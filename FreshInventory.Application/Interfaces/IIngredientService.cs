@@ -1,16 +1,12 @@
-﻿using FreshInventory.Domain.Entities;
+﻿using FreshInventory.Application.DTO;
 
 namespace FreshInventory.Application.Interfaces;
 
 public interface IIngredientService
 {
-    Task AddIngredientAsync(Ingredient ingredient);
-
-    Task UpdateIngredientAsync(Ingredient ingredient);
-
+    Task AddIngredientAsync(IngredientDto ingredientDto);
+    Task UpdateIngredientAsync(IngredientDto ingredientDto);
     Task DeleteIngredientAsync(int id);
-
-    Task<Ingredient> GetIngredientByIdAsync(int id);
-
-    Task<IEnumerable<Ingredient>> GetAllIngredientsAsync();
+    Task<IngredientDto> GetIngredientByIdAsync(int id);
+    Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
 }

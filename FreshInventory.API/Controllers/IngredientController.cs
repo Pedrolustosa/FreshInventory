@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using FreshInventory.Domain.Entities;
+using FreshInventory.Application.DTO;
 using FreshInventory.Application.Interfaces;
 
 namespace FreshInventory.API.Controllers;
@@ -11,21 +11,21 @@ public class IngredientController(IIngredientService ingredientService) : Contro
     private readonly IIngredientService _ingredientService = ingredientService;
 
     [HttpPost]
-    public async Task<IActionResult> AddIngredient([FromBody] Ingredient ingredient)
+    public async Task<IActionResult> AddIngredient([FromBody] IngredientDto ingredientDto)
     {
-        await _ingredientService.AddIngredientAsync(ingredient);
+        await _ingredientService.AddIngredientAsync(ingredientDto);
         return Ok();
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIngredient(int id, [FromBody] Ingredient ingredient)
+    public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientDto ingredientDto)
     {
-        if (id != ingredient.Id)
+        if (id != ingredientDto.Id)
         {
             return BadRequest("Ingredient ID does not match the resource ID.");
         }
 
-        await _ingredientService.UpdateIngredientAsync(ingredient);
+        await _ingredientService.UpdateIngredientAsync(ingredientDto);
         return NoContent();
     }
 
@@ -39,18 +39,19 @@ public class IngredientController(IIngredientService ingredientService) : Contro
     [HttpGet("{id}")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
-        var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
-        if (ingredient == null)
+        var ingredientDto = await _ingredientService.GetIngredientByIdAsync(id);
+        if (ingredientDto == null)
         {
             return NotFound();
         }
-        return Ok(ingredient);
+
+        return Ok(ingredientDto);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Ingredient>>> GetAllIngredients()
+    public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredients()
     {
-        var ingredients = await _ingredientService.GetAllIngredientsAsync();
-        return Ok(ingredients);
+        var ingredientDtos = await _ingredientService.GetAllIngredientsAsync();
+        return Ok(ingredientDtos);
     }
 }

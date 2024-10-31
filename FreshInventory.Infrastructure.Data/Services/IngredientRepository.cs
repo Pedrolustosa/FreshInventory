@@ -3,7 +3,7 @@ using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Infrastructure.Data.Context;
 
-namespace FreshInventory.Infrastructure.Data.Service;
+namespace FreshInventory.Infrastructure.Data.Services;
 
 public class IngredientRepository(ApplicationDbContext context) : IIngredientRepository
 {
@@ -27,7 +27,11 @@ public class IngredientRepository(ApplicationDbContext context) : IIngredientRep
 
     public async Task<IEnumerable<Ingredient>> GetAllAsync() => await _context.Ingredients.AsNoTracking().ToListAsync();
 
-    public async Task<Ingredient> GetByIdAsync(int id) => await _context.Ingredients.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+    public async Task<Ingredient> GetByIdAsync(int id)
+    {
+        var ingredient = await _context.Ingredients.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+        return ingredient ?? throw new KeyNotFoundException($"Ingredient with Id '{id}' does not exist.");
+    }
 
     public async Task UpdateAsync(Ingredient ingredient)
     {

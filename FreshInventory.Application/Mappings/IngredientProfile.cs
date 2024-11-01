@@ -2,13 +2,14 @@
 using FreshInventory.Domain.Entities;
 using FreshInventory.Application.DTO;
 
-namespace FreshInventory.Application.Mappings
+namespace FreshInventory.Application.Mappings;
+
+public class IngredientProfile : Profile
 {
-    public class IngredientProfile : Profile
+    public IngredientProfile()
     {
-        public IngredientProfile()
-        {
-            CreateMap<Ingredient, IngredientDto>().ReverseMap();
-        }
+        CreateMap<Ingredient, IngredientDto>().ReverseMap();
+        CreateMap<IngredientCreateDto, Ingredient>();
+        CreateMap<IngredientUpdateDto, Ingredient>();
     }
 }

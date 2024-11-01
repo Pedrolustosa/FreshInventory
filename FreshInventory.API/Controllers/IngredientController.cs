@@ -10,41 +10,11 @@ public class IngredientController(IIngredientService ingredientService) : Contro
 {
     private readonly IIngredientService _ingredientService = ingredientService;
 
-    [HttpPost]
-    public async Task<IActionResult> AddIngredient([FromBody] IngredientDto ingredientDto)
-    {
-        await _ingredientService.AddIngredientAsync(ingredientDto);
-        return Ok();
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientDto ingredientDto)
-    {
-        if (id != ingredientDto.Id)
-        {
-            return BadRequest("Ingredient ID does not match the resource ID.");
-        }
-
-        await _ingredientService.UpdateIngredientAsync(ingredientDto);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteIngredient(int id)
-    {
-        await _ingredientService.DeleteIngredientAsync(id);
-        return NoContent();
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
         var ingredientDto = await _ingredientService.GetIngredientByIdAsync(id);
-        if (ingredientDto == null)
-        {
-            return NotFound();
-        }
-
+        if (ingredientDto == null) return NotFound();
         return Ok(ingredientDto);
     }
 
@@ -53,5 +23,27 @@ public class IngredientController(IIngredientService ingredientService) : Contro
     {
         var ingredientDtos = await _ingredientService.GetAllIngredientsAsync();
         return Ok(ingredientDtos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddIngredient([FromBody] IngredientCreateDto ingredientCreateDto)
+    {
+        await _ingredientService.AddIngredientAsync(ingredientCreateDto);
+        return Ok();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientUpdateDto ingredientUpdateDto)
+    {
+        if (id != ingredientUpdateDto.Id) return BadRequest("Ingredient ID does not match the resource ID.");
+        await _ingredientService.UpdateIngredientAsync(ingredientUpdateDto);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteIngredient(int id)
+    {
+        await _ingredientService.DeleteIngredientAsync(id);
+        return NoContent();
     }
 }

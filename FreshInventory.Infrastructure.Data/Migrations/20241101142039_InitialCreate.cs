@@ -18,13 +18,26 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
+                    Unit = table.Column<string>(type: "TEXT", nullable: false),
+                    UnitCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    Supplier = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    PurchaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsPerishable = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
+                    ReorderLevel = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 10)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_Name",
+                table: "Ingredients",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />

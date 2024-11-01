@@ -1,3 +1,4 @@
+using FreshInventory.API.Middlewares;
 using FreshInventory.Infrastructure.IoC.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

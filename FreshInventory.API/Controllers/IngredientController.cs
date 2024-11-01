@@ -6,28 +6,20 @@ namespace FreshInventory.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class IngredientController(IIngredientService ingredientService) : ControllerBase
+public class IngredientController(IIngredientService ingredientService, ILogger<IngredientController> logger) : ControllerBase
 {
     private readonly IIngredientService _ingredientService = ingredientService;
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetIngredientById(int id)
-    {
-        var ingredientDto = await _ingredientService.GetIngredientByIdAsync(id);
-        if (ingredientDto == null) return NotFound();
-        return Ok(ingredientDto);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredients()
-    {
-        var ingredientDtos = await _ingredientService.GetAllIngredientsAsync();
-        return Ok(ingredientDtos);
-    }
+    private readonly ILogger<IngredientController> _logger = logger;
 
     [HttpPost]
     public async Task<IActionResult> AddIngredient([FromBody] IngredientCreateDto ingredientCreateDto)
     {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for AddIngredient.");
+            return BadRequest(ModelState);
+        }
+
         await _ingredientService.AddIngredientAsync(ingredientCreateDto);
         return Ok();
     }
@@ -35,7 +27,18 @@ public class IngredientController(IIngredientService ingredientService) : Contro
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientUpdateDto ingredientUpdateDto)
     {
-        if (id != ingredientUpdateDto.Id) return BadRequest("Ingredient ID does not match the resource ID.");
+        if (id != ingredientUpdateDto.Id)
+        {
+            _logger.LogWarning("ID in URL does not match ID in body for UpdateIngredient.");
+            return BadRequest("Ingredient ID mismatch.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for UpdateIngredient.");
+            return BadRequest(ModelState);
+        }
+
         await _ingredientService.UpdateIngredientAsync(ingredientUpdateDto);
         return NoContent();
     }
@@ -45,5 +48,25 @@ public class IngredientController(IIngredientService ingredientService) : Contro
     {
         await _ingredientService.DeleteIngredientAsync(id);
         return NoContent();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetIngredientById(int id)
+    {
+        var ingredientDto = await _ingredientService.GetIngredientByIdAsync(id);
+        if (ingredientDto == null)
+        {
+            _logger.LogWarning("Ingredient with ID {Id} not found.", id);
+            return NotFound();
+        }
+
+        return Ok(ingredientDto);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredients()
+    {
+        var ingredientDtos = await _ingredientService.GetAllIngredientsAsync();
+        return Ok(ingredientDtos);
     }
 }

@@ -13,7 +13,7 @@ public class EmailService(EmailSettingsDto emailSettings) : IEmailService
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.From, _emailSettings.From));
-        message.To.Add(new MailboxAddress("", "EMAIL"));
+        message.To.Add(new MailboxAddress("", "pedroeternalss@gmail.com"));
         message.Subject = subject;
         message.Body = new TextPart("html")
         {

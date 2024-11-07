@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshInventory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241101142039_InitialCreate")]
+    [Migration("20241107144729_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -69,9 +69,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Ingredients");
                 });

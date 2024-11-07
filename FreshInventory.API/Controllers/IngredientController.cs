@@ -1,14 +1,19 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FreshInventory.Application.DTO;
-using FreshInventory.Application.Interfaces;
+using FreshInventory.Application.CQRS.Commands.CreateIngredient;
+using FreshInventory.Application.CQRS.Commands.DeleteIngredient;
+using FreshInventory.Application.CQRS.Commands.UpdateIngredient;
+using FreshInventory.Application.CQRS.Queries.GetAllIngredients;
+using FreshInventory.Application.CQRS.Queries.GetIngredientById;
 
 namespace FreshInventory.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class IngredientController(IIngredientService ingredientService, ILogger<IngredientController> logger) : ControllerBase
+public class IngredientController(IMediator mediator, ILogger<IngredientController> logger) : ControllerBase
 {
-    private readonly IIngredientService _ingredientService = ingredientService;
+    private readonly IMediator _mediator = mediator;
     private readonly ILogger<IngredientController> _logger = logger;
 
     [HttpPost]
@@ -20,8 +25,9 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
             return BadRequest(ModelState);
         }
 
-        await _ingredientService.AddIngredientAsync(ingredientCreateDto);
-        return Ok();
+        var command = new CreateIngredientCommand(ingredientCreateDto);
+        var id = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetIngredientById), new { id }, null);
     }
 
     [HttpPut("{id}")]
@@ -39,21 +45,25 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
             return BadRequest(ModelState);
         }
 
-        await _ingredientService.UpdateIngredientAsync(ingredientUpdateDto);
+        var command = new UpdateIngredientCommand(ingredientUpdateDto);
+        await _mediator.Send(command);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteIngredient(int id)
     {
-        await _ingredientService.DeleteIngredientAsync(id);
+        var command = new DeleteIngredientCommand(id);
+        await _mediator.Send(command);
         return NoContent();
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
-        var ingredientDto = await _ingredientService.GetIngredientByIdAsync(id);
+        var query = new GetIngredientByIdQuery(id);
+        var ingredientDto = await _mediator.Send(query);
+
         if (ingredientDto == null)
         {
             _logger.LogWarning("Ingredient with ID {Id} not found.", id);
@@ -66,7 +76,8 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredients()
     {
-        var ingredientDtos = await _ingredientService.GetAllIngredientsAsync();
+        var query = new GetAllIngredientsQuery();
+        var ingredientDtos = await _mediator.Send(query);
         return Ok(ingredientDtos);
     }
 }

@@ -67,9 +67,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("Ingredients");
                 });
 #pragma warning restore 612, 618

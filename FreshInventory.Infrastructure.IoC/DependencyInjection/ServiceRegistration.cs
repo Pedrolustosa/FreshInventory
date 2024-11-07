@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using FreshInventory.Application.DTO;
 using FreshInventory.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using FreshInventory.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using FreshInventory.Infrastructure.Data.Context;
 using FreshInventory.Infrastructure.Data.Services;
+using FreshInventory.Application.CQRS.Commands.CreateIngredient;
 
 namespace FreshInventory.Infrastructure.IoC.DependencyInjection;
 
@@ -15,6 +17,7 @@ public static class ServiceRegistration
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateIngredientCommandHandler).Assembly));
         services.AddAutoMapper(typeof(IngredientProfile));
 
         services.AddDbContext<ApplicationDbContext>(options =>

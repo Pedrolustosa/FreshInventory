@@ -19,8 +19,6 @@ namespace FreshInventory.Infrastructure.Data.Context
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.HasIndex(e => e.Name).IsUnique();
-
                 entity.Property(e => e.Quantity)
                     .IsRequired()
                     .HasDefaultValue(0);

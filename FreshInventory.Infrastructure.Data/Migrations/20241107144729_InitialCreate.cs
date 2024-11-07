@@ -32,12 +32,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ingredients_Name",
-                table: "Ingredients",
-                column: "Name",
-                unique: true);
         }
 
         /// <inheritdoc />

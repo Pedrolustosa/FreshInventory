@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using FreshInventory.Infrastructure.Data.Context;
 using FreshInventory.Infrastructure.Data.Services;
 using FreshInventory.Application.CQRS.Commands.CreateIngredient;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace FreshInventory.Infrastructure.IoC.DependencyInjection;
 
@@ -38,6 +40,15 @@ public static class ServiceRegistration
         services.AddScoped<IIngredientService, IngredientService>();
         services.AddScoped<IIngredientRepository, IngredientRepository>();
         services.AddScoped<IEmailService, EmailService>();
+        Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddSerilog(dispose: true);
+        });
         return services;
     }
 }

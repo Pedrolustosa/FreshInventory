@@ -8,8 +8,10 @@ public class IngredientProfile : Profile
 {
     public IngredientProfile()
     {
-        CreateMap<Ingredient, IngredientDto>().ReverseMap();
+        CreateMap<Ingredient, IngredientDto>();
         CreateMap<IngredientCreateDto, Ingredient>();
-        CreateMap<IngredientUpdateDto, Ingredient>();
+        CreateMap<IngredientUpdateDto, Ingredient>()
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
     }
 }

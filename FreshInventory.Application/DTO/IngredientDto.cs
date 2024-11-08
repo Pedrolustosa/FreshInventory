@@ -15,4 +15,6 @@ public class IngredientDto
     public DateTime ExpiryDate { get; set; }
     public bool IsPerishable { get; set; }
     public int ReorderLevel { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
 }

@@ -26,6 +26,10 @@ public class Ingredient
 
     public int ReorderLevel { get; private set; }
 
+    public DateTime CreatedDate { get; private set; }
+
+    public DateTime UpdatedDate { get; private set; }
+
     private Ingredient() { }
 
     public Ingredient(
@@ -51,6 +55,17 @@ public class Ingredient
         SetIsPerishable(isPerishable);
         SetReorderLevel(reorderLevel);
     }
+
+    public void SetCreatedDate(DateTime createdDate)
+    {
+        CreatedDate = createdDate;
+    }
+
+    public void SetUpdatedDate(DateTime updatedDate)
+    {
+        UpdatedDate = updatedDate;
+    }
+
     public void AddQuantity(int quantity)
     {
         if (quantity <= 0)

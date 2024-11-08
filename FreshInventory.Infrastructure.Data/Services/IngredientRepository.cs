@@ -7,8 +7,9 @@ using FreshInventory.Infrastructure.Data.Context;
 
 namespace FreshInventory.Infrastructure.Data.Services;
 
-public class IngredientRepository(ApplicationDbContext context, ILogger<IngredientRepository> logger) : IIngredientRepository
+public class IngredientRepository(ApplicationDbContext context, ILogger<IngredientRepository> logger) : IIngredientRepository, IDisposable
 {
+    private bool _disposed = false;
     private readonly ApplicationDbContext _context = context;
     private readonly ILogger<IngredientRepository> _logger = logger;
 
@@ -152,5 +153,20 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
             _logger.LogError(ex, "An error occurred while retrieving ingredient with ID {Id} from database.", id);
             throw new RepositoryException("An error occurred while retrieving the ingredient.", ex);
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) _context.Dispose();
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

@@ -3,7 +3,7 @@ using FreshInventory.Application.DTO;
 
 namespace FreshInventory.Application.CQRS.Commands.UpdateIngredient;
 
-public class UpdateIngredientCommand(IngredientUpdateDto ingredient) : IRequest
+public class UpdateIngredientCommand(IngredientUpdateDto ingredientUpdateDto) : IRequest
 {
-    public IngredientUpdateDto Ingredient { get; set; } = ingredient;
+    public IngredientUpdateDto IngredientUpdateDto { get; } = ingredientUpdateDto;
 }

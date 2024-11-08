@@ -25,6 +25,11 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
             _logger.LogError(ex, "Database update failed when adding ingredient '{Name}'.", ingredient.Name);
             throw new RepositoryException("An error occurred while adding the ingredient.", ex);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred when adding ingredient '{Name}'.", ingredient.Name);
+            throw new RepositoryException("An unexpected error occurred while adding the ingredient.", ex);
+        }
     }
 
     public async Task UpdateAsync(Ingredient ingredient)
@@ -44,6 +49,11 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
         {
             _logger.LogError(ex, "Database update failed when updating ingredient '{Name}'.", ingredient.Name);
             throw new RepositoryException("An error occurred while updating the ingredient.", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred when updating ingredient '{Name}'.", ingredient.Name);
+            throw new RepositoryException("An unexpected error occurred while updating the ingredient.", ex);
         }
     }
 
@@ -69,15 +79,53 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
             _logger.LogError(ex, "Database update failed when deleting ingredient with ID {Id}.", id);
             throw new RepositoryException("An error occurred while deleting the ingredient.", ex);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred when deleting ingredient with ID {Id}.", id);
+            throw new RepositoryException("An unexpected error occurred while deleting the ingredient.", ex);
+        }
     }
 
-    public async Task<IEnumerable<Ingredient>> GetAllAsync()
+    public async Task<(IEnumerable<Ingredient> Items, int TotalCount)> GetAllIngredientsAsync(
+        int pageNumber,
+        int pageSize,
+        string? name = null,
+        string? category = null,
+        string? sortBy = null,
+        string? sortDirection = null)
     {
         try
         {
-            var ingredients = await _context.Ingredients.AsNoTracking().ToListAsync();
-            _logger.LogInformation("Retrieved {Count} ingredients from database.", ingredients.Count);
-            return ingredients;
+            var query = _context.Ingredients.AsNoTracking();
+
+            // Filtering
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(i => i.Name.Contains(name));
+            }
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(i => i.Category.ToString().Equals(category, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Sorting
+            query = sortBy?.ToLower() switch
+            {
+                "name" => sortDirection?.ToLower() == "desc" ? query.OrderByDescending(i => i.Name) : query.OrderBy(i => i.Name),
+                "quantity" => sortDirection?.ToLower() == "desc" ? query.OrderByDescending(i => i.Quantity) : query.OrderBy(i => i.Quantity),
+                "category" => sortDirection?.ToLower() == "desc" ? query.OrderByDescending(i => i.Category) : query.OrderBy(i => i.Category),
+                _ => query.OrderBy(i => i.Id),
+            };
+
+            var totalCount = await query.CountAsync();
+            _logger.LogInformation("Retrieved {Count} ingredients from database.", totalCount);
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
         catch (Exception ex)
         {

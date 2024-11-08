@@ -1,9 +1,9 @@
-﻿using MediatR;
-using FreshInventory.Application.DTO;
+﻿using FreshInventory.Application.DTO;
+using MediatR;
 
 namespace FreshInventory.Application.CQRS.Commands.CreateIngredient;
 
-public class CreateIngredientCommand(IngredientCreateDto ingredient) : IRequest<int>
+public class CreateIngredientCommand(IngredientCreateDto ingredientCreateDto) : IRequest<IngredientDto>
 {
-    public IngredientCreateDto Ingredient { get; set; } = ingredient;
+    public IngredientCreateDto IngredientCreateDto { get; } = ingredientCreateDto;
 }

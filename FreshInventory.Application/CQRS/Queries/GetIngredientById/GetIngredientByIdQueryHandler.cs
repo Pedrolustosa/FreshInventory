@@ -40,7 +40,7 @@ public class GetIngredientByIdQueryHandler(
             _logger.LogError(ex, "An error occurred while retrieving ingredient with ID {Id}.", request.Id);
             throw new QueryException("An error occurred while retrieving the ingredient.", ex);
         }
-        catch (QueryException ex)
+        catch (QueryException)
         {
             throw;
         }

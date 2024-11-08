@@ -5,5 +5,5 @@ namespace FreshInventory.Application.CQRS.Queries.GetIngredientById;
 
 public class GetIngredientByIdQuery(int id) : IRequest<IngredientDto>
 {
-    public int Id { get; set; } = id;
+    public int Id { get; } = id;
 }

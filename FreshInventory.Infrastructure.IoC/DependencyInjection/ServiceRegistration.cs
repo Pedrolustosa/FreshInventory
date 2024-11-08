@@ -35,6 +35,7 @@ public static class ServiceRegistration
             services.AddSingleton(emailConfig);
         else
             throw new Exception("EmailConfiguration section is missing or invalid in appsettings.json");
+        services.AddScoped<IIngredientService, IngredientService>();
         services.AddScoped<IIngredientRepository, IngredientRepository>();
         services.AddScoped<IEmailService, EmailService>();
         return services;

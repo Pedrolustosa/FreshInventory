@@ -1,83 +1,128 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FreshInventory.Application.DTO;
-using FreshInventory.Application.CQRS.Commands.CreateIngredient;
-using FreshInventory.Application.CQRS.Commands.DeleteIngredient;
-using FreshInventory.Application.CQRS.Commands.UpdateIngredient;
-using FreshInventory.Application.CQRS.Queries.GetAllIngredients;
-using FreshInventory.Application.CQRS.Queries.GetIngredientById;
+using FreshInventory.Application.Common;
+using FreshInventory.Application.Interfaces;
+using FreshInventory.Application.Exceptions;
 
 namespace FreshInventory.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class IngredientController(IMediator mediator, ILogger<IngredientController> logger) : ControllerBase
+public class IngredientsController(IIngredientService ingredientService, ILogger<IngredientsController> logger) : ControllerBase
 {
-    private readonly IMediator _mediator = mediator;
-    private readonly ILogger<IngredientController> _logger = logger;
+    private readonly IIngredientService _ingredientService = ingredientService;
+    private readonly ILogger<IngredientsController> _logger = logger;
 
-    [HttpPost]
-    public async Task<IActionResult> AddIngredient([FromBody] IngredientCreateDto ingredientCreateDto)
+    [HttpGet]
+    public async Task<ActionResult<PagedList<IngredientDto>>> GetAll(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? name = null,
+        [FromQuery] string? category = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] string? sortDirection = null)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            _logger.LogWarning("Invalid model state for AddIngredient.");
-            return BadRequest(ModelState);
+            var ingredients = await _ingredientService.GetAllIngredientsAsync(
+                pageNumber, pageSize, name, category, sortBy, sortDirection);
+            return Ok(ingredients);
         }
-
-        var command = new CreateIngredientCommand(ingredientCreateDto);
-        var id = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetIngredientById), new { id }, null);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientUpdateDto ingredientUpdateDto)
-    {
-        if (id != ingredientUpdateDto.Id)
+        catch (Exception ex)
         {
-            _logger.LogWarning("ID in URL does not match ID in body for UpdateIngredient.");
-            return BadRequest("Ingredient ID mismatch.");
+            _logger.LogError(ex, "An error occurred while retrieving ingredients.");
+            return StatusCode(500, "An error occurred while processing your request.");
         }
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogWarning("Invalid model state for UpdateIngredient.");
-            return BadRequest(ModelState);
-        }
-
-        var command = new UpdateIngredientCommand(ingredientUpdateDto);
-        await _mediator.Send(command);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteIngredient(int id)
-    {
-        var command = new DeleteIngredientCommand(id);
-        await _mediator.Send(command);
-        return NoContent();
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetIngredientById(int id)
+    public async Task<ActionResult<IngredientDto>> GetById(int id)
     {
-        var query = new GetIngredientByIdQuery(id);
-        var ingredientDto = await _mediator.Send(query);
-
-        if (ingredientDto == null)
+        try
         {
-            _logger.LogWarning("Ingredient with ID {Id} not found.", id);
-            return NotFound();
+            var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
+            if (ingredient == null)
+            {
+                _logger.LogWarning("Ingredient with ID {Id} not found.", id);
+                return NotFound($"Ingredient with ID {id} not found.");
+            }
+            return Ok(ingredient);
         }
-
-        return Ok(ingredientDto);
+        catch (ServiceException ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving ingredient with ID {Id}.", id);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while retrieving ingredient with ID {Id}.", id);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredients()
+    [HttpPost]
+    public async Task<ActionResult<IngredientDto>> Create([FromBody] IngredientCreateDto ingredientCreateDto)
     {
-        var query = new GetAllIngredientsQuery();
-        var ingredientDtos = await _mediator.Send(query);
-        return Ok(ingredientDtos);
+        try
+        {
+            var createdIngredient = await _ingredientService.AddIngredientAsync(ingredientCreateDto);
+            return CreatedAtAction(nameof(GetById), new { id = createdIngredient.Id }, createdIngredient);
+        }
+        catch (ServiceException ex)
+        {
+            _logger.LogError(ex, "An error occurred while creating ingredient '{Name}'.", ingredientCreateDto.Name);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while creating ingredient '{Name}'.", ingredientCreateDto.Name);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(int id, [FromBody] IngredientUpdateDto ingredientUpdateDto)
+    {
+        if (id != ingredientUpdateDto.Id)
+        {
+            _logger.LogWarning("ID in URL ({UrlId}) does not match ID in body ({BodyId}).", id, ingredientUpdateDto.Id);
+            return BadRequest("ID in URL does not match ID in body.");
+        }
+
+        try
+        {
+            await _ingredientService.UpdateIngredientAsync(ingredientUpdateDto);
+            return NoContent();
+        }
+        catch (ServiceException ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating ingredient '{Name}'.", ingredientUpdateDto.Name);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while updating ingredient '{Name}'.", ingredientUpdateDto.Name);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        try
+        {
+            await _ingredientService.DeleteIngredientAsync(id);
+            return NoContent();
+        }
+        catch (ServiceException ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting ingredient with ID {Id}.", id);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while deleting ingredient with ID {Id}.", id);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 }

@@ -17,6 +17,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors(opt => opt.AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials()
+                      .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

@@ -13,7 +13,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
     private readonly IIngredientService _ingredientService = ingredientService;
     private readonly ILogger<IngredientsController> _logger = logger;
 
-    [HttpGet]
+    [HttpGet("GetAll")]
     public async Task<ActionResult<PagedList<IngredientDto>>> GetAll(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,

@@ -1,0 +1,28 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  background: var(--neutral-beige);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  width: calc(100% - 280px); /* Largura com sidebar expandido */
+  margin-left: 280px; /* Margem com sidebar expandido */
+  padding: 1.5rem;
+}
+
+.main-content.no-sidebar {
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+}
+
+.app-container.collapsed .main-content {
+  width: calc(100% - 70px); /* Largura com sidebar colapsado */
+  margin-left: 70px; /* Margem com sidebar colapsado */
+}

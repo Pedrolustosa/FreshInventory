@@ -1,0 +1,17 @@
+<div class="app-container" [class.collapsed]="isSidebarCollapsed && !isHomePage">
+  <app-sidebar *ngIf="!isHomePage" (collapseChange)="onSidebarCollapseChange($event)"></app-sidebar>
+  
+  <div class="main-content" [class.no-sidebar]="isHomePage">
+    <router-outlet></router-outlet>
+  </div>
+
+  <ngx-spinner
+    bdColor="rgba(0, 0, 0, 0.8)"
+    size="medium"
+    color="#fff"
+    type="ball-clip-rotate"
+    [fullScreen]="true"
+  >
+    <p style="color: white">Loading...</p>
+  </ngx-spinner>
+</div>

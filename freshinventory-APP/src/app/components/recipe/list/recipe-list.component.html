@@ -1,0 +1,137 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-utensils me-2"></i>Recipes Management</h2>
+    <button class="btn btn-primary" routerLink="create">
+      <i class="fas fa-plus me-2"></i>Add New Recipe
+    </button>
+  </div>
+  
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="searchTerm" 
+              placeholder="Search by name or description..."
+              (keyup.enter)="onSearch()"
+            >
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-filter"></i>
+            </span>
+            <select 
+              class="form-select" 
+              [(ngModel)]="selectedCategory"
+              (change)="onCategoryChange()"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let category of categories" [value]="category">
+                {{category}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Preparation Time</th>
+              <th>Servings</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let recipe of filteredRecipes">
+              <td>{{ recipe.name }}</td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="{
+                  'bg-success': recipe.category === 'Main Course',
+                  'bg-info': recipe.category === 'Appetizer',
+                  'bg-warning': recipe.category === 'Dessert',
+                  'bg-primary': recipe.category === 'Beverage',
+                  'bg-secondary': recipe.category === 'Side Dish'
+                }">
+                  {{ recipe.category }}
+                </span>
+              </td>
+              <td>{{ recipe.preparationTime }} mins</td>
+              <td>{{ recipe.servings }} servings</td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="getAvailabilityClass(recipe)">
+                  {{ recipe.isAvailable ? 'Available' : 'Unavailable' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button 
+                  class="btn btn-sm btn-outline-info me-2"
+                  [routerLink]="['update', recipe.id]"
+                  title="Edit Recipe"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="onDeleteClick(recipe)"
+                  title="Delete Recipe"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <span class="text-muted">
+            Showing {{ filteredRecipes.length }} recipes
+          </span>
+        </div>
+        <div class="form-check">
+          <input 
+            type="checkbox" 
+            class="form-check-input" 
+            id="showAvailable"
+            [(ngModel)]="showOnlyAvailable"
+            (change)="onAvailabilityChange()"
+          >
+          <label class="form-check-label" for="showAvailable">
+            Show only available recipes
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-recipe-delete-modal
+  *ngIf="showDeleteModal"
+  [recipe]="selectedRecipe"
+  (confirm)="onDeleteConfirm()"
+  (cancel)="closeDeleteModal()"
+></app-recipe-delete-modal>
+
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-clip-rotate"
+  [fullScreen]="true"
+>
+  <p style="color: white">Loading recipes...</p>
+</ngx-spinner>

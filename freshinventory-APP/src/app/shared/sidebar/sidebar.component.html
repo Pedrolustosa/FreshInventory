@@ -1,0 +1,78 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="brand">
+      <img src="assets/images/logo.png" alt="Fresh Inventory" class="brand-logo">
+      <h2 class="brand-name">FreshInventory</h2>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <i class="fas" [class.fa-chevron-left]="!isCollapsed" [class.fa-chevron-right]="isCollapsed"></i>
+    </button>
+  </div>
+  
+  <div class="sidebar-content">
+    <div class="nav-section">
+      <h3 class="nav-section-title">CORE</h3>
+      <ul class="nav-items">
+        <li class="nav-item">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link" data-title="Dashboard">
+            <span class="nav-icon">
+              <i class="fas fa-chart-line"></i>
+            </span>
+            <span class="nav-text">Dashboard</span>
+            <i class="fas fa-chevron-right nav-arrow"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <h3 class="nav-section-title">INVENTORY</h3>
+      <ul class="nav-items">
+        <li class="nav-item">
+          <a routerLink="/ingredients" routerLinkActive="active" class="nav-link" data-title="Ingredients">
+            <span class="nav-icon">
+              <i class="fas fa-box"></i>
+            </span>
+            <span class="nav-text">Ingredients</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/recipes" routerLinkActive="active" class="nav-link" data-title="Recipes">
+            <span class="nav-icon">
+              <i class="fas fa-utensils"></i>
+            </span>
+            <span class="nav-text">Recipes</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="sidebar-footer">
+    <div class="btn-group" dropdown [dropup]="true">
+      <div class="user-info" dropdownToggle id="user-dropup" 
+           aria-controls="dropdown-user-menu">
+        <img src="assets/images/avatar-placeholder.png" alt="User Avatar" class="user-avatar">
+        <div class="user-details">
+          <span class="user-name">Logged in as:</span>
+          <span class="user-role">Valerie Luna</span>
+        </div>
+        <i class="fas fa-chevron-up nav-arrow"></i>
+      </div>
+      <ul id="dropdown-user-menu" *dropdownMenu class="dropdown-menu"
+          role="menu" aria-labelledby="user-dropup">
+        <li role="menuitem">
+          <a class="dropdown-item" routerLink="/profile">
+            <i class="fas fa-user me-2"></i>Profile
+          </a>
+        </li>
+        <li class="divider dropdown-divider"></li>
+        <li role="menuitem">
+          <a class="dropdown-item text-danger" href="javascript:void(0)" (click)="onLogout()">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

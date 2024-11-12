@@ -1,0 +1,60 @@
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--neutral-coffee);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(44, 97, 79, 0.1);
+}
+
+.ingredients-section,
+.instructions-section {
+  background: var(--neutral-beige);
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.ingredients-section h3,
+.instructions-section h3 {
+  color: var(--neutral-coffee);
+}
+
+.input-group-text {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.btn-outline-danger {
+  border-color: var(--danger-color);
+  color: var(--danger-color);
+}
+
+.btn-outline-danger:hover {
+  background: var(--danger-color);
+  color: white;
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.invalid-feedback {
+  display: block;
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}

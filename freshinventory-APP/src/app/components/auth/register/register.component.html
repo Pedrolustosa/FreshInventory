@@ -1,0 +1,168 @@
+<div class="auth-container">
+  <div class="auth-box">
+    <div class="auth-left">
+      <img src="assets/images/fresh-produce.png" alt="Fresh Inventory" class="auth-illustration">
+    </div>
+    
+    <div class="auth-right">
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p>Join us to manage your fresh ingredients inventory</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label for="name">
+            <i class="fas fa-user"></i>Full Name <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="name"
+            class="form-control" 
+            formControlName="name"
+            placeholder="Enter your full name"
+            [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+          >
+          <div class="invalid-feedback" *ngIf="getFieldError('name')">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i>Email Address <span class="required">*</span>
+          </label>
+          <input 
+            type="email" 
+            id="email"
+            class="form-control" 
+            formControlName="email"
+            placeholder="Enter your email"
+            [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+          >
+          <div class="invalid-feedback" *ngIf="getFieldError('email')">
+            {{ getFieldError('email') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i>Password <span class="required">*</span>
+          </label>
+          <div class="password-input">
+            <input 
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              class="form-control" 
+              formControlName="password"
+              placeholder="Create a password"
+              [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+            >
+            <button 
+              type="button" 
+              class="password-toggle" 
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+          
+          <div class="password-strength" *ngIf="registerForm.get('password')?.value">
+            <div class="strength-bar">
+              <div 
+                class="strength-progress" 
+                [style.width.%]="passwordStrength"
+                [class]="getPasswordStrengthClass()"
+              ></div>
+            </div>
+            <span class="strength-text" [class]="getPasswordStrengthClass()">
+              Password Strength: {{ getPasswordStrengthText() }}
+            </span>
+          </div>
+
+          <div class="password-criteria">
+            <p>Password must contain:</p>
+            <ul>
+              <li [class.met]="passwordCriteria.length">
+                <i class="fas" [class.fa-check]="passwordCriteria.length" [class.fa-times]="!passwordCriteria.length"></i>
+                At least 8 characters
+              </li>
+              <li [class.met]="passwordCriteria.lowercase">
+                <i class="fas" [class.fa-check]="passwordCriteria.lowercase" [class.fa-times]="!passwordCriteria.lowercase"></i>
+                One lowercase letter
+              </li>
+              <li [class.met]="passwordCriteria.uppercase">
+                <i class="fas" [class.fa-check]="passwordCriteria.uppercase" [class.fa-times]="!passwordCriteria.uppercase"></i>
+                One uppercase letter
+              </li>
+              <li [class.met]="passwordCriteria.number">
+                <i class="fas" [class.fa-check]="passwordCriteria.number" [class.fa-times]="!passwordCriteria.number"></i>
+                One number
+              </li>
+              <li [class.met]="passwordCriteria.special">
+                <i class="fas" [class.fa-check]="passwordCriteria.special" [class.fa-times]="!passwordCriteria.special"></i>
+                One special character
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">
+            <i class="fas fa-lock"></i>Confirm Password <span class="required">*</span>
+          </label>
+          <div class="password-input">
+            <input 
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              class="form-control" 
+              formControlName="confirmPassword"
+              placeholder="Confirm your password"
+              [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || registerForm.hasError('mismatch')"
+            >
+            <button 
+              type="button" 
+              class="password-toggle" 
+              (click)="toggleConfirmPassword()"
+              [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+            >
+              <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+            </button>
+          </div>
+          <div class="invalid-feedback" *ngIf="registerForm.hasError('mismatch')">
+            Passwords do not match
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="registerForm.invalid || isLoading"
+        >
+          <i class="fas" [class.fa-user-plus]="!isLoading" [class.fa-spinner]="isLoading" [class.fa-spin]="isLoading"></i>
+          {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary"
+          (click)="onCancel()"
+          [disabled]="isLoading"
+        >
+          <i class="fas fa-arrow-left me-2"></i>Back to Login
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-clip-rotate"
+  [fullScreen]="true"
+>
+  <p style="color: white">Creating your account...</p>
+</ngx-spinner>

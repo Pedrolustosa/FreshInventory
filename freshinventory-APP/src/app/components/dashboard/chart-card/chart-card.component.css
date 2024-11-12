@@ -1,0 +1,20 @@
+.chart-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  transition: transform 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+}
+
+.chart-card h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--neutral-coffee);
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--neutral-cream);
+}

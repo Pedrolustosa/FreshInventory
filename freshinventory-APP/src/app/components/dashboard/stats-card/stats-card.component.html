@@ -1,0 +1,13 @@
+<div class="stat-card">
+  <div class="stat-icon" [ngClass]="type">
+    <i class="fas fa-{{icon}}"></i>
+  </div>
+  <div class="stat-content">
+    <h3>{{title}}</h3>
+    <p class="stat-value">{{value}}</p>
+    <p class="stat-change" [ngClass]="{'positive': trend === 'up', 'negative': trend === 'down'}">
+      <i class="fas fa-arrow-{{trend}}"></i> {{change}}
+    </p>
+    <p class="stat-description">{{description}}</p>
+  </div>
+</div>

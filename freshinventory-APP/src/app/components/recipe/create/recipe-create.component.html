@@ -1,0 +1,120 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="fas fa-plus-circle me-2"></i>Create New Recipe
+    </h2>
+    <button class="btn btn-outline-secondary" routerLink="/recipes">
+      <i class="fas fa-arrow-left me-2"></i>Back to Recipes
+    </button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Recipe Name</label>
+            <input type="text" class="form-control" formControlName="name">
+            <div class="invalid-feedback" *ngIf="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched">
+              Recipe name is required
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" formControlName="category">
+              <option value="">Select Category</option>
+              <option *ngFor="let category of categories" [value]="category">
+                {{category}}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="recipeForm.get('category')?.invalid && recipeForm.get('category')?.touched">
+              Category is required
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Preparation Time (minutes)</label>
+            <input type="number" class="form-control" formControlName="preparationTime">
+            <div class="invalid-feedback" *ngIf="recipeForm.get('preparationTime')?.invalid && recipeForm.get('preparationTime')?.touched">
+              Valid preparation time is required
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Servings</label>
+            <input type="number" class="form-control" formControlName="servings">
+            <div class="invalid-feedback" *ngIf="recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched">
+              Valid number of servings is required
+            </div>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" rows="3" formControlName="description"></textarea>
+            <div class="invalid-feedback" *ngIf="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched">
+              Description is required
+            </div>
+          </div>
+        </div>
+
+        <div class="ingredients-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-0">Ingredients</h3>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="addIngredient()">
+              <i class="fas fa-plus me-2"></i>Add Ingredient
+            </button>
+          </div>
+
+          <div formArrayName="ingredients">
+            <div *ngFor="let ingredient of ingredientsArray.controls; let i=index" [formGroupName]="i" class="row mb-3">
+              <div class="col-md-4">
+                <select class="form-select" formControlName="ingredientId">
+                  <option value="">Select Ingredient</option>
+                  <option *ngFor="let ing of ingredients" [value]="ing.id">{{ing.name}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="number" class="form-control" formControlName="quantity" placeholder="Quantity">
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control" formControlName="unit" placeholder="Unit">
+              </div>
+              <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeIngredient(i)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="instructions-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-0">Instructions</h3>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="addInstruction()">
+              <i class="fas fa-plus me-2"></i>Add Step
+            </button>
+          </div>
+
+          <div formArrayName="instructions">
+            <div *ngFor="let instruction of instructionsArray.controls; let i=index" class="mb-3">
+              <div class="input-group">
+                <span class="input-group-text">Step {{i + 1}}</span>
+                <input type="text" class="form-control" [formControlName]="i">
+                <button type="button" class="btn btn-outline-danger" (click)="removeInstruction(i)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/recipes">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Recipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

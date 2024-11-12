@@ -1,0 +1,29 @@
+<div class="modal-overlay">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h4 class="modal-title">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Delete Recipe
+        </h4>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="onCancel()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the recipe:</p>
+        <p class="fw-bold">{{ recipe?.name }}</p>
+        <p class="text-danger mb-0">
+          <i class="fas fa-info-circle me-2"></i>
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          <i class="fas fa-times me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onConfirm()">
+          <i class="fas fa-trash me-2"></i>Delete Recipe
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

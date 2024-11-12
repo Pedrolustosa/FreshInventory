@@ -1,0 +1,96 @@
+<div class="auth-container">
+  <div class="auth-box">
+    <div class="auth-left">
+      <img src="assets/images/logo.png" alt="Fresh Inventory" class="auth-illustration">
+    </div>
+    
+    <div class="auth-right">
+      <div class="auth-header">
+        <h1>Welcome Back!</h1>
+        <p>Sign in to manage your fresh ingredients inventory</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i>Email Address
+          </label>
+          <input 
+            type="email" 
+            id="email"
+            class="form-control" 
+            formControlName="email"
+            placeholder="Enter your email"
+            [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          >
+          <div class="invalid-feedback">
+            Please enter a valid email address
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i>Password
+          </label>
+          <div class="password-input">
+            <input 
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              class="form-control" 
+              formControlName="password"
+              placeholder="Enter your password"
+              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            >
+            <button 
+              type="button" 
+              class="password-toggle" 
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+          <div class="invalid-feedback">
+            Password must be at least 6 characters
+          </div>
+        </div>
+
+        <div class="form-options">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" formControlName="rememberMe">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="loginForm.invalid"
+        >
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
+
+        <div class="social-login">
+          <p>Or sign in with</p>
+          <div class="social-buttons">
+            <button type="button" class="social-btn">
+              <i class="fab fa-google"></i>
+            </button>
+            <button type="button" class="social-btn">
+              <i class="fab fa-facebook-f"></i>
+            </button>
+            <button type="button" class="social-btn">
+              <i class="fab fa-twitter"></i>
+            </button>
+          </div>
+        </div>
+
+        <p class="auth-footer">
+          Don't have an account? 
+          <a routerLink="/auth/register">Create Account</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

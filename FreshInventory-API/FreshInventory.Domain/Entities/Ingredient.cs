@@ -5,29 +5,17 @@ namespace FreshInventory.Domain.Entities;
 public class Ingredient
 {
     public int Id { get; private set; }
-
     public string Name { get; private set; }
-
     public int Quantity { get; private set; }
-
     public Unit Unit { get; private set; }
-
     public decimal UnitCost { get; private set; }
-
     public Category Category { get; private set; }
-
-    public string Supplier { get; private set; }
-
+    public Supplier Supplier { get; private set; }
     public DateTime PurchaseDate { get; private set; }
-
     public DateTime ExpiryDate { get; private set; }
-
     public bool IsPerishable { get; private set; }
-
     public int ReorderLevel { get; private set; }
-
     public DateTime CreatedDate { get; private set; }
-
     public DateTime UpdatedDate { get; private set; }
 
     private Ingredient() { }
@@ -54,16 +42,14 @@ public class Ingredient
         SetExpiryDate(expiryDate);
         SetIsPerishable(isPerishable);
         SetReorderLevel(reorderLevel);
+        CreatedDate = DateTime.Now;
+        UpdatedDate = DateTime.Now;
     }
 
-    public void SetCreatedDate(DateTime createdDate)
+    // Atualiza data de atualização em cada modificação
+    private void UpdateTimestamp()
     {
-        CreatedDate = createdDate;
-    }
-
-    public void SetUpdatedDate(DateTime updatedDate)
-    {
-        UpdatedDate = updatedDate;
+        UpdatedDate = DateTime.Now;
     }
 
     public void AddQuantity(int quantity)
@@ -72,6 +58,7 @@ public class Ingredient
             throw new ArgumentException("Quantity to add must be positive.");
 
         Quantity += quantity;
+        UpdateTimestamp();
     }
 
     public void ReduceQuantity(int quantity)
@@ -83,6 +70,7 @@ public class Ingredient
             throw new InvalidOperationException("Insufficient quantity to reduce.");
 
         Quantity -= quantity;
+        UpdateTimestamp();
     }
 
     public decimal CalculateTotalCost()
@@ -92,7 +80,12 @@ public class Ingredient
 
     public bool IsExpired()
     {
-        return IsPerishable && DateTime.UtcNow > ExpiryDate;
+        return IsPerishable && DateTime.Now > ExpiryDate;
+    }
+
+    public bool NeedsRestocking()
+    {
+        return Quantity <= ReorderLevel;
     }
 
     public void SetName(string name)
@@ -101,6 +94,7 @@ public class Ingredient
             throw new ArgumentException("Name cannot be null or empty.");
 
         Name = name;
+        UpdateTimestamp();
     }
 
     public void SetQuantity(int quantity)
@@ -109,11 +103,13 @@ public class Ingredient
             throw new ArgumentException("Quantity cannot be negative.");
 
         Quantity = quantity;
+        UpdateTimestamp();
     }
 
     public void SetUnit(Unit unit)
     {
         Unit = unit;
+        UpdateTimestamp();
     }
 
     public void SetUnitCost(decimal unitCost)
@@ -122,24 +118,28 @@ public class Ingredient
             throw new ArgumentException("Unit cost cannot be negative.");
 
         UnitCost = unitCost;
+        UpdateTimestamp();
     }
 
     public void SetCategory(Category category)
     {
         Category = category;
+        UpdateTimestamp();
     }
 
     public void SetSupplier(string supplier)
     {
         Supplier = supplier;
+        UpdateTimestamp();
     }
 
     public void SetPurchaseDate(DateTime purchaseDate)
     {
-        if (purchaseDate > DateTime.UtcNow)
+        if (purchaseDate > DateTime.Now)
             throw new ArgumentException("Purchase date cannot be in the future.");
 
         PurchaseDate = purchaseDate;
+        UpdateTimestamp();
     }
 
     public void SetExpiryDate(DateTime expiryDate)
@@ -148,11 +148,13 @@ public class Ingredient
             throw new ArgumentException("Expiry date must be after the purchase date.");
 
         ExpiryDate = expiryDate;
+        UpdateTimestamp();
     }
 
     public void SetIsPerishable(bool isPerishable)
     {
         IsPerishable = isPerishable;
+        UpdateTimestamp();
     }
 
     public void SetReorderLevel(int reorderLevel)
@@ -161,5 +163,6 @@ public class Ingredient
             throw new ArgumentException("Reorder level cannot be negative.");
 
         ReorderLevel = reorderLevel;
+        UpdateTimestamp();
     }
 }

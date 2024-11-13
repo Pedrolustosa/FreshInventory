@@ -6,6 +6,9 @@ namespace FreshInventory.Infrastructure.Data.Context;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; }
+    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<IngredientRecipe> IngredientRecipes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,9 +37,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .IsRequired()
                 .HasConversion<string>();
 
-            entity.Property(e => e.Supplier)
-                .HasMaxLength(100);
-
             entity.Property(e => e.PurchaseDate)
                 .IsRequired();
 
@@ -56,18 +56,69 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             entity.Property(e => e.UpdatedDate)
                 .IsRequired();
-        });
-    }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var entries = ChangeTracker.Entries<Ingredient>().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-        foreach (var entry in entries)
+            // Define relacionamento com Supplier
+            entity.HasOne(e => e.Supplier)
+                  .WithMany()
+                  .HasForeignKey("SupplierId")
+                  .IsRequired();
+        });
+
+        // Configuração da entidade Supplier
+        modelBuilder.Entity<Supplier>(entity =>
         {
-            var now = DateTime.Now;
-            if (entry.State == EntityState.Added) entry.Entity.SetCreatedDate(now);
-            entry.Entity.SetUpdatedDate(now);
-        }
-        return await base.SaveChangesAsync(cancellationToken);
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.ContactInfo)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(300);
+
+            entity.Property(e => e.CreatedDate)
+                .IsRequired();
+
+            entity.Property(e => e.UpdatedDate)
+                .IsRequired();
+        });
+
+        // Configuração da entidade Recipe
+        modelBuilder.Entity<Recipe>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedDate)
+                .IsRequired();
+
+            entity.Property(e => e.UpdatedDate)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<IngredientRecipe>(entity =>
+        {
+            entity.HasKey(e => new { e.IngredientId, e.RecipeId });
+
+            entity.Property(e => e.Quantity)
+                .IsRequired();
+
+            entity.HasOne(ir => ir.Ingredient)
+                .WithMany(i => i.IngredientRecipes)
+                .HasForeignKey(ir => ir.IngredientId);
+
+            entity.HasOne(ir => ir.Recipe)
+                .WithMany(r => r.IngredientRecipes)
+                .HasForeignKey(ir => ir.RecipeId);
+        });
     }
 }

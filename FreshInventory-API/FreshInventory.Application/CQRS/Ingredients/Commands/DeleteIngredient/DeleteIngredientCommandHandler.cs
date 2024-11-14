@@ -4,7 +4,7 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Application.Exceptions;
 
-namespace FreshInventory.Application.CQRS.Commands.DeleteIngredient;
+namespace FreshInventory.Application.CQRS.Ingredients.Commands.DeleteIngredient;
 
 public class DeleteIngredientCommandHandler(
     IIngredientRepository repository,

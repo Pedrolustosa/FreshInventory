@@ -5,10 +5,9 @@ namespace FreshInventory.Infrastructure.Data.Context;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public DbSet<Ingredient> Ingredients { get; set; }
-    public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
-    public DbSet<IngredientRecipe> IngredientRecipes { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,69 +55,28 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             entity.Property(e => e.UpdatedDate)
                 .IsRequired();
-
-            // Define relacionamento com Supplier
-            entity.HasOne(e => e.Supplier)
-                  .WithMany()
-                  .HasForeignKey("SupplierId")
-                  .IsRequired();
         });
 
-        // Configuração da entidade Supplier
-        modelBuilder.Entity<Supplier>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.Property(e => e.ContactInfo)
-                .HasMaxLength(200);
-
-            entity.Property(e => e.Address)
-                .HasMaxLength(300);
-
-            entity.Property(e => e.CreatedDate)
-                .IsRequired();
-
-            entity.Property(e => e.UpdatedDate)
-                .IsRequired();
-        });
-
-        // Configuração da entidade Recipe
         modelBuilder.Entity<Recipe>(entity =>
         {
-            entity.HasKey(e => e.Id);
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Name).IsRequired().HasMaxLength(100);
+            entity.Property(r => r.IsActive).HasDefaultValue(true);
 
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(150);
-
-            entity.Property(e => e.Description)
-                .HasMaxLength(500);
-
-            entity.Property(e => e.CreatedDate)
-                .IsRequired();
-
-            entity.Property(e => e.UpdatedDate)
-                .IsRequired();
+            entity.HasMany(r => r.Ingredients)
+                  .WithOne(ri => ri.Recipe)
+                  .HasForeignKey(ri => ri.RecipeId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<IngredientRecipe>(entity =>
+        modelBuilder.Entity<RecipeIngredient>(entity =>
         {
-            entity.HasKey(e => new { e.IngredientId, e.RecipeId });
-
-            entity.Property(e => e.Quantity)
-                .IsRequired();
-
-            entity.HasOne(ir => ir.Ingredient)
-                .WithMany(i => i.IngredientRecipes)
-                .HasForeignKey(ir => ir.IngredientId);
-
-            entity.HasOne(ir => ir.Recipe)
-                .WithMany(r => r.IngredientRecipes)
-                .HasForeignKey(ir => ir.RecipeId);
+            entity.HasKey(ri => ri.Id);
+            entity.Property(ri => ri.QuantityRequired).IsRequired();
+            entity.HasOne(ri => ri.Ingredient)
+                  .WithMany()
+                  .HasForeignKey(ri => ri.IngredientId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

@@ -7,7 +7,7 @@ using FreshInventory.Domain.Exceptions;
 using FreshInventory.Application.Common;
 using FreshInventory.Application.Exceptions;
 
-namespace FreshInventory.Application.CQRS.Queries.GetAllIngredients;
+namespace FreshInventory.Application.CQRS.Ingredients.Queries.GetAllIngredients;
 
 public class GetAllIngredientsQueryHandler(
     IIngredientRepository repository,

@@ -6,7 +6,7 @@ using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Domain.Interfaces;
 
-namespace FreshInventory.Application.CQRS.Commands.CreateIngredient;
+namespace FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
 
 public class CreateIngredientCommandHandler(
     IIngredientRepository repository,

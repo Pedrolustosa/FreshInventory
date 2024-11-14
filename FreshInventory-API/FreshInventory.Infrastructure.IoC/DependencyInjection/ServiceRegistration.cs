@@ -12,9 +12,9 @@ using FreshInventory.Application.Validators;
 using Microsoft.Extensions.DependencyInjection;
 using FreshInventory.Infrastructure.Data.Context;
 using FreshInventory.Infrastructure.Data.Services;
-using FreshInventory.Application.CQRS.Commands.CreateIngredient;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
 
 namespace FreshInventory.Infrastructure.IoC.DependencyInjection;
 
@@ -25,6 +25,8 @@ public static class ServiceRegistration
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateIngredientCommandHandler).Assembly));
 
         services.AddAutoMapper(typeof(IngredientProfile));
+        services.AddAutoMapper(typeof(RecipeProfile));
+        services.AddAutoMapper(typeof(RecipeIngredientProfile));
         services.AddValidatorsFromAssemblyContaining<IngredientCreateDtoValidator>();
         services.AddValidatorsFromAssemblyContaining<IngredientUpdateDtoValidator>();
         services.AddFluentValidationAutoValidation();
@@ -39,6 +41,8 @@ public static class ServiceRegistration
             throw new Exception("EmailConfiguration section is missing or invalid in appsettings.json");
         services.AddScoped<IIngredientService, IngredientService>();
         services.AddScoped<IIngredientRepository, IngredientRepository>();
+        services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IEmailService, EmailService>();
         Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)

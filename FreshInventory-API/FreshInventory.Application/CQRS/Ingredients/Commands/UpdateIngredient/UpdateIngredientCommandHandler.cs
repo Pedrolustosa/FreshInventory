@@ -5,7 +5,7 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Application.Exceptions;
 
-namespace FreshInventory.Application.CQRS.Commands.UpdateIngredient;
+namespace FreshInventory.Application.CQRS.Ingredients.Commands.UpdateIngredient;
 
 public class UpdateIngredientCommandHandler(
     IIngredientRepository repository,

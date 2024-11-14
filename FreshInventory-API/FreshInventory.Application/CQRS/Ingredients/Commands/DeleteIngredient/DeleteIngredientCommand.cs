@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FreshInventory.Application.CQRS.Commands.DeleteIngredient
+namespace FreshInventory.Application.CQRS.Ingredients.Commands.DeleteIngredient
 {
     public class DeleteIngredientCommand(int id) : IRequest
     {

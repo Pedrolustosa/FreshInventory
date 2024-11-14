@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using FreshInventory.Application.DTO;
 
-namespace FreshInventory.Application.CQRS.Commands.UpdateIngredient;
+namespace FreshInventory.Application.CQRS.Ingredients.Commands.UpdateIngredient;
 
 public class UpdateIngredientCommand(IngredientUpdateDto ingredientUpdateDto) : IRequest
 {

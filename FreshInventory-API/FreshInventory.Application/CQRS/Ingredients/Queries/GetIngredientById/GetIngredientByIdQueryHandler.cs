@@ -6,7 +6,7 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Application.Exceptions;
 
-namespace FreshInventory.Application.CQRS.Queries.GetIngredientById;
+namespace FreshInventory.Application.CQRS.Ingredients.Queries.GetIngredientById;
 
 public class GetIngredientByIdQueryHandler(
     IIngredientRepository repository,

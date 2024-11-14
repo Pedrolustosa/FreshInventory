@@ -2,7 +2,7 @@
 using FreshInventory.Application.DTO;
 using FreshInventory.Application.Common;
 
-namespace FreshInventory.Application.CQRS.Queries.GetAllIngredients;
+namespace FreshInventory.Application.CQRS.Ingredients.Queries.GetAllIngredients;
 
 public class GetAllIngredientsQuery(
     int pageNumber = 1,

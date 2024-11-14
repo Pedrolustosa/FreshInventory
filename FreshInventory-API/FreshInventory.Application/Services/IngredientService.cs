@@ -5,11 +5,11 @@ using FreshInventory.Application.DTO;
 using FreshInventory.Application.Common;
 using FreshInventory.Application.Exceptions;
 using FreshInventory.Application.Interfaces;
-using FreshInventory.Application.CQRS.Queries.GetAllIngredients;
-using FreshInventory.Application.CQRS.Queries.GetIngredientById;
-using FreshInventory.Application.CQRS.Commands.CreateIngredient;
-using FreshInventory.Application.CQRS.Commands.UpdateIngredient;
-using FreshInventory.Application.CQRS.Commands.DeleteIngredient;
+using FreshInventory.Application.CQRS.Ingredients.Queries.GetAllIngredients;
+using FreshInventory.Application.CQRS.Ingredients.Queries.GetIngredientById;
+using FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
+using FreshInventory.Application.CQRS.Ingredients.Commands.UpdateIngredient;
+using FreshInventory.Application.CQRS.Ingredients.Commands.DeleteIngredient;
 
 namespace FreshInventory.Application.Services;
 

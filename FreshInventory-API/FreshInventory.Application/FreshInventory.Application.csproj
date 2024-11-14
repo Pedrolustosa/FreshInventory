@@ -19,4 +19,8 @@
     <ProjectReference Include="..\FreshInventory.Domain\FreshInventory.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CQRS\Recipes\Queries\" />
+  </ItemGroup>
+
 </Project>

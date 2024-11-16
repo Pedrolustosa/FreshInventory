@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using FreshInventory.Domain.Interfaces;
-using FreshInventory.Application.DTO;
 using FreshInventory.Application.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using FreshInventory.Application.DTO.RecipeDTO;
 
 namespace FreshInventory.Application.CQRS.Commands.UpdateRecipe
 {
@@ -10,22 +11,39 @@ namespace FreshInventory.Application.CQRS.Commands.UpdateRecipe
     {
         private readonly IRecipeRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdateRecipeCommandHandler> _logger;
 
-        public UpdateRecipeCommandHandler(IRecipeRepository repository, IMapper mapper)
+        public UpdateRecipeCommandHandler(IRecipeRepository repository, IMapper mapper, ILogger<UpdateRecipeCommandHandler> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<RecipeDto> Handle(UpdateRecipeCommand request, CancellationToken cancellationToken)
         {
-            var existingRecipe = await _repository.GetByIdAsync(request.RecipeUpdateDto.Id)
-                ?? throw new ServiceException($"Recipe with ID {request.RecipeUpdateDto.Id} not found.");
+            try
+            {
+                var existingRecipe = await _repository.GetByIdAsync(request.RecipeUpdateDto.Id)
+                    ?? throw new ServiceException($"Recipe with ID {request.RecipeUpdateDto.Id} not found.");
 
-            _mapper.Map(request.RecipeUpdateDto, existingRecipe);
-            await _repository.UpdateAsync(existingRecipe);
+                _mapper.Map(request.RecipeUpdateDto, existingRecipe);
+                await _repository.UpdateAsync(existingRecipe);
 
-            return _mapper.Map<RecipeDto>(existingRecipe);
+                _logger.LogInformation("Recipe with ID {RecipeId} updated successfully.", request.RecipeUpdateDto.Id);
+
+                return _mapper.Map<RecipeDto>(existingRecipe);
+            }
+            catch (ServiceException ex)
+            {
+                _logger.LogError(ex, "Service error while updating recipe with ID {RecipeId}.", request.RecipeUpdateDto.Id);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while updating recipe with ID {RecipeId}.", request.RecipeUpdateDto.Id);
+                throw new Exception("An unexpected error occurred while updating the recipe.", ex);
+            }
         }
     }
 }

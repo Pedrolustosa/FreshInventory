@@ -1,26 +1,39 @@
 ﻿using MediatR;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using FreshInventory.Application.DTO;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Application.Exceptions;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.Application.CQRS.Ingredients.Queries.GetIngredientById;
 
-public class GetIngredientByIdQueryHandler(
-    IIngredientRepository repository,
-    IMapper mapper,
-    ILogger<GetIngredientByIdQueryHandler> logger) : IRequestHandler<GetIngredientByIdQuery, IngredientDto>
+public class GetIngredientByIdQueryHandler : IRequestHandler<GetIngredientByIdQuery, IngredientDto>
 {
-    private readonly IIngredientRepository _repository = repository;
-    private readonly IMapper _mapper = mapper;
-    private readonly ILogger<GetIngredientByIdQueryHandler> _logger = logger;
+    private readonly IIngredientRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<GetIngredientByIdQueryHandler> _logger;
+
+    public GetIngredientByIdQueryHandler(
+        IIngredientRepository repository,
+        IMapper mapper,
+        ILogger<GetIngredientByIdQueryHandler> logger)
+    {
+        _repository = repository;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
     public async Task<IngredientDto> Handle(GetIngredientByIdQuery request, CancellationToken cancellationToken)
     {
         try
         {
+            if (request.Id <= 0)
+            {
+                _logger.LogWarning("Invalid ingredient ID: {Id}.", request.Id);
+                throw new QueryException("Invalid ingredient ID.");
+            }
+
             var ingredient = await _repository.GetByIdAsync(request.Id);
 
             if (ingredient == null)

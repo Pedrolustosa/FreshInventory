@@ -1,5 +1,5 @@
 ﻿using FreshInventory.Application.Common;
-using FreshInventory.Application.DTO;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.Application.Interfaces;
 

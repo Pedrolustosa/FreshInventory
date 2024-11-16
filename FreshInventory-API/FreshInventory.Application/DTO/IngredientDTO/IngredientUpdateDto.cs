@@ -1,9 +1,10 @@
 ﻿using FreshInventory.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace FreshInventory.Application.DTO;
+namespace FreshInventory.Application.DTO.IngredientDTO;
 
-public record IngredientCreateDto(string Name,
+public record IngredientUpdateDto(int Id,
+                                  string Name,
                                   int Quantity,
                                   Unit Unit,
                                   decimal UnitCost,
@@ -13,4 +14,3 @@ public record IngredientCreateDto(string Name,
                                   [property: DataType(DataType.Date)] DateTime ExpiryDate,
                                   bool IsPerishable,
                                   int ReorderLevel);
-

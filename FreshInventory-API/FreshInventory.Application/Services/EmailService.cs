@@ -2,9 +2,9 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
-using FreshInventory.Application.DTO;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.Exceptions;
+using FreshInventory.Application.DTO.EmailDTO;
 
 namespace FreshInventory.Application.Services;
 

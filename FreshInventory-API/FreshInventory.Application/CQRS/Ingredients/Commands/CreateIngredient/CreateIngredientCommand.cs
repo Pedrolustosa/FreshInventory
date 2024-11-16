@@ -1,4 +1,4 @@
-﻿using FreshInventory.Application.DTO;
+﻿using FreshInventory.Application.DTO.IngredientDTO;
 using MediatR;
 
 namespace FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;

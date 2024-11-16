@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FreshInventory.Application.DTO;
+using FreshInventory.Application.DTO.IngredientDTO;
 using FreshInventory.Domain.Entities;
 
 namespace FreshInventory.Application.Mappings

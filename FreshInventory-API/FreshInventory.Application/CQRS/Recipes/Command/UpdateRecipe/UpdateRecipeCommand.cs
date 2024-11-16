@@ -1,4 +1,4 @@
-﻿using FreshInventory.Application.DTO;
+﻿using FreshInventory.Application.DTO.RecipeDTO;
 using MediatR;
 
 namespace FreshInventory.Application.CQRS.Commands.UpdateRecipe

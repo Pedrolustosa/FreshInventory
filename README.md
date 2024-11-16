@@ -1,8 +1,6 @@
 # FreshInventory
 
-![License](https://img.shields.io/github/license/Pedrolustosa/FreshInventory)
-![Stars](https://img.shields.io/github/stars/Pedrolustosa/FreshInventory?style=social)
-![Project Views](https://komarev.com/ghpvc/?username=Pedrolustosa&label=Project%20Views&color=brightgreen)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ## Introduction
 

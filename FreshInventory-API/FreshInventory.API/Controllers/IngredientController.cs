@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using FreshInventory.Application.DTO;
 using FreshInventory.Application.Common;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.Exceptions;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.API.Controllers;
 
@@ -13,7 +13,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
     private readonly IIngredientService _ingredientService = ingredientService;
     private readonly ILogger<IngredientsController> _logger = logger;
 
-    [HttpGet("GetAll")]
+    [HttpGet("GetAllIngredients")]
     public async Task<ActionResult<PagedList<IngredientDto>>> GetAll(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -35,7 +35,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetIngredientById/{id:int}")]
     public async Task<ActionResult<IngredientDto>> GetById(int id)
     {
         try
@@ -60,7 +60,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
         }
     }
 
-    [HttpPost]
+    [HttpPost("CreateIngredient")]
     public async Task<ActionResult<IngredientDto>> Create([FromBody] IngredientCreateDto ingredientCreateDto)
     {
         try
@@ -80,7 +80,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("UpdateIngredient/{id:int}")]
     public async Task<ActionResult> Update(int id, [FromBody] IngredientUpdateDto ingredientUpdateDto)
     {
         if (id != ingredientUpdateDto.Id)
@@ -106,7 +106,7 @@ public class IngredientsController(IIngredientService ingredientService, ILogger
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("DeleteIngredient/{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
         try

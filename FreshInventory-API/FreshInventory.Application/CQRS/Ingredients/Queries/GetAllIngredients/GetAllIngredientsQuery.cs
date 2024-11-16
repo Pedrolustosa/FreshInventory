@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using FreshInventory.Application.DTO;
 using FreshInventory.Application.Common;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.Application.CQRS.Ingredients.Queries.GetAllIngredients;
 

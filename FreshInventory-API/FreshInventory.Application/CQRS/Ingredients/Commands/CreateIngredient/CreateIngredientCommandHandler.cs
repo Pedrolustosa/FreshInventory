@@ -1,24 +1,37 @@
 ﻿using MediatR;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using FreshInventory.Application.DTO;
 using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Domain.Interfaces;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
 
-public class CreateIngredientCommandHandler(
-    IIngredientRepository repository,
-    IMapper mapper,
-    ILogger<CreateIngredientCommandHandler> logger) : IRequestHandler<CreateIngredientCommand, IngredientDto>
+public class CreateIngredientCommandHandler : IRequestHandler<CreateIngredientCommand, IngredientDto>
 {
-    private readonly IIngredientRepository _repository = repository;
-    private readonly IMapper _mapper = mapper;
-    private readonly ILogger<CreateIngredientCommandHandler> _logger = logger;
+    private readonly IIngredientRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<CreateIngredientCommandHandler> _logger;
+
+    public CreateIngredientCommandHandler(
+        IIngredientRepository repository,
+        IMapper mapper,
+        ILogger<CreateIngredientCommandHandler> logger)
+    {
+        _repository = repository;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
     public async Task<IngredientDto> Handle(CreateIngredientCommand request, CancellationToken cancellationToken)
     {
+        if (request?.IngredientCreateDto == null)
+        {
+            _logger.LogWarning("Received null or invalid data for creating an ingredient.");
+            throw new ArgumentException("IngredientCreateDto cannot be null.");
+        }
+
         try
         {
             var ingredient = _mapper.Map<Ingredient>(request.IngredientCreateDto);
@@ -31,7 +44,7 @@ public class CreateIngredientCommandHandler(
         }
         catch (RepositoryException ex)
         {
-            _logger.LogError(ex, "An error occurred while creating ingredient '{Name}'.", request.IngredientCreateDto.Name);
+            _logger.LogError(ex, "A repository error occurred while creating ingredient '{Name}'.", request.IngredientCreateDto.Name);
             throw;
         }
         catch (Exception ex)

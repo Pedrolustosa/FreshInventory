@@ -1,4 +1,4 @@
-﻿namespace FreshInventory.Application.DTO
+﻿namespace FreshInventory.Application.DTO.RecipeDTO
 {
     public class RecipeIngredientCreateDto
     {

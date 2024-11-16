@@ -8,6 +8,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddIdentityConfiguration(builder.Configuration);
+builder.Services.AddSwaggerWithJwtSupport(builder.Configuration);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();

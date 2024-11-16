@@ -1,6 +1,6 @@
 ﻿using FreshInventory.Domain.Enums;
 
-namespace FreshInventory.Application.DTO;
+namespace FreshInventory.Application.DTO.IngredientDTO;
 
 public class IngredientDto
 {

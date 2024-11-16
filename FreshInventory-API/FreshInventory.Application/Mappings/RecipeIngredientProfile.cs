@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FreshInventory.Domain.Entities;
-using FreshInventory.Application.DTO;
+using FreshInventory.Application.DTO.RecipeDTO;
 
 namespace FreshInventory.Application.Mappings;
 

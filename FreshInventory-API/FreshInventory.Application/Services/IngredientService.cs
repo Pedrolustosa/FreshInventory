@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using FreshInventory.Application.DTO;
 using FreshInventory.Application.Common;
 using FreshInventory.Application.Exceptions;
 using FreshInventory.Application.Interfaces;
@@ -10,6 +9,7 @@ using FreshInventory.Application.CQRS.Ingredients.Queries.GetIngredientById;
 using FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
 using FreshInventory.Application.CQRS.Ingredients.Commands.UpdateIngredient;
 using FreshInventory.Application.CQRS.Ingredients.Commands.DeleteIngredient;
+using FreshInventory.Application.DTO.IngredientDTO;
 
 namespace FreshInventory.Application.Services;
 

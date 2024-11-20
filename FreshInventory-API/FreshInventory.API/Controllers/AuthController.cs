@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using FreshInventory.Application.DTO.UserDTO;
 using FreshInventory.Application.Interfaces;
+using FreshInventory.Application.DTO.UserDTO;
 
 namespace FreshInventory.API.Controllers;
 
@@ -17,7 +17,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         if (registerUserDto == null)
         {
             _logger.LogWarning("Received null data for user registration.");
-            return BadRequest("Invalid data.");
+            return BadRequest(new { message = "Invalid data." }); ;
         }
 
         try
@@ -27,18 +27,18 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
             if (result)
             {
                 _logger.LogInformation("User registered successfully: {Email}", registerUserDto.Email);
-                return Ok("User registered successfully.");
+                return Ok(new { message = "User registered successfully." });
             }
             else
             {
                 _logger.LogWarning("User registration failed for email: {Email}", registerUserDto.Email);
-                return BadRequest("User registration failed.");
+                return BadRequest(new { message = "User registration failed." });
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred during user registration for email: {Email}", registerUserDto.Email);
-            return StatusCode(500, "An error occurred while processing your request.");
+            return StatusCode(500, new { message = "An error occurred while processing your request." });
         }
     }
 

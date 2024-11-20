@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "FreshInventory is a modern inventory management system designed to help businesses efficiently track and manage their fresh ingredients. Built with scalability and maintainability in mind, FreshInventory leverages contemporary software development practices to ensure reliable performance and ease of use.",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "dev": "ng serve --port 4200"
+    "ng": "npx ng",
+    "start": "npx ng serve",
+    "build": "npx ng build",
+    "watch": "npx ng build --watch --configuration development",
+    "test": "npx ng test",
+    "dev": "npx ng serve --port 4200"
   },
   "keywords": [
     "inventory",
@@ -18,31 +18,33 @@
   "author": "Pedro Lustosa",
   "license": "ISC",
   "dependencies": {
-    "@angular/animations": "^16.2.0",
+    "@angular/animations": "^17.3.12",
     "@angular/cdk": "^16.2.0",
-    "@angular/common": "^16.2.0",
-    "@angular/compiler": "^16.2.0",
-    "@angular/core": "^16.2.0",
-    "@angular/forms": "^16.2.0",
-    "@angular/platform-browser": "^16.2.0",
-    "@angular/platform-browser-dynamic": "^16.2.0",
-    "@angular/router": "^16.2.0",
+    "@angular/common": "^17.3.12",
+    "@angular/compiler": "^17.3.12",
+    "@angular/core": "^17.3.12",
+    "@angular/forms": "^17.3.12",
+    "@angular/platform-browser": "^17.3.12",
+    "@angular/platform-browser-dynamic": "^17.3.12",
+    "@angular/router": "^17.3.12",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "bootstrap": "^5.3.2",
     "chart.js": "^4.4.1",
+    "lottie-web": "^5.12.2",
     "ng2-charts": "^5.0.3",
     "ngx-bootstrap": "^11.0.2",
-    "ngx-spinner": "^16.0.2",
+    "ngx-lottie": "^12.0.0",
+    "ngx-spinner": "^17.0.0",
     "ngx-toastr": "^18.0.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.2",
-    "zone.js": "~0.13.3"
+    "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.0",
-    "@angular/cli": "^16.2.0",
-    "@angular/compiler-cli": "^16.2.0",
+    "@angular-devkit/build-angular": "^17.3.11",
+    "@angular/cli": "^17.3.11",
+    "@angular/compiler-cli": "^17.3.12",
     "@types/node": "^20.9.0",
-    "typescript": "~5.1.6"
+    "typescript": "~5.4.5"
   }
 }

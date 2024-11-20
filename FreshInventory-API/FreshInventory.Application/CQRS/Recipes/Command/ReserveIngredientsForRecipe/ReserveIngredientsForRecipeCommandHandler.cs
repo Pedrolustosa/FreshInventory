@@ -33,16 +33,16 @@ namespace FreshInventory.Application.CQRS.Commands.ReserveIngredients
                     var ingredient = await _ingredientRepository.GetByIdAsync(recipeIngredient.IngredientId)
                         ?? throw new ServiceException($"Ingredient with ID {recipeIngredient.IngredientId} not found.");
 
-                    if (ingredient.Quantity < recipeIngredient.QuantityRequired)
+                    if (ingredient.Quantity < recipeIngredient.Quantity)
                     {
                         _logger.LogWarning("Insufficient quantity for ingredient '{IngredientName}' in recipe ID {RecipeId}.", ingredient.Name, request.RecipeId);
                         throw new ServiceException($"Insufficient quantity for ingredient '{ingredient.Name}'.");
                     }
 
-                    ingredient.ReduceQuantity(recipeIngredient.QuantityRequired);
+                    ingredient.ReduceQuantity(recipeIngredient.Quantity);
                     await _ingredientRepository.UpdateAsync(ingredient);
 
-                    _logger.LogInformation("Reserved {Quantity} of ingredient '{IngredientName}' for recipe ID {RecipeId}.", recipeIngredient.QuantityRequired, ingredient.Name, request.RecipeId);
+                    _logger.LogInformation("Reserved {Quantity} of ingredient '{IngredientName}' for recipe ID {RecipeId}.", recipeIngredient.Quantity, ingredient.Name, request.RecipeId);
                 }
 
                 _logger.LogInformation("All ingredients successfully reserved for recipe ID {RecipeId}.", request.RecipeId);

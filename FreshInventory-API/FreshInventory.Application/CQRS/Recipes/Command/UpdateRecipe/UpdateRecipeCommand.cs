@@ -1,7 +1,18 @@
-﻿using FreshInventory.Application.DTO.RecipeDTO;
-using MediatR;
+﻿using MediatR;
+using FreshInventory.Application.DTO.RecipeDTO;
 
 namespace FreshInventory.Application.CQRS.Commands.UpdateRecipe
 {
-    public record UpdateRecipeCommand(RecipeUpdateDto RecipeUpdateDto) : IRequest<RecipeDto>;
+    public class UpdateRecipeCommand : IRequest<RecipeDto>
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; }
+        public string PreparationTime { get; set; }
+        public string Servings { get; set; }
+        public bool IsAvailable { get; set; }
+        public List<string> Instructions { get; set; }
+        public List<RecipeIngredientDto> Ingredients { get; set; }
+    }
 }

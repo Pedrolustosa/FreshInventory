@@ -136,7 +136,7 @@ public class IngredientService(
                     <tr><td><strong>Quantity:</strong></td><td>{ingredient.Quantity} {ingredient.Unit}</td></tr>
                     <tr><td><strong>Unit Cost:</strong></td><td>{ingredient.UnitCost:C}</td></tr>
                     <tr><td><strong>Category:</strong></td><td>{ingredient.Category}</td></tr>
-                    <tr><td><strong>Supplier:</strong></td><td>{ingredient.Supplier}</td></tr>
+                    <tr><td><strong>Supplier:</strong></td><td>{ingredient.SupplierId.ToString()}</td></tr>
                     <tr><td><strong>Purchase Date:</strong></td><td>{ingredient.PurchaseDate:yyyy-MM-dd}</td></tr>
                     <tr><td><strong>Expiry Date:</strong></td><td>{ingredient.ExpiryDate:yyyy-MM-dd}</td></tr>
                     <tr><td><strong>Is Perishable:</strong></td><td>{ingredient.IsPerishable}</td></tr>
@@ -179,7 +179,7 @@ public class IngredientService(
                     <tr><td><strong>Quantity:</strong></td><td>{ingredient.Quantity} {ingredient.Unit}</td></tr>
                     <tr><td><strong>Unit Cost:</strong></td><td>{ingredient.UnitCost:C}</td></tr>
                     <tr><td><strong>Category:</strong></td><td>{ingredient.Category}</td></tr>
-                    <tr><td><strong>Supplier:</strong></td><td>{ingredient.Supplier}</td></tr>
+                    <tr><td><strong>Supplier:</strong></td><td>{ingredient.SupplierId.ToString()}</td></tr>
                     <tr><td><strong>Purchase Date:</strong></td><td>{ingredient.PurchaseDate:yyyy-MM-dd}</td></tr>
                     <tr><td><strong>Expiry Date:</strong></td><td>{ingredient.ExpiryDate:yyyy-MM-dd}</td></tr>
                     <tr><td><strong>Is Perishable:</strong></td><td>{ingredient.IsPerishable}</td></tr>
@@ -213,8 +213,8 @@ public class IngredientService(
         if (oldData.Category != newData.Category)
             AddDifference("Category", oldData.Category, newData.Category);
 
-        if (oldData.Supplier != newData.Supplier)
-            AddDifference("Supplier", oldData.Supplier, newData.Supplier);
+        if (oldData.SupplierId.ToString() != newData.SupplierId.ToString())
+            AddDifference("Supplier", oldData.SupplierId.ToString(), newData.SupplierId.ToString());
 
         if (oldData.PurchaseDate != newData.PurchaseDate)
             AddDifference("Purchase Date", oldData.PurchaseDate.ToString("yyyy-MM-dd"), newData.PurchaseDate.ToString("yyyy-MM-dd"));

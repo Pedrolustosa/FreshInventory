@@ -1,4 +1,10 @@
 ﻿namespace FreshInventory.Application.DTO.UserDTO
 {
-    public record RegisterUserDto(string FullName, string Email, DateTime DateOfBirth, string Password);
+    public class RegisterUserDto()
+    {
+        public required string FullName { get; set; }
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+    }
 }

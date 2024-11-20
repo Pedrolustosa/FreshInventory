@@ -25,7 +25,7 @@ public static class ServiceRegistration
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IngredientProfile).Assembly));
 
         // AutoMapper profiles for Ingredient, Recipe, RecipeIngredient
-        services.AddAutoMapper(typeof(IngredientProfile), typeof(RecipeProfile), typeof(UserProfile), typeof(RecipeIngredientProfile));
+        services.AddAutoMapper(typeof(IngredientProfile), typeof(RecipeProfile), typeof(UserProfile), typeof(SupplierProfile), typeof(RecipeIngredientProfile));
 
         // FluentValidation validators
         services.AddValidatorsFromAssemblyContaining<IngredientCreateDtoValidator>();
@@ -52,6 +52,8 @@ public static class ServiceRegistration
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<ISupplierRepository, SupplierRepository>();
 
         services.AddScoped<IEmailService, EmailService>();
 

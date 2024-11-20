@@ -23,20 +23,14 @@ namespace FreshInventory.Application.CQRS.Commands.CreateRecipe
 
         public async Task<RecipeDto> Handle(CreateRecipeCommand request, CancellationToken cancellationToken)
         {
-            try
+            if (request.Ingredients == null || request.Ingredients.Count == 0)
             {
-                var recipe = _mapper.Map<Recipe>(request.RecipeCreateDto);
-                await _repository.AddAsync(recipe);
-
-                _logger.LogInformation("Recipe '{Name}' created successfully.", recipe.Name);
-
-                return _mapper.Map<RecipeDto>(recipe);
+                throw new Exception("Recipe must have at least one ingredient.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating recipe '{Name}'.", request.RecipeCreateDto.Name);
-                throw new ServiceException("An unexpected error occurred while creating the recipe.", ex);
-            }
+
+            var recipe = _mapper.Map<Recipe>(request);
+            await _repository.AddAsync(recipe);
+            return _mapper.Map<RecipeDto>(recipe);
         }
     }
 }

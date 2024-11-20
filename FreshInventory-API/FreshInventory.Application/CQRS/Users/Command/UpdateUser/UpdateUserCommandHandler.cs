@@ -15,14 +15,14 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, bool>
 
     public async Task<bool> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserByIdAsync(request.UpdateUserDto.Id);
+        var user = await _userRepository.GetUserByIdAsync(request.Id);
 
         if (user == null)
         {
             return false;
         }
 
-        _mapper.Map(request.UpdateUserDto, user);
+        _mapper.Map(request, user);
         return await _userRepository.UpdateUserAsync(user);
     }
 }

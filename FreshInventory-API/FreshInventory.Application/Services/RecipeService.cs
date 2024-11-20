@@ -10,22 +10,31 @@ using FreshInventory.Application.CQRS.Commands.UpdateRecipe;
 using FreshInventory.Application.CQRS.Commands.DeleteRecipe;
 using FreshInventory.Application.CQRS.Commands.ReactivateRecipe;
 using FreshInventory.Application.CQRS.Commands.ReserveIngredients;
+using FreshInventory.Application.CQRS.Recipes.Queries.GetAllRecipes;
+using FreshInventory.Application.CQRS.Recipes.Queries.GetRecipeById;
+using AutoMapper;
 
 namespace FreshInventory.Application.Services;
 
-public class RecipeService(IRecipeRepository recipeRepository, IMediator mediator, ILogger<RecipeService> logger) : IRecipeService
+public class RecipeService(IRecipeRepository recipeRepository, IMediator mediator, ILogger<RecipeService> logger, IMapper mapper) : IRecipeService
 {
+    private readonly IMapper _mapper = mapper;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<RecipeService> _logger = logger;
-    private readonly IRecipeRepository _recipeRepository = recipeRepository;
 
     public async Task<PagedList<RecipeDto>> GetAllRecipesAsync(int pageNumber, int pageSize, string? name = null, string? sortBy = null, string? sortDirection = null)
     {
         try
         {
-            var (recipes, totalCount) = await _recipeRepository.GetAllRecipesAsync(pageNumber, pageSize, name, sortBy, sortDirection);
-            var recipeDtos = recipes.Select(r => new RecipeDto(r.Id, r.Name, default, default)).ToList();
-            return new PagedList<RecipeDto>(recipeDtos, totalCount, pageNumber, pageSize);
+            var query = new GetAllRecipesQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Name = name,
+                SortBy = sortBy,
+                SortDirection = sortDirection
+            };
+            return await _mediator.Send(query);
         }
         catch (Exception ex)
         {
@@ -34,11 +43,29 @@ public class RecipeService(IRecipeRepository recipeRepository, IMediator mediato
         }
     }
 
+    public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
+    {
+        try
+        {
+            var query = new GetRecipeByIdQuery { RecipeId = recipeId };
+            return await _mediator.Send(query);
+        }
+        catch (ServiceException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving recipe with ID {Id}.", recipeId);
+            throw new ServiceException("An error occurred while retrieving the recipe.", ex);
+        }
+    }
+
     public async Task<RecipeDto> CreateRecipeAsync(RecipeCreateDto recipeCreateDto)
     {
         try
         {
-            var command = new CreateRecipeCommand(recipeCreateDto);
+            var command = _mapper.Map<CreateRecipeCommand>(recipeCreateDto);
             return await _mediator.Send(command);
         }
         catch (Exception ex)
@@ -52,7 +79,7 @@ public class RecipeService(IRecipeRepository recipeRepository, IMediator mediato
     {
         try
         {
-            var command = new UpdateRecipeCommand(recipeUpdateDto);
+            var command = _mapper.Map<UpdateRecipeCommand>(recipeUpdateDto); // Usando AutoMapper
             return await _mediator.Send(command);
         }
         catch (ServiceException ex)
@@ -66,6 +93,7 @@ public class RecipeService(IRecipeRepository recipeRepository, IMediator mediato
             throw new ServiceException("An error occurred while updating the recipe.", ex);
         }
     }
+
 
     public async Task DeleteRecipeAsync(int recipeId)
     {
@@ -121,29 +149,6 @@ public class RecipeService(IRecipeRepository recipeRepository, IMediator mediato
         {
             _logger.LogError(ex, "An unexpected error occurred while reserving ingredients for recipe with ID {Id}.", recipeId);
             throw new ServiceException("An error occurred while reserving ingredients.", ex);
-        }
-    }
-
-    public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
-    {
-        try
-        {
-            var recipe = await _recipeRepository.GetByIdAsync(recipeId);
-            if (recipe == null)
-            {
-                _logger.LogWarning("Recipe with ID {Id} not found.", recipeId);
-                throw new ServiceException($"Recipe with ID {recipeId} not found.");
-            }
-            return new RecipeDto(recipe.Id, recipe.Name, default, default);
-        }
-        catch (ServiceException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving recipe with ID {Id}.", recipeId);
-            throw new ServiceException("An error occurred while retrieving the recipe.", ex);
         }
     }
 }

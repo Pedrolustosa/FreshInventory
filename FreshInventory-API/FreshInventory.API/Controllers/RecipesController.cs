@@ -13,7 +13,7 @@ public class RecipeController(IRecipeService recipeService, ILogger<RecipeContro
     private readonly ILogger<RecipeController> _logger = logger;
 
     [HttpGet("GetAllRecipes")]
-    public async Task<ActionResult<PagedList<RecipeDto>>> GetAll(
+    public async Task<ActionResult<PagedList<RecipeDto>>> GetAllRecipes(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] string? name = null,

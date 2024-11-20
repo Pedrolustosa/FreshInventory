@@ -23,9 +23,8 @@ public class IngredientCreateDtoValidator : AbstractValidator<IngredientCreateDt
         RuleFor(i => i.Category)
             .NotEmpty().WithMessage("Category is required.");
 
-        RuleFor(i => i.Supplier)
-            .NotEmpty().WithMessage("Supplier is required.")
-            .Length(2, 50).WithMessage("Supplier must be between 2 and 50 characters.");
+        RuleFor(i => i.SupplierId.ToString())
+            .NotEmpty().WithMessage("Supplier is required.");
 
         RuleFor(i => i.PurchaseDate)
             .LessThanOrEqualTo(DateTime.Today).WithMessage("Purchase date cannot be in the future.");

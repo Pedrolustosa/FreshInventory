@@ -1,0 +1,286 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: #ffffff;
+  color: #6c757d;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 1000;
+  border-right: 1px solid #e9ecef;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  color: #2c3e50;
+  font-size: 1.25rem;
+  margin: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.toggle-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle-btn:hover {
+  color: #4154f1;
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: .8rem 0;
+}
+
+.nav-section {
+  margin-bottom: 2rem;
+}
+
+.nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8898aa;
+  padding: 0 1.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.nav-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #6c757d;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #4154f1;
+  background: #f8f9fa;
+}
+
+.nav-link.active {
+  color: #4154f1;
+  background: #f0f3ff;
+  border-right: 3px solid #4154f1;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-arrow {
+  margin-left: auto;
+  font-size: 0.8rem;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.user-info:hover {
+  background: #f8f9fa;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-details {
+  min-width: 0;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.user-name {
+  font-size: 0.75rem;
+  color: #8898aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.875rem;
+  color: #2c3e50;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Collapsed state styles */
+.sidebar.collapsed .brand-name,
+.sidebar.collapsed .nav-section-title,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-arrow,
+.sidebar.collapsed .user-details {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+}
+
+.sidebar.collapsed .nav-link {
+  padding: 0.75rem;
+  justify-content: center;
+}
+
+.sidebar.collapsed .nav-icon {
+  margin: 0;
+}
+
+.sidebar.collapsed .user-info {
+  justify-content: center;
+}
+
+/* Tooltip for collapsed state */
+.sidebar.collapsed .nav-item {
+  position: relative;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Botão do Dropdown */
+.sidebar-footer .btn {
+  background-color: #ffffff !important; /* Cor de fundo clara */
+  border: 1px solid #dee2e6 !important; /* Borda discreta */
+  color: #212529 !important; /* Texto neutro */
+  border-radius: 0.375rem !important; /* Leve arredondamento */
+  padding: 0.5rem 0.75rem !important; /* Espaçamento interno */
+  transition: none !important; /* Remove animações */
+}
+
+/* Ícone do botão */
+.sidebar-footer .btn i {
+  color: #adb5bd !important; /* Cor neutra para o ícone */
+}
+
+/* Remove animações e efeitos no hover */
+.sidebar-footer .btn:hover,
+.sidebar-footer .btn:focus,
+.sidebar-footer .btn:active {
+  background-color: #ffffff !important; /* Mantém a cor original */
+  border-color: #dee2e6 !important; /* Mantém a borda */
+  color: #212529 !important; /* Mantém o texto */
+  box-shadow: none !important; /* Sem sombra */
+}
+
+/* Estilo do menu dropdown */
+.sidebar-footer .dropdown-menu {
+  border-radius: 0.375rem !important; /* Leve arredondamento */
+  border: 1px solid #dee2e6 !important; /* Borda discreta */
+  padding: 0.5rem 0 !important; /* Espaçamento interno */
+  box-shadow: none !important; /* Remove sombra extra */
+}
+
+/* Itens do menu dropdown */
+.sidebar-footer .dropdown-menu .dropdown-item {
+  padding: 0.5rem 1rem !important; /* Ajusta espaçamento */
+  font-size: 0.875rem !important; /* Tamanho do texto */
+  color: #212529 !important; /* Cor neutra */
+}
+
+/* Hover nos itens do menu */
+.sidebar-footer .dropdown-menu .dropdown-item:hover {
+  background-color: #f8f9fa !important; /* Fundo claro */
+  color: #212529 !important; /* Mantém cor do texto */
+}

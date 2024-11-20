@@ -1,30 +1,60 @@
 ﻿using AutoMapper;
 using FreshInventory.Domain.Entities;
-using System.Linq;
 using FreshInventory.Application.DTO.RecipeDTO;
+using FreshInventory.Application.CQRS.Commands.CreateRecipe;
+using FreshInventory.Application.CQRS.Commands.UpdateRecipe;
+using FreshInventory.Application.CQRS.Recipes.Command.CreateRecipe;
 
-namespace FreshInventory.Application.Mappings
+namespace FreshInventory.Application.Mappings;
+
+public class RecipeProfile : Profile
 {
-    public class RecipeProfile : Profile
+    public RecipeProfile()
     {
-        public RecipeProfile()
-        {
-            CreateMap<Recipe, RecipeDto>()
-                .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients));
+        // Domain <-> DTO
+        CreateMap<Recipe, RecipeDto>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ReverseMap();
 
-            CreateMap<RecipeCreateDto, Recipe>()
-                .ConstructUsing(src => new Recipe(
-                    src.Name,
-                    src.Ingredients.Select(i => new RecipeIngredient(i.IngredientId, i.QuantityRequired)).ToList()))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore()); // Ignora Ingredients no mapeamento padrão para usar o construtor
+        CreateMap<RecipeIngredient, RecipeIngredientDto>()
+            .ReverseMap();
 
-            CreateMap<RecipeUpdateDto, Recipe>()
-                .ConstructUsing(src => new Recipe(
-                    src.Name,
-                    src.Ingredients.Select(i => new RecipeIngredient(i.IngredientId, i.QuantityRequired)).ToList()))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore()); // Ignora Ingredients no mapeamento padrão para usar o construtor
-        }
+        // DTO <-> Domain
+        CreateMap<RecipeCreateDto, Recipe>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ReverseMap();
+
+        CreateMap<RecipeIngredientCreateDto, RecipeIngredient>()
+            .ReverseMap();
+
+        CreateMap<RecipeUpdateDto, Recipe>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ReverseMap();
+
+        // CQRS Commands -> Domain
+        CreateMap<CreateRecipeCommand, Recipe>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ReverseMap();
+
+        CreateMap<CreateRecipeIngredientCommand, RecipeIngredient>()
+            .ReverseMap();
+
+        // DTO -> Commands
+        CreateMap<RecipeCreateDto, CreateRecipeCommand>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients));
+
+        CreateMap<RecipeIngredientCreateDto, CreateRecipeIngredientCommand>()
+            .ReverseMap();
+
+        // Update Commands -> Domain
+        CreateMap<UpdateRecipeCommand, Recipe>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ReverseMap();
     }
 }

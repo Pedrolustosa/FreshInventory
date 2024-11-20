@@ -4,35 +4,32 @@
     {
         public int Id { get; private set; }
         public string Name { get; private set; }
-        public bool IsActive { get; private set; } = true;
+        public string Description { get; private set; }
+        public string Category { get; private set; }
+        public string PreparationTime { get; private set; }
+        public string Servings { get; private set; }
+        public List<string> Instructions { get; private set; } = new List<string>();
+        public bool IsAvailable { get; private set; }
         public bool IsDeleted { get; private set; } = false;
-        public ICollection<RecipeIngredient> Ingredients { get; private set; }
+        public DateTime CreatedDate { get; private set; }
+        public DateTime UpdatedDate { get; private set; }
+        public ICollection<RecipeIngredient> Ingredients { get; private set; } = new List<RecipeIngredient>();
 
-        private Recipe() { }
+        // Construtor vazio para EF Core
+        public Recipe() { }
 
-        public Recipe(string name, List<RecipeIngredient> ingredients)
+        // Método para atualizar dados
+        public void Update(string name, string description, string category, string preparationTime, string servings, bool isAvailable, List<RecipeIngredient> ingredients, List<string> instructions)
         {
-            SetName(name);
-            Ingredients = ingredients;
-        }
-
-        public void SetName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name cannot be null or empty.");
             Name = name;
-        }
-
-        public void SetActiveStatus(bool status) => IsActive = status;
-
-        public void MarkAsDeleted()
-        {
-            IsDeleted = true;
-        }
-
-        public void Reactivate()
-        {
-            IsDeleted = false;
+            Description = description;
+            Category = category;
+            PreparationTime = preparationTime;
+            Servings = servings;
+            IsAvailable = isAvailable;
+            Ingredients = ingredients ?? new List<RecipeIngredient>();
+            Instructions = instructions ?? new List<string>();
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

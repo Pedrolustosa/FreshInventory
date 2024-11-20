@@ -24,24 +24,24 @@ namespace FreshInventory.Application.CQRS.Commands.UpdateRecipe
         {
             try
             {
-                var existingRecipe = await _repository.GetByIdAsync(request.RecipeUpdateDto.Id)
-                    ?? throw new ServiceException($"Recipe with ID {request.RecipeUpdateDto.Id} not found.");
+                var existingRecipe = await _repository.GetByIdAsync(request.Id)
+                    ?? throw new ServiceException($"Recipe with ID {request.Id} not found.");
 
-                _mapper.Map(request.RecipeUpdateDto, existingRecipe);
+                _mapper.Map(request, existingRecipe);
                 await _repository.UpdateAsync(existingRecipe);
 
-                _logger.LogInformation("Recipe with ID {RecipeId} updated successfully.", request.RecipeUpdateDto.Id);
+                _logger.LogInformation("Recipe with ID {RecipeId} updated successfully.", request.Id);
 
                 return _mapper.Map<RecipeDto>(existingRecipe);
             }
             catch (ServiceException ex)
             {
-                _logger.LogError(ex, "Service error while updating recipe with ID {RecipeId}.", request.RecipeUpdateDto.Id);
+                _logger.LogError(ex, "Service error while updating recipe with ID {RecipeId}.", request.Id);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred while updating recipe with ID {RecipeId}.", request.RecipeUpdateDto.Id);
+                _logger.LogError(ex, "An unexpected error occurred while updating recipe with ID {RecipeId}.", request.Id);
                 throw new Exception("An unexpected error occurred while updating the recipe.", ex);
             }
         }

@@ -1,0 +1,199 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="header-content">
+          <h1>Dashboard</h1>
+          <p class="text-muted">{{ today | date:'EEEE · MMMM d, y · h:mm a' }}</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="date-picker">
+            <i class="fas fa-calendar"></i>
+            <span>{{ today | date:'MMM dd, yyyy' }}</span>
+          </div>
+          <button class="btn-icon">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="welcome-section">
+        <div class="row align-items-center">
+          <div class="col-lg-8 mb-3 mb-lg-0">
+            <div class="welcome-content">
+              <h2>Welcome to Fresh Inventory!</h2>
+              <p>Monitor your kitchen metrics, track inventory levels, and optimize your operations with our comprehensive dashboard.</p>
+              <button class="btn btn-primary">
+                View Reports
+                <i class="fas fa-chart-bar ms-2"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="welcome-illustration text-center">
+              <img src="assets/images/fresh-produce.png" alt="Fresh Inventory" class="img-fluid">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-4 mb-4">
+    <!-- Financial Overview -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card primary">
+        <div class="d-flex justify-content-between">
+          <div class="stat-content">
+            <h3>Revenue</h3>
+            <div class="stat-value">{{ formatCurrency(financialMetrics.totalProfit) }}</div>
+            <div class="stat-change positive">
+              <i class="fas fa-chart-line"></i>
+              Net: {{ formatCurrency(financialMetrics.netProfit) }}
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Status -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card" [ngClass]="getStockStatusClass()">
+        <div class="d-flex justify-content-between">
+          <div class="stat-content">
+            <h3>Stock Status</h3>
+            <div class="stat-value">{{ ingredientMetrics.totalAvailableStock }}</div>
+            <div class="stat-change" [ngClass]="{'warning': ingredientMetrics.lowStockCount > 0}">
+              <i class="fas" [ngClass]="ingredientMetrics.lowStockCount > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle'"></i>
+              {{ getLowStockMessage() }}
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Insights -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card success">
+        <div class="d-flex justify-content-between">
+          <div class="stat-content">
+            <h3>Customers</h3>
+            <div class="stat-value">{{ customerMetrics.totalCustomersServed }}</div>
+            <div class="stat-change positive">
+              <i class="fas fa-users"></i>
+              {{ customerMetrics.repeatCustomers }} returning
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-user-friends"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waste Management -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card" [ngClass]="getWasteStatusClass()">
+        <div class="d-flex justify-content-between">
+          <div class="stat-content">
+            <h3>Waste Control</h3>
+            <div class="stat-value">{{ formatCurrency(wasteMetrics.totalWasteCost) }}</div>
+            <div class="stat-change" [ngClass]="{'negative': wasteMetrics.spoiledProductsCount > 0}">
+              <i class="fas" [ngClass]="wasteMetrics.spoiledProductsCount > 0 ? 'fa-exclamation-circle' : 'fa-check-circle'"></i>
+              {{ getSpoiledItemsMessage() }}
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-recycle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts and Analytics -->
+  <div class="row g-4">
+    <!-- Revenue Trends -->
+    <div class="col-lg-8">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Revenue Trends</h3>
+          <div class="chart-actions">
+            <button class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-download me-2"></i>Export
+            </button>
+          </div>
+        </div>
+        <canvas baseChart
+          [data]="revenueChartData"
+          [options]="chartOptions"
+          [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Popular Dishes -->
+    <div class="col-lg-4">
+      <div class="chart-card">
+        <h3 class="section-title">Popular Dishes</h3>
+        
+        <div class="dish-card success mb-3">
+          <div class="dish-icon">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="dish-content">
+            <h4>Most Popular</h4>
+            <div class="dish-name">{{ dishMetrics.mostPopularDish }}</div>
+            <div class="dish-stats">
+              <span class="stat-label">Total Orders:</span>
+              <span class="stat-value">{{ dishMetrics.totalDishOutputs }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card primary mb-3">
+          <div class="dish-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="dish-content">
+            <h4>Most Profitable</h4>
+            <div class="dish-name">{{ dishMetrics.mostProfitableDish }}</div>
+          </div>
+        </div>
+
+        <div class="dish-card warning mb-3">
+          <div class="dish-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="dish-content">
+            <h4>Needs Attention</h4>
+            <div class="dish-name">{{ dishMetrics.leastPopularDish }}</div>
+          </div>
+        </div>
+
+        <div class="dish-card info">
+          <div class="dish-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <div class="dish-content">
+            <h4>Review Pricing</h4>
+            <div class="dish-name">{{ dishMetrics.leastProfitableDish }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -10,7 +10,8 @@ namespace FreshInventory.Domain.Entities
         public Unit Unit { get; private set; }
         public decimal UnitCost { get; private set; }
         public Category Category { get; private set; }
-        public string Supplier { get; private set; }
+        public int SupplierId { get; private set; }
+        public Supplier Supplier { get; private set; }
         public DateTime PurchaseDate { get; private set; }
         public DateTime ExpiryDate { get; private set; }
         public bool IsPerishable { get; private set; }
@@ -26,7 +27,7 @@ namespace FreshInventory.Domain.Entities
             Unit unit,
             decimal unitCost,
             Category category,
-            string supplier,
+            int supplierId,
             DateTime purchaseDate,
             DateTime expiryDate,
             bool isPerishable,
@@ -37,7 +38,7 @@ namespace FreshInventory.Domain.Entities
             SetUnit(unit);
             SetUnitCost(unitCost);
             SetCategory(category);
-            SetSupplier(supplier);
+            SetSupplier(supplierId);
             SetPurchaseDate(purchaseDate);
             SetExpiryDate(expiryDate);
             SetIsPerishable(isPerishable);
@@ -54,6 +55,11 @@ namespace FreshInventory.Domain.Entities
                 throw new InvalidOperationException("Insufficient quantity to reduce.");
             Quantity -= quantity;
             UpdatedDate = DateTime.Now;
+        }
+
+        public void SetSupplier(int supplierId)
+        {
+            SupplierId = supplierId;
         }
 
         public void UpdateQuantity(int newQuantity)
@@ -101,12 +107,6 @@ namespace FreshInventory.Domain.Entities
         public void SetCategory(Category category)
         {
             Category = category;
-            UpdateTimestamp();
-        }
-
-        public void SetSupplier(string supplier)
-        {
-            Supplier = supplier;
             UpdateTimestamp();
         }
 

@@ -2,26 +2,19 @@
 {
     public class RecipeIngredient
     {
-        public int Id { get; private set; }
-        public int RecipeId { get; private set; }
-        public Recipe Recipe { get; private set; }
-        public int IngredientId { get; private set; }
-        public Ingredient Ingredient { get; private set; }
-        public int QuantityRequired { get; private set; }
+        public int RecipeId { get; set; }
+        public int IngredientId { get; set; }
+        public int Quantity { get; set; }
 
-        private RecipeIngredient() { }
+        public Ingredient Ingredient { get; set; }  
 
-        public RecipeIngredient(int ingredientId, int quantityRequired)
+        // Construtor vazio para EF Core
+        public RecipeIngredient() { }
+
+        public RecipeIngredient(int ingredientId, int quantity)
         {
             IngredientId = ingredientId;
-            QuantityRequired = quantityRequired;
-        }
-
-        public void SetQuantityRequired(int quantity)
-        {
-            if (quantity <= 0)
-                throw new ArgumentException("Quantity required must be greater than zero.");
-            QuantityRequired = quantity;
+            Quantity = quantity;
         }
     }
 }

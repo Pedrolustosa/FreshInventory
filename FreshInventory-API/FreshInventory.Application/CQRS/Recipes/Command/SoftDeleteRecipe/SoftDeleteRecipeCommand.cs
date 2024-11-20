@@ -2,5 +2,13 @@
 
 namespace FreshInventory.Application.CQRS.Commands.DeleteRecipe
 {
-    public record SoftDeleteRecipeCommand(int RecipeId) : IRequest;
+    public class SoftDeleteRecipeCommand : IRequest
+    {
+        public int RecipeId { get; set; }
+
+        public SoftDeleteRecipeCommand(int recipeId)
+        {
+            RecipeId = recipeId;
+        }
+    }
 }

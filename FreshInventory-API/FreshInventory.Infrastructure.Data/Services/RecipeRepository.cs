@@ -7,8 +7,9 @@ using FreshInventory.Infrastructure.Data.Context;
 
 namespace FreshInventory.Infrastructure.Data.Services;
 
-public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeRepository> logger) : IRecipeRepository
+public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeRepository> logger) : IRecipeRepository, IDisposable
 {
+    private bool _disposed = false;
     private readonly ApplicationDbContext _context = context;
     private readonly ILogger<RecipeRepository> _logger = logger;
 
@@ -16,7 +17,7 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
     {
         try
         {
-            var query = _context.Recipes.AsNoTracking().Where(r => r.IsActive);
+            var query = _context.Recipes.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(r => r.Name.Contains(name));
@@ -38,7 +39,7 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
             var totalCount = await query.CountAsync();
             var recipes = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            _logger.LogInformation("Retrieved {Count} recipes from database.", recipes.Count);
+            _logger.LogInformation("Retrieved {Count} recipes from database.", recipes.Count());
             return (recipes, totalCount);
         }
         catch (Exception ex)
@@ -89,7 +90,6 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
                 _logger.LogWarning("Recipe with ID {Id} not found for deletion.", recipeId);
                 throw new RepositoryException($"Recipe with ID {recipeId} not found.");
             }
-            recipe.MarkAsDeleted();
             await _context.SaveChangesAsync();
             _logger.LogInformation("Recipe with ID {Id} logically deleted.", recipeId);
         }
@@ -110,7 +110,6 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
                 _logger.LogWarning("Recipe with ID {Id} not found for reactivation.", recipeId);
                 throw new RepositoryException($"Recipe with ID {recipeId} not found.");
             }
-            recipe.Reactivate();
             await _context.SaveChangesAsync();
             _logger.LogInformation("Recipe with ID {Id} reactivated.", recipeId);
         }
@@ -144,20 +143,30 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
         }
     }
 
+
     public async Task<bool> ReserveIngredientsAsync(int recipeId)
     {
         try
         {
-            var recipe = await GetByIdAsync(recipeId);
+            var recipe = await _context.Recipes
+                .Include(r => r.Ingredients)
+                .FirstOrDefaultAsync(r => r.Id == recipeId && !r.IsDeleted);
+
+            if (recipe == null)
+            {
+                _logger.LogWarning("Recipe with ID {Id} not found.", recipeId);
+                throw new RepositoryException($"Recipe with ID {recipeId} not found.");
+            }
+
             foreach (var ingredient in recipe.Ingredients)
             {
                 var inventoryIngredient = await _context.Ingredients.FindAsync(ingredient.IngredientId);
-                if (inventoryIngredient == null || inventoryIngredient.Quantity < ingredient.QuantityRequired)
+                if (inventoryIngredient == null || inventoryIngredient.Quantity < ingredient.Quantity)
                 {
-                    _logger.LogWarning("Insufficient quantity for ingredient '{Name}' in recipe ID {Id}.", ingredient.Ingredient.Name, recipeId);
+                    _logger.LogWarning("Insufficient quantity for ingredient in recipe ID {Id}.", recipeId);
                     return false;
                 }
-                inventoryIngredient.UpdateQuantity(inventoryIngredient.Quantity - ingredient.QuantityRequired);
+                inventoryIngredient.UpdateQuantity(inventoryIngredient.Quantity - ingredient.Quantity);
             }
             await _context.SaveChangesAsync();
             _logger.LogInformation("Ingredients for recipe ID {Id} reserved successfully.", recipeId);
@@ -168,5 +177,21 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
             _logger.LogError(ex, "An error occurred while reserving ingredients for recipe ID {Id}.", recipeId);
             throw new RepositoryException("An error occurred while reserving ingredients.", ex);
         }
+    }
+
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) _context.Dispose();
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

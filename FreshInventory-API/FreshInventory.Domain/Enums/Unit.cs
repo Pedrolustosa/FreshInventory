@@ -1,5 +1,8 @@
-﻿namespace FreshInventory.Domain.Enums;
+﻿using System.Text.Json.Serialization;
 
+namespace FreshInventory.Domain.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Unit
 {
     Kilogram,

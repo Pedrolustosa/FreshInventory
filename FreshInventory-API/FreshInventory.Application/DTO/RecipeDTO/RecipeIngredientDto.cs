@@ -1,4 +1,8 @@
 ﻿namespace FreshInventory.Application.DTO.RecipeDTO
 {
-    public record RecipeIngredientDto(int IngredientId, int QuantityRequired, string IngredientName);
+    public class RecipeIngredientDto
+    {
+        public int IngredientId { get; set; }
+        public int Quantity { get; set; }
+    }
 }

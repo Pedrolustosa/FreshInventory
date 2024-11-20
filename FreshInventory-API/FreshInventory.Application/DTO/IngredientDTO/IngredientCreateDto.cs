@@ -1,16 +1,18 @@
 ﻿using FreshInventory.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace FreshInventory.Application.DTO.IngredientDTO;
-
-public record IngredientCreateDto(string Name,
-                                  int Quantity,
-                                  Unit Unit,
-                                  decimal UnitCost,
-                                  Category Category,
-                                  string Supplier,
-                                  [property: DataType(DataType.Date)] DateTime PurchaseDate,
-                                  [property: DataType(DataType.Date)] DateTime ExpiryDate,
-                                  bool IsPerishable,
-                                  int ReorderLevel);
-
+namespace FreshInventory.Application.DTO.IngredientDTO
+{
+    public class IngredientCreateDto
+    {
+        public string Name { get; set; }
+        public int Quantity { get; set; }
+        public Unit Unit { get; set; }
+        public decimal UnitCost { get; set; }
+        public Category Category { get; set; }
+        public int SupplierId { get; set; }
+        public DateTime PurchaseDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
+        public bool IsPerishable { get; set; }
+        public int ReorderLevel { get; set; }
+    }
+}

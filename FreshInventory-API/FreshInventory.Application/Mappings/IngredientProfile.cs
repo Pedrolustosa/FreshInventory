@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FreshInventory.Application.CQRS.Ingredients.Commands.CreateIngredient;
+using FreshInventory.Application.CQRS.Ingredients.Commands.UpdateIngredient;
 using FreshInventory.Application.DTO.IngredientDTO;
 using FreshInventory.Domain.Entities;
 
@@ -8,15 +10,14 @@ namespace FreshInventory.Application.Mappings
     {
         public IngredientProfile()
         {
-            CreateMap<Ingredient, IngredientDto>();
-            CreateMap<IngredientCreateDto, Ingredient>();
-            CreateMap<IngredientUpdateDto, Ingredient>()
-                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
-                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+            CreateMap<Ingredient, IngredientDto>()
+                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.Name));
 
-            CreateMap<IngredientDto, Ingredient>()
-                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
-                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+            CreateMap<IngredientCreateDto, Ingredient>();
+            CreateMap<IngredientUpdateDto, Ingredient>();
+
+            CreateMap<IngredientCreateDto, CreateIngredientCommand>();
+            CreateMap<IngredientUpdateDto, UpdateIngredientCommand>();
         }
     }
 }

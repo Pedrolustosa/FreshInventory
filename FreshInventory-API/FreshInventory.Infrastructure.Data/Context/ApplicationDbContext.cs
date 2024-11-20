@@ -7,6 +7,7 @@ namespace FreshInventory.Infrastructure.Data.Context
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User>(options)
     {
         public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
@@ -14,7 +15,6 @@ namespace FreshInventory.Infrastructure.Data.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // Identity configuration
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(u => u.FullName)
@@ -30,66 +30,74 @@ namespace FreshInventory.Infrastructure.Data.Context
                 entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
+                      .IsRequired()
+                      .HasMaxLength(100);
 
                 entity.Property(e => e.Quantity)
-                    .IsRequired()
-                    .HasDefaultValue(0);
+                      .IsRequired()
+                      .HasDefaultValue(0);
 
                 entity.Property(e => e.Unit)
-                    .IsRequired()
-                    .HasConversion<string>();
+                      .IsRequired()
+                      .HasConversion<string>();
 
                 entity.Property(e => e.UnitCost)
-                    .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(18,2)");
 
                 entity.Property(e => e.Category)
-                    .IsRequired()
-                    .HasConversion<string>();
+                      .IsRequired()
+                      .HasConversion<string>();
 
-                entity.Property(e => e.PurchaseDate)
-                    .IsRequired();
-
-                entity.Property(e => e.ExpiryDate)
-                    .IsRequired();
-
-                entity.Property(e => e.IsPerishable)
-                    .IsRequired()
-                    .HasDefaultValue(true);
-
-                entity.Property(e => e.ReorderLevel)
-                    .IsRequired()
-                    .HasDefaultValue(10);
-
-                entity.Property(e => e.CreatedDate)
-                    .IsRequired();
-
-                entity.Property(e => e.UpdatedDate)
-                    .IsRequired();
+                entity.Property(e => e.PurchaseDate).IsRequired();
+                entity.Property(e => e.ExpiryDate).IsRequired();
+                entity.Property(e => e.IsPerishable).IsRequired().HasDefaultValue(true);
+                entity.Property(e => e.ReorderLevel).IsRequired().HasDefaultValue(10);
+                entity.Property(e => e.CreatedDate).IsRequired();
+                entity.Property(e => e.UpdatedDate).IsRequired();
             });
 
             modelBuilder.Entity<Recipe>(entity =>
             {
                 entity.HasKey(r => r.Id);
-                entity.Property(r => r.Name).IsRequired().HasMaxLength(100);
-                entity.Property(r => r.IsActive).HasDefaultValue(true);
+
+                entity.Property(r => r.Name)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.Property(r => r.IsAvailable)
+                      .IsRequired()
+                      .HasDefaultValue(true);
+
+                entity.Property(r => r.CreatedDate).IsRequired();
+                entity.Property(r => r.UpdatedDate).IsRequired();
 
                 entity.HasMany(r => r.Ingredients)
-                      .WithOne(ri => ri.Recipe)
+                      .WithOne()
                       .HasForeignKey(ri => ri.RecipeId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<RecipeIngredient>(entity =>
             {
-                entity.HasKey(ri => ri.Id);
-                entity.Property(ri => ri.QuantityRequired).IsRequired();
+                // Definir chave composta
+                entity.HasKey(ri => new { ri.RecipeId, ri.IngredientId });
+
+                // Configurar propriedades obrigatórias
+                entity.Property(ri => ri.Quantity).IsRequired();
+
+                // Relacionamento com Ingredient
                 entity.HasOne(ri => ri.Ingredient)
-                      .WithMany()
+                      .WithMany() // Se Ingredient não tem uma lista de RecipeIngredients
                       .HasForeignKey(ri => ri.IngredientId)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                // Relacionamento com Recipe
+                entity.HasOne<Recipe>()
+                      .WithMany(r => r.Ingredients)
+                      .HasForeignKey(ri => ri.RecipeId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
+
         }
     }
 }

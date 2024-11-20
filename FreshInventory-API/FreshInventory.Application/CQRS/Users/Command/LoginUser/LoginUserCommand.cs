@@ -1,12 +1,11 @@
-﻿using FreshInventory.Application.DTO;
-using FreshInventory.Application.DTO.UserDTO;
+﻿using FreshInventory.Application.DTO.UserDTO;
 using MediatR;
 
 namespace FreshInventory.Application.CQRS.Users.Command.LoginUser
 {
-    public class LoginUserCommand(string email, string password) : IRequest<LoginUserResponseDto>
+    public class LoginUserCommand() : IRequest<LoginUserResponseDto>
     {
-        public string Email { get; set; } = email;
-        public string Password { get; set; } = password;
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 }

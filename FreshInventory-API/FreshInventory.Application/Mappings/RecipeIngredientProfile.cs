@@ -9,7 +9,8 @@ public class RecipeIngredientProfile : Profile
     public RecipeIngredientProfile()
     {
         CreateMap<RecipeIngredient, RecipeIngredientDto>()
-            .ForMember(dest => dest.IngredientName, opt => opt.MapFrom(src => src.Ingredient.Name));
+            .ForMember(dest => dest.IngredientId, opt => opt.MapFrom(src => src.IngredientId))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
 
         CreateMap<RecipeIngredientCreateDto, RecipeIngredient>();
     }

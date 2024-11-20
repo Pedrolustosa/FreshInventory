@@ -1,0 +1,102 @@
+.text-success {
+  color: #28a745 !important; /* Verde */
+}
+
+.text-danger {
+  color: #dc3545 !important; /* Vermelho */
+}
+
+.fas {
+  font-size: 1rem;
+}
+
+li {
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary) !important;
+  --bs-btn-border-color: var(--bs-primary) !important;
+  --bs-btn-hover-bg: #349e67 !important; /* Verde mais escuro no hover */
+  --bs-btn-hover-border-color: #349e67 !important;
+  --bs-btn-active-bg: #2d8557 !important; /* Verde ativo */
+  --bs-btn-active-border-color: #2d8557 !important;
+}
+
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+.form-control:focus {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0 0 0.25rem rgba(60, 163, 116, 0.25) !important;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--bs-primary) !important;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem) !important;
+}
+
+.btn-link {
+  color: var(--bs-primary) !important;
+  text-decoration: none !important;
+}
+
+.btn-link:hover {
+  color: #349e67 !important;
+}
+
+.form-control-lg {
+  min-height: calc(1.5em + 1rem + 4px) !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 1.125rem !important;
+}
+
+.form-floating > .form-control-lg {
+  padding: 1rem !important;
+  padding-top: 1.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+
+.card {
+  --bs-card-border-radius: 1rem !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+small {
+  font-size: 0.875rem !important;
+  margin-top: 0.25rem !important;
+  display: block !important;
+}
+
+.progress-bar-weak {
+  background-color: var(--bs-danger) !important;
+}
+
+.progress-bar-medium {
+  background-color: var(--bs-warning) !important;
+}
+
+.progress-bar-strong {
+  background-color: var(--bs-success) !important;
+}
+
+.progress {
+  background-color: #e9ecef !important;
+  height: 5px !important;
+  border-radius: 1rem !important;
+}
+
+.invalid-feedback {
+  font-size: 0.875rem !important;
+  color: var(--bs-danger) !important;
+}
+
+.bg-secondary {
+  background-color: #f9f9f9 !important;
+}

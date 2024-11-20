@@ -1,0 +1,68 @@
+/* Add these custom styles to override Bootstrap defaults */
+:root {
+  --bs-primary: #3ca374 !important;
+  --bs-primary-rgb: 60, 163, 116 !important;
+  --bs-secondary: #6c757d !important;
+  --bs-success: #2dce89 !important;
+  --bs-info: #11cdef !important;
+  --bs-warning: #ffa726 !important;
+  --bs-danger: #f5365c !important;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  background: var(--neutral-beige);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  width: calc(100% - 280px);
+  margin-left: 280px;
+  padding: 1.5rem;
+}
+
+.main-content.no-sidebar {
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+}
+
+/* Fix for collapsed state */
+.app-container.collapsed .main-content {
+  width: calc(100% - 70px);
+  margin-left: 70px;
+}
+
+.progress-container {
+  width: 80%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px auto;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background-color: #4caf50;
+  animation: progress 3s infinite;
+}
+
+@keyframes progress {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}

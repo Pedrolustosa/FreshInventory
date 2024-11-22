@@ -1,15 +1,19 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { IngredientService } from '../../../services/ingredient.service';
-import { SupplierService } from '../../../services/supplier.service';
-import { Unit, UnitLabels } from '../../../models/enums/unit.enum';
-import { Category, CategoryLabels } from '../../../models/enums/category.enum';
-import { Supplier } from '../../../models/supplier.model';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { IngredientService } from "../../../services/ingredient.service";
+import { SupplierService } from "../../../services/supplier.service";
+import { Unit, UnitLabels } from "../../../models/enums/unit.enum";
+import { Category, CategoryLabels } from "../../../models/enums/category.enum";
+import { Supplier } from "../../../models/supplier.model";
 
 export abstract class IngredientFormBase {
   ingredientForm: FormGroup;
-  units = Object.keys(Unit).filter(key => !isNaN(Number(key))).map(key => Number(key) as Unit);
-  categories = Object.keys(Category).filter(key => !isNaN(Number(key))).map(key => Number(key) as Category);
+  units = Object.keys(Unit)
+    .filter((key) => !isNaN(Number(key)))
+    .map((key) => Number(key) as Unit);
+  categories = Object.keys(Category)
+    .filter((key) => !isNaN(Number(key)))
+    .map((key) => Number(key) as Category);
   unitLabels = UnitLabels;
   categoryLabels = CategoryLabels;
   suppliers: Supplier[] = [];
@@ -20,29 +24,31 @@ export abstract class IngredientFormBase {
     protected router: Router
   ) {
     this.ingredientForm = new FormBuilder().group({
-      name: ['', [Validators.required]],
-      quantity: ['', [Validators.required, Validators.min(0)]],
-      unit: ['', [Validators.required]],
-      unitCost: ['', [Validators.required, Validators.min(0)]],
-      category: ['', [Validators.required]],
-      supplierId: ['', [Validators.required]],
-      purchaseDate: ['', [Validators.required]],
-      expiryDate: ['', [Validators.required]],
+      name: ["", [Validators.required]],
+      quantity: ["", [Validators.required, Validators.min(0)]],
+      unit: [null, [Validators.required]],
+      unitCost: ["", [Validators.required, Validators.min(0)]],
+      category: [null, [Validators.required]],
+      supplierId: ["", [Validators.required]],
+      purchaseDate: ["", [Validators.required]],
+      expiryDate: ["", [Validators.required]],
       isPerishable: [false],
-      reorderLevel: ['', [Validators.required, Validators.min(0)]]
+      reorderLevel: ["", [Validators.required, Validators.min(0)]],
     });
 
     this.loadSuppliers();
   }
 
   private loadSuppliers(): void {
-    this.supplierService.getSuppliers(1, 100, '', 'name', 'asc').subscribe({
+    this.supplierService.getSuppliers(1, 100, "", "name", "asc").subscribe({
       next: (response) => {
-        this.suppliers = response.items.filter((supplier: Supplier) => supplier.status);
+        this.suppliers = response.items.filter(
+          (supplier: Supplier) => supplier.status
+        );
       },
       error: (error) => {
-        console.error('Error loading suppliers:', error);
-      }
+        console.error("Error loading suppliers:", error);
+      },
     });
   }
 
@@ -57,11 +63,12 @@ export abstract class IngredientFormBase {
   abstract onSubmit(): void;
 
   protected formatDate(date: string | Date): string {
-    return new Date(date).toISOString().split('T')[0];
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+    return formattedDate;
   }
 
   protected markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);

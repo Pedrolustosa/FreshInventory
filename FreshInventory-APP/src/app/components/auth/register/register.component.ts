@@ -57,10 +57,8 @@ export class RegisterComponent {
       validator: this.passwordMatchValidator
     });
 
-    // Define a data máxima para 18 anos atrás
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
 
-    // Atualiza a força da senha sempre que o campo for alterado
     this.registerForm.get('password')?.valueChanges.subscribe(password => {
       this.updatePasswordStrength(password);
     });    
@@ -68,7 +66,7 @@ export class RegisterComponent {
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      this.spinner.show(); // Exibe o spinner durante o envio do formulário
+      this.spinner.show();
       const formValue = this.registerForm.value;
       const registerData = {
         fullName: formValue.fullName,
@@ -79,12 +77,11 @@ export class RegisterComponent {
 
       this.authService.register(registerData).subscribe({
         next: () => {
-          this.spinner.hide(); // Oculta o spinner após o sucesso
+          this.spinner.hide();
           this.toastr.success('Registration successful! Welcome to Fresh Inventory.');
-          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          this.spinner.hide(); // Oculta o spinner após erro
+          this.spinner.hide();
           this.toastr.error(error.error?.message || 'Registration failed. Please try again.');
         }
       });

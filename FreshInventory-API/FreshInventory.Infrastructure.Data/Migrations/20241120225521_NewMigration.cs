@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FreshInventory.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrationv1 : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

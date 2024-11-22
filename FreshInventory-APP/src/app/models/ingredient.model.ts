@@ -9,6 +9,7 @@ export interface Ingredient {
   unitCost: number;
   category: Category;
   supplierId: number;
+  supplierName: string;
   purchaseDate: Date;
   expiryDate: Date;
   isPerishable: boolean;

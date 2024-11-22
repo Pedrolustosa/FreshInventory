@@ -1,10 +1,10 @@
 export enum Unit {
-  Kilogram = 0,
-  Gram = 1,
-  Liter = 2,
-  Milliliter = 3,
-  Piece = 4,
-  Unit = 5
+  Kilogram = 1,
+  Gram = 2,
+  Liter = 3,
+  Milliliter = 4,
+  Piece = 5,
+  Unit = 6
 }
 
 export const UnitLabels: Record<Unit, string> = {

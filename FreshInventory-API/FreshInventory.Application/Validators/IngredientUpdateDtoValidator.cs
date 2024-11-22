@@ -7,8 +7,7 @@ public class IngredientUpdateDtoValidator : AbstractValidator<IngredientUpdateDt
 {
     public IngredientUpdateDtoValidator()
     {
-        RuleFor(i => i.Id)
-            .GreaterThan(0).WithMessage("ID is required for update and must be greater than zero.");
+        RuleFor(i => i.Id);
 
         RuleFor(i => i.Name)
             .NotEmpty().WithMessage("Name is required.")

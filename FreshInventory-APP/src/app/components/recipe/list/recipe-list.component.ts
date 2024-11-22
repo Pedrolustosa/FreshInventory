@@ -6,7 +6,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { RecipeService } from '../../../services/recipe.service';
 import { Recipe } from '../../../models/recipe.model';
-import { RecipeDeleteModalComponent } from '../modals/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from 'src/app/shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-recipe-list',
@@ -16,7 +16,7 @@ import { RecipeDeleteModalComponent } from '../modals/delete-confirmation-modal.
     RouterModule,
     FormsModule,
     NgxSpinnerModule,
-    RecipeDeleteModalComponent
+    DeleteConfirmationModalComponent
   ],
   templateUrl: './recipe-list.component.html',
   styleUrls: ['./recipe-list.component.css']
@@ -29,8 +29,8 @@ export class RecipeListComponent implements OnInit {
   searchTerm = '';
   selectedCategory = '';
   showOnlyAvailable = false;
-  showDeleteModal = false;
-  selectedRecipe: Recipe | null = null;
+  selectedRecipe: any = null;
+  showDeleteModal: boolean = false;
   protected readonly Math = Math;
 
   categories = [
@@ -75,8 +75,7 @@ export class RecipeListComponent implements OnInit {
   filterRecipes(): void {
     this.recipes = this.recipes.filter(recipe => {
       const matchesCategory = !this.selectedCategory || recipe.category === this.selectedCategory;
-      const matchesAvailability = !this.showOnlyAvailable || recipe.isAvailable;
-      return matchesCategory && matchesAvailability;
+      return matchesCategory;
     });
   }
 
@@ -93,16 +92,12 @@ export class RecipeListComponent implements OnInit {
     this.filterRecipes();
   }
 
-  getAvailabilityClass(recipe: Recipe): string {
-    return recipe.isAvailable ? 'bg-success' : 'bg-danger';
-  }
-
   onDeleteClick(recipe: Recipe): void {
     this.selectedRecipe = recipe;
     this.showDeleteModal = true;
   }
 
-  onDeleteConfirm(): void {
+  confirmDelete(): void {
     if (this.selectedRecipe) {
       this.recipeService.deleteRecipe(this.selectedRecipe.id).subscribe({
         next: () => {
@@ -118,8 +113,7 @@ export class RecipeListComponent implements OnInit {
     }
   }
 
-  closeDeleteModal(): void {
+  closeDeleteModal() {
     this.showDeleteModal = false;
-    this.selectedRecipe = null;
   }
 }

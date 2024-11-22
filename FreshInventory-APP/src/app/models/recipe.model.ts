@@ -3,17 +3,24 @@ export interface RecipeIngredient {
   quantity: number;
 }
 
-export interface Recipe {
+export interface CreateRecipe {
   id: number;
   name: string;
-  description: string;
   category: string;
   preparationTime: number;
   servings: number;
+  description: string;
   ingredients: RecipeIngredient[];
   instructions: string[];
-  imageUrl?: string;
-  isAvailable?: boolean;
-  createdDate: Date;
-  updatedDate: Date;
+}
+
+export interface Recipe {
+  id: number;
+  name: string;
+  category: string;
+  preparationTime: number;
+  servings: number;
+  description: string;
+  ingredients: RecipeIngredient[];
+  instructions: string[];
 }

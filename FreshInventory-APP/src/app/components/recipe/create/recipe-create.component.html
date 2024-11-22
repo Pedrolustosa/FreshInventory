@@ -15,8 +15,9 @@
           <div class="col-md-6 mb-3">
             <label class="form-label">Recipe Name</label>
             <input type="text" class="form-control" formControlName="name">
-            <div class="invalid-feedback" *ngIf="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched">
-              Recipe name is required
+            <div class="invalid-feedback"
+              *ngIf="recipeForm.get('name')?.invalid && (recipeForm.get('name')?.touched || recipeForm.get('name')?.dirty)">
+              Recipe name is required.
             </div>
           </div>
 
@@ -25,39 +26,44 @@
             <select class="form-select" formControlName="category">
               <option value="">Select Category</option>
               <option *ngFor="let category of categories" [value]="category">
-                {{category}}
+                {{ category }}
               </option>
             </select>
-            <div class="invalid-feedback" *ngIf="recipeForm.get('category')?.invalid && recipeForm.get('category')?.touched">
-              Category is required
+            <div class="invalid-feedback"
+              *ngIf="recipeForm.get('category')?.invalid && (recipeForm.get('category')?.touched || recipeForm.get('category')?.dirty)">
+              Category is required.
             </div>
           </div>
 
           <div class="col-md-6 mb-3">
             <label class="form-label">Preparation Time (minutes)</label>
             <input type="number" class="form-control" formControlName="preparationTime">
-            <div class="invalid-feedback" *ngIf="recipeForm.get('preparationTime')?.invalid && recipeForm.get('preparationTime')?.touched">
-              Valid preparation time is required
+            <div class="invalid-feedback"
+              *ngIf="recipeForm.get('preparationTime')?.invalid && (recipeForm.get('preparationTime')?.touched || recipeForm.get('preparationTime')?.dirty)">
+              Valid preparation time is required.
             </div>
           </div>
 
           <div class="col-md-6 mb-3">
             <label class="form-label">Servings</label>
             <input type="number" class="form-control" formControlName="servings">
-            <div class="invalid-feedback" *ngIf="recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched">
-              Valid number of servings is required
+            <div class="invalid-feedback"
+              *ngIf="recipeForm.get('servings')?.invalid && (recipeForm.get('servings')?.touched || recipeForm.get('servings')?.dirty)">
+              Valid number of servings is required.
             </div>
           </div>
 
           <div class="col-12 mb-3">
             <label class="form-label">Description</label>
             <textarea class="form-control" rows="3" formControlName="description"></textarea>
-            <div class="invalid-feedback" *ngIf="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched">
-              Description is required
+            <div class="invalid-feedback"
+              *ngIf="recipeForm.get('description')?.invalid && (recipeForm.get('description')?.touched || recipeForm.get('description')?.dirty)">
+              Description is required.
             </div>
           </div>
         </div>
 
+        <!-- Ingredients -->
         <div class="ingredients-section mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="h5 mb-0">Ingredients</h3>
@@ -66,26 +72,26 @@
             </button>
           </div>
 
+          <div *ngIf="ingredientsArray.invalid && (ingredientsArray.touched || ingredientsArray.dirty)"
+            class="text-danger mb-3">
+            At least one valid ingredient is required.
+          </div>
+
           <div formArrayName="ingredients">
             <div *ngFor="let ingredient of ingredientsArray.controls; let i=index" [formGroupName]="i" class="row mb-3">
               <div class="col-md-6">
                 <select class="form-select" formControlName="ingredientId">
                   <option value="">Select Ingredient</option>
                   <option *ngFor="let ing of availableIngredients" [value]="ing.id">
-                    {{ing.name}} (Available: {{ing.quantity}})
+                    {{ ing.name }} (Available: {{ ing.quantity }})
                   </option>
                 </select>
               </div>
               <div class="col-md-4">
-                <input 
-                  type="number" 
-                  class="form-control" 
-                  formControlName="quantity" 
-                  placeholder="Quantity"
-                  [max]="getMaxAvailableQuantity(ingredient.get('ingredientId')?.value)"
-                >
+                <input type="number" class="form-control" formControlName="quantity" placeholder="Quantity"
+                  [max]="getMaxAvailableQuantity(ingredient.get('ingredientId')?.value)">
                 <div class="form-text" *ngIf="ingredient.get('ingredientId')?.value">
-                  Max available: {{getMaxAvailableQuantity(ingredient.get('ingredientId')?.value)}}
+                  Max available: {{ getMaxAvailableQuantity(ingredient.get('ingredientId')?.value) }}
                 </div>
               </div>
               <div class="col-md-2">
@@ -97,6 +103,7 @@
           </div>
         </div>
 
+        <!-- Instructions -->
         <div class="instructions-section mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="h5 mb-0">Instructions</h3>
@@ -105,34 +112,33 @@
             </button>
           </div>
 
+          <div *ngIf="instructionsArray.invalid && (instructionsArray.touched || instructionsArray.dirty)"
+            class="text-danger mb-3">
+            At least one valid instruction is required.
+          </div>
+
           <div formArrayName="instructions">
             <div *ngFor="let instruction of instructionsArray.controls; let i=index" class="mb-3">
               <div class="input-group">
-                <span class="input-group-text">Step {{i + 1}}</span>
-                <input type="text" class="form-control" [formControlName]="i">
+                <span class="input-group-text">Step {{ i + 1 }}</span>
+                <input type="text" class="form-control" [formControlName]="i"
+                  [class.is-invalid]="instruction.invalid && instruction.touched">
                 <button type="button" class="btn btn-outline-danger" (click)="removeInstruction(i)">
                   <i class="fas fa-trash"></i>
                 </button>
+                <div class="invalid-feedback">Step is required.</div>
               </div>
             </div>
           </div>
         </div>
 
+
+        <!-- Buttons -->
         <div class="d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-outline-secondary" routerLink="/recipes">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="recipeForm.invalid">Create Recipe</button>
+          <button type="submit" class="btn btn-primary" [disabled]="recipeForm.invalid">Creates Recipe</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
-<ngx-spinner
-  bdColor="rgba(0, 0, 0, 0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-clip-rotate"
-  [fullScreen]="true"
->
-  <p style="color: white">Creating recipe...</p>
-</ngx-spinner>

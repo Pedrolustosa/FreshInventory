@@ -1,52 +1,63 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxSpinnerModule } from 'ngx-spinner';
-import { Router } from '@angular/router';
-import { IngredientService } from '../../../services/ingredient.service';
-import { SupplierService } from '../../../services/supplier.service';
-import { IngredientFormBase } from '../shared/ingredient-form.base';
-import { Unit } from '../../../models/enums/unit.enum';
-import { Category } from '../../../models/enums/category.enum';
+import { Component } from "@angular/core";
+import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
+import { ToastrService } from "ngx-toastr";
+import { IngredientFormBase } from "../shared/ingredient-form.base";
+import { CommonModule } from "@angular/common";
+import { Router, RouterModule } from "@angular/router";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { IngredientService } from "src/app/services/ingredient.service";
+import { SupplierService } from "src/app/services/supplier.service";
 
 @Component({
-  selector: 'app-ingredient-create',
+  selector: "app-ingredient-create",
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
   ],
-  templateUrl: './ingredient-create.component.html',
-  styleUrls: ['./ingredient-create.component.css']
+  templateUrl: "./ingredient-create.component.html",
+  styleUrls: ["./ingredient-create.component.css"],
 })
 export class IngredientCreateComponent extends IngredientFormBase {
-  protected readonly Unit = Unit;
-  protected readonly Category = Category;
-
   constructor(
     protected override ingredientService: IngredientService,
     protected override supplierService: SupplierService,
-    protected override router: Router
+    protected override router: Router,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {
     super(ingredientService, supplierService, router);
   }
 
   override onSubmit(): void {
     if (this.ingredientForm.valid) {
-      this.ingredientService.createIngredient(this.ingredientForm.value).subscribe({
-        next: () => {
-          this.router.navigate(['/ingredients']);
-        },
-        error: () => {
-          // Handle error
-        }
-      });
+      this.spinner.show();
+      this.ingredientService
+        .createIngredient(this.ingredientForm.value)
+        .subscribe({
+          next: () => {
+            this.spinner.hide();
+            this.toastr.success("Ingredient created successfully!", "Success");
+            this.router.navigate(["/ingredients"]);
+          },
+          error: (error) => {
+            this.spinner.hide();
+            console.error(error);
+            this.toastr.error(
+              "Failed to create ingredient. Please try again.",
+              "Error"
+            );
+          },
+        });
     } else {
       this.markFormGroupTouched(this.ingredientForm);
+      this.toastr.warning(
+        "Please fill in all required fields.",
+        "Form Incomplete"
+      );
     }
   }
 }

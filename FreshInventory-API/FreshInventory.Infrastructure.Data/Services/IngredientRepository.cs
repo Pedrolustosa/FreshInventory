@@ -4,6 +4,8 @@ using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Exceptions;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Infrastructure.Data.Context;
+using AutoMapper;
+using FreshInventory.Domain.Enums;
 
 namespace FreshInventory.Infrastructure.Data.Services;
 
@@ -97,19 +99,19 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
     {
         try
         {
-            var query = _context.Ingredients.AsNoTracking();
+            var query = _context.Ingredients
+                .Include(x => x.Supplier)
+                .AsNoTracking();
 
-            // Filtering
             if (!string.IsNullOrWhiteSpace(name))
             {
                 query = query.Where(i => i.Name.Contains(name));
             }
-            if (!string.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(category) && Enum.TryParse<Category>(category, true, out var parsedCategory))
             {
-                query = query.Where(i => i.Category.ToString().Equals(category, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(i => i.Category == parsedCategory);
             }
 
-            // Sorting
             query = sortBy?.ToLower() switch
             {
                 "name" => sortDirection?.ToLower() == "desc" ? query.OrderByDescending(i => i.Name) : query.OrderBy(i => i.Name),
@@ -119,7 +121,6 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
             };
 
             var totalCount = await query.CountAsync();
-            _logger.LogInformation("Retrieved {Count} ingredients from database.", totalCount);
 
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
@@ -130,7 +131,7 @@ public class IngredientRepository(ApplicationDbContext context, ILogger<Ingredie
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving ingredients from database.");
+            _logger.LogError(ex, "An error occurred while retrieving ingredients from the database.");
             throw new RepositoryException("An error occurred while retrieving ingredients.", ex);
         }
     }

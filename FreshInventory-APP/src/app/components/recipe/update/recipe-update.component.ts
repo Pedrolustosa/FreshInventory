@@ -75,7 +75,7 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
     });
   }
 
-  override onSubmit(): void {
+  onSubmit(): void {
     if (this.recipeForm.valid) {
       this.recipeService.updateRecipe(this.recipeId, this.recipeForm.value).subscribe({
         next: () => {

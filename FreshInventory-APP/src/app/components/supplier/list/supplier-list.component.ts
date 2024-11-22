@@ -6,7 +6,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
 import { Supplier } from '../../../models/supplier.model';
-import { DeleteConfirmationModalComponent } from '../modals/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from 'src/app/shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-supplier-list',
@@ -27,8 +27,8 @@ export class SupplierListComponent implements OnInit {
   pageSize = 10;
   totalItems = 0;
   searchName = '';
-  showDeleteModal = false;
-  selectedSupplier: Supplier | null = null;
+  selectedSupplier: any = null;
+  showDeleteModal: boolean = false;
   protected readonly Math = Math;
 
   constructor(
@@ -71,7 +71,12 @@ export class SupplierListComponent implements OnInit {
     this.showDeleteModal = true;
   }
 
-  onDeleteConfirm(): void {
+  openDeleteModal(supplier: any) {
+    this.selectedSupplier = supplier;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
     if (this.selectedSupplier) {
       this.supplierService.deleteSupplier(this.selectedSupplier.id).subscribe({
         next: () => {
@@ -87,8 +92,7 @@ export class SupplierListComponent implements OnInit {
     }
   }
 
-  closeDeleteModal(): void {
+  closeDeleteModal() {
     this.showDeleteModal = false;
-    this.selectedSupplier = null;
   }
 }

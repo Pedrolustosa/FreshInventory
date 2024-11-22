@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Recipe } from '../models/recipe.model';
+import { CreateRecipe, Recipe } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +33,10 @@ export class RecipeService {
   getRecipeById(id: number): Observable<Recipe> {
     return this.http.get<Recipe>(`${this.apiUrl}/GetRecipeById/${id}`);
   }
-
-  createRecipe(recipe: Omit<Recipe, 'id' | 'createdDate' | 'updatedDate'>): Observable<Recipe> {
+  // createIngredient(ingredient: CreateIngredient): Observable<Ingredient> {
+  //   return this.http.post<Ingredient>(`${this.apiUrl}/CreateIngredient`, ingredient);
+  // }
+  createRecipe(recipe: CreateRecipe): Observable<Recipe> {
     return this.http.post<Recipe>(`${this.apiUrl}/CreateRecipe`, recipe);
   }
 

@@ -47,3 +47,8 @@
   border-color: var(--primary-color);
   box-shadow: 0 0 0 0.2rem rgba(65, 84, 241, 0.25);
 }
+
+.modal.show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}

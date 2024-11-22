@@ -5,8 +5,8 @@ import { IngredientFormBase } from "../shared/ingredient-form.base";
 import { CommonModule } from "@angular/common";
 import { Router, RouterModule } from "@angular/router";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { IngredientService } from "src/app/services/ingredient.service";
-import { SupplierService } from "src/app/services/supplier.service";
+import { IngredientService } from "../../../services/ingredient.service";
+import { SupplierService } from "../../../services/supplier.service";
 
 @Component({
   selector: "app-ingredient-create",

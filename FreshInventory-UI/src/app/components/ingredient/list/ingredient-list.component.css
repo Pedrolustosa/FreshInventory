@@ -1,0 +1,54 @@
+.table-responsive {
+  margin-top: 1rem;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.pagination {
+  margin-bottom: 0;
+}
+
+.page-link {
+  cursor: pointer;
+}
+
+.text-danger {
+  color: var(--danger-color) !important;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table > :not(caption) > * > * {
+  padding: 1rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.input-group-text {
+  background-color: var(--neutral-beige);
+  border: 1px solid #ced4da;
+  color: var(--neutral-coffee);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(65, 84, 241, 0.25);
+}
+
+.modal.show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}

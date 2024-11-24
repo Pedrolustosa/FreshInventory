@@ -1,0 +1,28 @@
+.table-responsive {
+  margin-top: 1rem;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.pagination {
+  margin-bottom: 0;
+}
+
+.page-link {
+  cursor: pointer;
+}
+
+.supplier-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}

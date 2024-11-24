@@ -1,0 +1,171 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">
+      <i class="fas fa-seedling me-2"></i>Add New Ingredient
+    </h2>
+    <button class="btn btn-outline-secondary" routerLink="/ingredients">
+      <i class="fas fa-arrow-left me-2"></i>Back to List
+    </button>
+  </div>
+
+  <div class="card shadow-lg border-0">
+    <div class="card-body">
+      <form [formGroup]="ingredientForm" (ngSubmit)="onSubmit()">
+        <div class="row g-4">
+          <!-- Name -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-tag me-2 text-secondary"></i>Ingredient Name
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Enter ingredient name"
+              formControlName="name"
+              [class.is-invalid]="ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched">
+            <div class="invalid-feedback">Ingredient name is required.</div>
+          </div>
+
+          <!-- Unit -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-balance-scale me-2 text-secondary"></i>Unit of Measurement
+            </label>
+            <select 
+              class="form-select" 
+              formControlName="unit"
+              [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched">
+              <option value="" disabled>Select a Unit</option>
+              <option *ngFor="let unit of units" [value]="unit">{{ unitLabels[unit] }}</option>
+            </select>
+            <div class="invalid-feedback">Please select a valid unit.</div>
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-boxes me-2 text-secondary"></i>Category
+            </label>
+            <select 
+              class="form-select" 
+              formControlName="category"
+              [class.is-invalid]="ingredientForm.get('category')?.invalid && ingredientForm.get('category')?.touched">
+              <option value="" disabled>Select a Category</option>
+              <option *ngFor="let category of categories" [value]="category">{{ categoryLabels[category] }}</option>
+            </select>
+            <div class="invalid-feedback">Category is required.</div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-sort-amount-up me-2 text-secondary"></i>Quantity
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              placeholder="Enter quantity"
+              formControlName="quantity" 
+              step="1"
+              [class.is-invalid]="ingredientForm.get('quantity')?.invalid && ingredientForm.get('quantity')?.touched">
+            <div class="invalid-feedback">Quantity must be a positive number.</div>
+          </div>
+
+          <!-- Unit Cost -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-money-bill-wave me-2 text-secondary"></i>Unit Cost
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              placeholder="Enter cost per unit"
+              formControlName="unitCost" 
+              step="0.01"
+              [class.is-invalid]="ingredientForm.get('unitCost')?.invalid && ingredientForm.get('unitCost')?.touched">
+            <div class="invalid-feedback">Unit cost must be a positive number.</div>
+          </div>
+
+          <!-- Supplier -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-warehouse me-2 text-secondary"></i>Supplier
+            </label>
+            <select 
+              class="form-select" 
+              formControlName="supplierId"
+              [class.is-invalid]="ingredientForm.get('supplierId')?.invalid && ingredientForm.get('supplierId')?.touched">
+              <option value="" disabled>Select a Supplier</option>
+              <option *ngFor="let supplier of suppliers" [value]="supplier.id">{{supplier.name}}</option>
+            </select>
+            <div class="invalid-feedback">Please select a supplier.</div>
+          </div>
+
+          <!-- Purchase Date -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-calendar-day me-2 text-secondary"></i>Purchase Date
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="purchaseDate"
+              [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched">
+            <div class="invalid-feedback">Purchase date is required.</div>
+          </div>
+
+          <!-- Expiry Date -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-calendar-times me-2 text-secondary"></i>Expiry Date
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="expiryDate"
+              [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched">
+            <div class="invalid-feedback">Expiry date is required.</div>
+          </div>
+
+          <!-- Reorder Level -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-sort-amount-down me-2 text-secondary"></i>Reorder Level
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              placeholder="Enter reorder level"
+              formControlName="reorderLevel" 
+              step="1"
+              [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched">
+            <div class="invalid-feedback">Reorder level must be a positive number.</div>
+          </div>
+
+          <!-- Is Perishable -->
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="form-check">
+              <input 
+                type="checkbox" 
+                class="form-check-input" 
+                formControlName="isPerishable" 
+                id="isPerishable">
+              <label class="form-check-label fw-bold ms-2" for="isPerishable">
+                <i class="fas fa-apple-alt me-1 text-secondary"></i>Perishable Item
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-4">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/ingredients">
+            <i class="fas fa-times me-2"></i>Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="ingredientForm.invalid">
+            <i class="fas fa-check me-2"></i>Create Ingredient
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

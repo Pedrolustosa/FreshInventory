@@ -1,0 +1,102 @@
+.row.g-3>.col {
+  margin-bottom: 0.5rem;
+}
+
+/* Card Styling */
+.card {
+  border-radius: 15px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Form Fields */
+.form-floating {
+  margin-bottom: 1rem !important;
+}
+
+.form-floating label {
+  font-size: .8rem;
+}
+
+.form-control {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 5px;
+}
+
+.form-control-lg {
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Social Links */
+.social-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+}
+
+.social-link:hover {
+  transform: scale(1.1);
+}
+
+/* Social Button Colors */
+.btn-facebook {
+  background-color: #1877f2;
+}
+
+.btn-facebook:hover {
+  background-color: #145dbf;
+}
+
+.btn-twitter {
+  background-color: #1da1f2;
+}
+
+.btn-twitter:hover {
+  background-color: #0d8de4;
+}
+
+.btn-instagram {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.btn-instagram:hover {
+  background: linear-gradient(45deg, #e58a2d, #d35647, #ca1b6c, #aa1472);
+}
+
+.btn-linkedin {
+  background-color: #0077b5;
+}
+
+.btn-linkedin:hover {
+  background-color: #005582;
+}
+
+.btn-github {
+  background-color: #333;
+}
+
+.btn-github:hover {
+  background-color: #24292e;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .card-body {
+    padding: 1.5rem !important;
+  }
+}

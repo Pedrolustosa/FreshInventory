@@ -1,0 +1,111 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="container py-4">
+    <div class="card border-0 shadow-lg">
+      <div class="row g-0">
+        <!-- Left side - Image -->
+        <div class="col-lg-5 d-none d-lg-block bg-primary">
+          <div class="h-100 w-100 position-relative">
+            <img src="assets/Futuristic_Inventory_Control.png" alt="Fresh Inventory"
+              class="w-100 h-100 object-fit-cover">
+            <div class="position-absolute bottom-0 start-0 p-4 text-white bg-opacity-75">
+              <h3 class="fw-bold mb-2">Fresh Inventory</h3>
+              <p class="mb-0">Smart Kitchen Management System</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right side - Form -->
+        <div class="col-lg-7">
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold text-primary mb-2">Welcome Back!</h2>
+              <p class="text-muted">Sign in to manage your fresh ingredients inventory</p>
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <div class="row g-3 pb-1">
+                <!-- Email -->
+                <div class="col-12">
+                  <div class="form-floating position-relative">
+                    <input type="email" id="email" class="form-control form-control-lg border-2" formControlName="email"
+                      placeholder="Enter your email"
+                      [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <label for="email">
+                      <i class="fas fa-envelope me-2"></i>Email Address
+                    </label>
+                    <div class="invalid-feedback">
+                      Please enter a valid email address
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3 pb-1">
+                <!-- Password -->
+                <div class="col-12">
+                  <div class="form-floating position-relative">
+                    <input [type]="showPassword ? 'text' : 'password'" id="password"
+                      class="form-control form-control-lg border-2" formControlName="password"
+                      placeholder="Enter your password"
+                      [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                    <label for="password">
+                      <i class="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div class="invalid-feedback">
+                      Password must be at least 6 characters
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Remember Me and Forgot Password -->
+              <div class="d-flex justify-content-between mb-3">
+                <div>
+                  <input type="checkbox" id="remember" formControlName="rememberMe">
+                  <label for="remember" class="ms-2">Remember me</label>
+                </div>
+                <a href="#" class="text-decoration-none text-primary">Forgot Password?</a>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
+                  <span *ngIf="!isLoading"><i class="fas fa-sign-in-alt me-2"></i>Sign In</span>
+                  <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i>Signing In...</span>
+                </button>
+              </div>
+
+              <!-- Social Login -->
+              <div class="text-center">
+                <p class="m-3">Or sign in with</p>
+                <div class="social-links">
+                  <a href="#" class="social-link btn-facebook" aria-label="Sign in with Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="social-link btn-twitter" aria-label="Sign in with Twitter">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="social-link btn-instagram" aria-label="Sign in with Instagram">
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a href="#" class="social-link btn-linkedin" aria-label="Sign in with LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                  <a href="#" class="social-link btn-github" aria-label="Sign in with GitHub">
+                    <i class="fab fa-github"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <p class="text-center mt-3">
+                Don't have an account?
+                <a routerLink="/auth/register" class="text-decoration-none text-primary">Create Account</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

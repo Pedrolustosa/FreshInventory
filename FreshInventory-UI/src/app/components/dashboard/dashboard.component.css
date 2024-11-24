@@ -1,0 +1,119 @@
+.dashboard-container {
+  padding: 2rem;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.current-date {
+  background-color: #f8f9fa;
+  border: 0.1rem solid var(--neutral-coffee);
+  padding: 0.5rem 1rem;
+  border-radius: 0.8rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--neutral-coffee);
+  box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.current-date:hover {
+  background-color: #e9ecef;
+  border-color: var(--primary-color);
+  box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.2);
+}
+
+.date-container i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+
+.welcome-illustration img {
+  max-width: 35%;
+  height: auto;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+}
+
+.welcome-img {
+  max-width: 55%;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.header-content h1 {
+  font-size: 1.75rem;
+  color: var(--neutral-coffee);
+  font-weight: bold;
+}
+
+.kpi-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+}
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--neutral-coffee);
+  margin-top: 0.5rem;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card, .recommendations-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--neutral-coffee);
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+}
+
+.activity-list li {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.activity-date {
+  font-weight: bold;
+  color: var(--neutral-coffee);
+  margin-right: 0.5rem;
+}
+
+.recommendation {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}

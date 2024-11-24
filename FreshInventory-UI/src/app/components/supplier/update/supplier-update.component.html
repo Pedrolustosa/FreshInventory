@@ -1,0 +1,146 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">
+      <i class="fas fa-edit me-2"></i>Edit Supplier
+    </h2>
+    <button class="btn btn-outline-secondary" routerLink="/suppliers">
+      <i class="fas fa-arrow-left me-2"></i>Back to List
+    </button>
+  </div>
+
+  <!-- Card -->
+  <div class="card shadow-lg border-0">
+    <div class="card-body">
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+        <div class="row g-4">
+          <!-- Company Name -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-building me-2 text-secondary"></i>Company Name
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              placeholder="Enter company name"
+              [class.is-invalid]="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched">
+            <div class="invalid-feedback" *ngIf="supplierForm.get('name')?.errors?.['required'] && supplierForm.get('name')?.touched">
+              Company name is required.
+            </div>
+          </div>
+
+          <!-- Contact Person -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-user me-2 text-secondary"></i>Contact Person
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="contactPerson"
+              placeholder="Enter contact person"
+              [class.is-invalid]="supplierForm.get('contactPerson')?.invalid && supplierForm.get('contactPerson')?.touched">
+            <div class="invalid-feedback" *ngIf="supplierForm.get('contactPerson')?.errors?.['required'] && supplierForm.get('contactPerson')?.touched">
+              Contact person is required.
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-envelope me-2 text-secondary"></i>Email
+            </label>
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Enter email"
+              [class.is-invalid]="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched">
+            <div class="invalid-feedback" *ngIf="supplierForm.get('email')?.errors?.['required'] && supplierForm.get('email')?.touched">
+              Email is required.
+            </div>
+            <div class="invalid-feedback" *ngIf="supplierForm.get('email')?.errors?.['email'] && supplierForm.get('email')?.touched">
+              Enter a valid email address.
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-phone me-2 text-secondary"></i>Phone
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="phone"
+              placeholder="Enter phone number"
+              [class.is-invalid]="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
+            <div class="invalid-feedback" *ngIf="supplierForm.get('phone')?.errors?.['required'] && supplierForm.get('phone')?.touched">
+              Phone number is required.
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="col-md-12">
+            <label class="form-label fw-bold">
+              <i class="fas fa-map-marker-alt me-2 text-secondary"></i>Address
+            </label>
+            <textarea
+              class="form-control"
+              formControlName="address"
+              rows="3"
+              placeholder="Enter supplier address"
+              [class.is-invalid]="supplierForm.get('address')?.invalid && supplierForm.get('address')?.touched"></textarea>
+            <div class="invalid-feedback" *ngIf="supplierForm.get('address')?.errors?.['required'] && supplierForm.get('address')?.touched">
+              Address is required.
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-th-list me-2 text-secondary"></i>Category
+            </label>
+            <select
+              class="form-select"
+              formControlName="category"
+              [class.is-invalid]="supplierForm.get('category')?.invalid && supplierForm.get('category')?.touched">
+              <option value="">Select Category</option>
+              <option *ngFor="let category of categories" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="supplierForm.get('category')?.errors?.['required'] && supplierForm.get('category')?.touched">
+              Category is required.
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="status"
+                id="statusSwitch">
+              <label class="form-check-label ms-2" for="statusSwitch">
+                {{ supplierForm.get('status')?.value ? 'Active' : 'Inactive' }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-3 mt-4">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/suppliers">
+            <i class="fas fa-times me-2"></i>Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid">
+            <i class="fas fa-save me-2"></i>Update Supplier
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

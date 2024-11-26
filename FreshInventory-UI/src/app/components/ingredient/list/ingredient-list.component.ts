@@ -1,90 +1,76 @@
-import { Component, OnInit } from "@angular/core";
-import { CommonModule, DatePipe } from "@angular/common";
-import { RouterModule } from "@angular/router";
-import { FormsModule } from "@angular/forms";
-import { NgxSpinnerModule } from "ngx-spinner";
-import { ToastrService } from "ngx-toastr";
-import { IngredientService } from "../../../services/ingredient.service";
-import { Ingredient } from "../../../models/ingredient.model";
-import { Unit, UnitLabels } from "../../../models/enums/unit.enum";
-import { Category, CategoryLabels } from "../../../models/enums/category.enum";
-import { DeleteConfirmationModalComponent } from "../../../shared/delete-confirmation-modal/delete-confirmation-modal.component";
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { IngredientService } from '../../../services/ingredient.service';
+import { ToastService } from '../../../services/toast.service';
+import { SpinnerService } from '../../../services/spinner.service';
+import { Ingredient } from '../../../models/ingredient.model';
+import { Category, CategoryLabels } from '../../../models/enums/category.enum';
+import { finalize } from 'rxjs/operators';
+import { Modal } from 'bootstrap';
 
 @Component({
-  selector: "app-ingredient-list",
+  selector: 'app-ingredient-list',
+  templateUrl: './ingredient-list.component.html',
+  styleUrls: ['./ingredient-list.component.css'],
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     FormsModule,
-    NgxSpinnerModule,
-    DatePipe,
-    DeleteConfirmationModalComponent
-  ],
-  templateUrl: "./ingredient-list.component.html",
-  styleUrls: ["./ingredient-list.component.css"],
+    RouterModule,
+    TooltipModule,
+    ModalModule
+  ]
 })
 export class IngredientListComponent implements OnInit {
   ingredients: Ingredient[] = [];
-  currentPage = 1;
-  pageSize = 10;
-  totalItems = 0;
-  searchName = "";
-  selectedCategory: Category | "" = "";
-  selectedIngredient: any = null;
-  showDeleteModal: boolean = false;
-  protected readonly Math = Math;
-  protected readonly Category = Category;
-  protected readonly Unit = Unit;
-  categories = Object.values(Category).filter(
-    (value) => typeof value === "number"
-  ) as Category[];
-  units = Object.values(Unit).filter(
-    (value) => typeof value === "number"
-  ) as Unit[];
+  categories = Object.values(Category).filter(v => typeof v === 'number') as Category[];
+  categoryLabels = CategoryLabels;
+  selectedIngredient: Ingredient | null = null;
+  searchName: string = '';
+  selectedCategory: Category | null = null;
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 1;
+  Math = Math;
+  userName: string = 'Admin'; // TODO: Get from auth service
 
   constructor(
     private ingredientService: IngredientService,
-    private toastr: ToastrService
+    private toastService: ToastService,
+    private spinnerService: SpinnerService
   ) {}
 
   ngOnInit(): void {
     this.loadIngredients();
   }
 
-  getUnitLabel(unit: number | Unit): string {
-    return UnitLabels[unit as Unit] || "Unknown Unit";
-  }
-
-  getCategoryLabel(category: number | Category): string {
-    return CategoryLabels[category as Category] || "Unknown Category";
-  }
-
   loadIngredients(): void {
-    this.ingredientService
-      .getIngredients(
-        this.currentPage,
-        this.pageSize,
-        this.searchName,
-        this.selectedCategory ? this.selectedCategory.toString() : ""
-      )
-      .subscribe({
-        next: (response) => {
-          this.ingredients = response.items.map((item: any) => ({
-            ...item,
-            supplierName: item.supplierName || "Unknown Supplier",
-          }));
-          this.totalItems = response.totalCount;
-        },
-        error: (error) => {
-          this.toastr.error("Error loading ingredients");
-        },
-      });
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadIngredients();
+    this.spinnerService.show();
+    this.ingredientService.getIngredients(
+      this.currentPage,
+      this.pageSize,
+      this.searchName,
+      this.selectedCategory?.toString()
+    )
+    .pipe(
+      finalize(() => this.spinnerService.hide())
+    )
+    .subscribe({
+      next: (response) => {
+        this.ingredients = response.items;
+        this.totalItems = response.totalItems;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+      },
+      error: (error) => {
+        this.toastService.error('Failed to load ingredients. Please try again.');
+        console.error('Error loading ingredients:', error);
+      }
+    });
   }
 
   onSearch(): void {
@@ -92,37 +78,74 @@ export class IngredientListComponent implements OnInit {
     this.loadIngredients();
   }
 
-  openDeleteModal(ingredient: any) {
-    this.selectedIngredient = ingredient;
-    this.showDeleteModal = true;
-  }
-
-  confirmDelete(): void {
-    if (this.selectedIngredient) {
-      this.ingredientService.deleteIngredient(this.selectedIngredient.id).subscribe({
-        next: () => {
-          this.toastr.success('Ingredient deleted successfully');
-          this.loadIngredients();
-          this.closeDeleteModal();
-        },
-        error: () => {
-          this.toastr.error('Error deleting ingredient');
-          this.closeDeleteModal();
-        }
-      });
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadIngredients();
     }
   }
 
-  closeDeleteModal() {
-    this.showDeleteModal = false;
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  getCategoryLabel(category: Category): string {
+    return CategoryLabels[category];
   }
 
   isExpiringSoon(date: Date): boolean {
     const expiryDate = new Date(date);
     const today = new Date();
-    const daysUntilExpiry = Math.floor(
-      (expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return daysUntilExpiry <= 7;
+    const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilExpiry <= 7 && daysUntilExpiry >= 0;
+  }
+
+  openDeleteModal(ingredient: Ingredient): void {
+    this.selectedIngredient = ingredient;
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+      const bsModal = new Modal(modal);
+      bsModal.show();
+    }
+  }
+
+  deleteIngredient(): void {
+    if (!this.selectedIngredient) return;
+
+    this.spinnerService.show();
+    this.ingredientService.deleteIngredient(this.selectedIngredient.id)
+      .pipe(
+        finalize(() => {
+          this.spinnerService.hide();
+          const modal = document.getElementById('deleteModal');
+          if (modal) {
+            const bsModal = Modal.getInstance(modal);
+            bsModal?.hide();
+          }
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.success('Ingredient deleted successfully');
+          this.loadIngredients();
+        },
+        error: (error) => {
+          this.toastService.error('Failed to delete ingredient. Please try again.');
+          console.error('Error deleting ingredient:', error);
+        }
+      });
   }
 }

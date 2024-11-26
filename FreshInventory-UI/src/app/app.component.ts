@@ -35,14 +35,7 @@ export class AppComponent {
       });
   }
 
-  onSidebarCollapseChange(isCollapsed: boolean): void {
-    this.isSidebarCollapsed = isCollapsed;
-  }
-  
-
   shouldShowSidebar(): boolean {
-    return (
-      this.authService.isAuthenticated && !this.isHomePage && !this.isAuthPage
-    );
+    return this.authService.isAuthenticated && !this.isHomePage && !this.isAuthPage;
   }
 }

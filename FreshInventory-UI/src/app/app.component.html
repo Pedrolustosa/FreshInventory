@@ -1,19 +1,21 @@
-<div class="app-container" [class.collapsed]="isSidebarCollapsed && shouldShowSidebar()">
+<div class="app-container" [class.collapsed]="isSidebarCollapsed">
   <app-sidebar
-  *ngIf="shouldShowSidebar()"
-  (collapseChange)="onSidebarCollapseChange(isSidebarCollapsed)">
-</app-sidebar>
-
-
+    *ngIf="shouldShowSidebar()"
+    [(isCollapsed)]="isSidebarCollapsed">
+  </app-sidebar>
 
   <div class="main-content" [class.no-sidebar]="!shouldShowSidebar()">
     <router-outlet></router-outlet>
   </div>
 
-  <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="var(--bs-primary)" type="ball-spin-fade-rotating"
+  <ngx-spinner 
+    bdColor="rgba(0, 0, 0, 0.8)" 
+    size="medium" 
+    color="var(--bs-success)" 
+    type="ball-spin-clockwise"
     [fullScreen]="true">
     <div class="spinner-content">
-      <p>Loading, please wait...</p>
+      <p class="loading-text">Loading...</p>
       <div class="progress-container">
         <div class="progress-bar"></div>
       </div>

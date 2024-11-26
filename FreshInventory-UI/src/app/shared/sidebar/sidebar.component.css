@@ -1,91 +1,276 @@
-.sidebar-container {
-  background-color: var(--bs-dark);
-  color: var(--bs-light);
+.sidebar {
+  width: 260px;
   height: 100vh;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  color: var(--bs-light);
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.3s ease-in-out;
-  width: 250px;
+  transition: all 0.3s ease;
+  z-index: 1030;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar-container.collapsed {
-  width: 80px;
+.sidebar.collapsed {
+  width: 70px;
 }
 
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.sidebar.collapsed .nav-link i {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* Header Styles */
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid var(--bs-light);
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+  min-height: 85px;
 }
 
 .brand {
+  text-decoration: none;
+  color: var(--bs-light);
   display: flex;
   align-items: center;
-  text-decoration: none;
+  gap: 0.75rem;
+}
+
+.brand:hover {
   color: var(--bs-light);
 }
 
 .brand-logo {
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.brand-name {
-  font-size: 1.2rem;
-  font-weight: bold;
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  color: var(--bs-success);
 }
 
 .toggle-btn {
-  background: transparent;
-  border: none;
-  color: var(--bs-light);
-  cursor: pointer;
-  font-size: 1.2rem;
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--bs-success);
+  color: white;
+  border: 2px solid var(--bs-body-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-size: 12px;
 }
 
-.nav {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.toggle-btn:hover {
+  background: var(--bs-success-dark, #249c6b);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.toggle-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.collapsed .toggle-btn {
+  right: -12px;
+}
+
+/* Navigation Styles */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: var(--bs-success);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bs-primary);
 }
 
 .nav-item {
-  margin: 0.5rem 0;
+  margin-bottom: 0.5rem;
 }
 
 .nav-link {
+  color: var(--bs-light);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
   display: flex;
   align-items: center;
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  color: var(--bs-light);
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease-in-out;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.nav-link:hover, .nav-link.active {
-  background-color: rgba(var(--bs-primary-rgb), 0.2);
-  color: var(--bs-primary);
+.nav-link:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: var(--bs-success);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
 }
 
+.nav-link:hover {
+  background-color: rgba(45, 206, 137, 0.1);
+  color: var(--bs-success);
+}
+
+.nav-link:hover:before {
+  transform: scaleY(1);
+}
+
+.nav-link.active {
+  background-color: var(--bs-success);
+  color: white;
+  box-shadow: 0 4px 6px rgba(45, 206, 137, 0.2);
+}
+
+.nav-link.active:hover {
+  color: white;
+}
+
+.nav-link i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+  color: inherit;
+}
+
+.nav-text {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  background-color: var(--bs-primary);
+  transition: all 0.3s ease;
+}
+
+/* Footer Styles */
 .sidebar-footer {
   padding: 1rem;
-  border-top: 1px solid var(--bs-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+  min-height: 85px;
 }
 
-.user-menu {
+.user-profile {
+  color: var(--bs-light);
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.user-profile:hover {
+  background-color: rgba(45, 206, 137, 0.1);
+  color: var(--bs-success);
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--bs-success);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.user-menu .dropdown-menu {
-  background-color: var(--bs-dark);
+.user-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dropdown Styles */
+.dropdown-menu {
+  min-width: 200px;
+  padding: 0.5rem;
+  margin: 0;
   border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  color: var(--bs-light);
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(45, 206, 137, 0.1);
+  color: var(--bs-success);
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: rgba(var(--bs-danger-rgb), 0.1);
+  color: var(--bs-danger);
+}
+
+.dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar .nav-link,
+.sidebar .user-profile {
+  animation: fadeIn 0.3s ease;
 }

@@ -9,6 +9,23 @@ import { SpinnerService } from "../../services/spinner.service";
 import { catchError, finalize } from "rxjs/operators";
 import { forkJoin } from "rxjs";
 
+interface TopItem {
+  name: string;
+  category: string;
+  quantity: number;
+  sales: number;
+  trend: 'up' | 'down' | 'neutral';
+  percentage: number;
+}
+
+interface Activity {
+  type: 'success' | 'warning' | 'danger' | 'info';
+  icon: string;
+  title: string;
+  description: string;
+  time: Date;
+}
+
 @Component({
   selector: "app-dashboard",
   standalone: true,
@@ -20,6 +37,7 @@ export class DashboardComponent implements OnInit {
   userName: string = "Admin";
   today = new Date();
 
+  // Metrics
   financialMetrics = {
     totalProfit: 0,
     netProfit: 0,
@@ -30,87 +48,184 @@ export class DashboardComponent implements OnInit {
     lowStockCount: 0,
   };
 
-  customerMetrics = {
-    totalCustomersServed: 0,
-    repeatCustomers: 0,
-  };
-
-  wasteMetrics = {
-    totalWasteCost: 0,
-    spoiledProductsCount: 0,
-  };
-
-  dishMetrics = {
-    leastProfitableDish: "None",
-  };
-
-  revenueChartData: ChartData = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+  // Chart Data
+  salesChartData: ChartData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
       {
-        label: "Revenue",
-        data: [3000, 4000, 3500, 5000, 4500, 6000, 7000, 8000, 8500, 9000, 9500, 10000],
-        borderColor: "rgba(65, 84, 241, 1)",
-        backgroundColor: "rgba(65, 84, 241, 0.1)",
-        tension: 0.4,
+        label: 'Sales',
+        data: [65, 59, 80, 81, 56, 55, 40],
+        borderColor: 'rgb(45, 206, 137)',
+        backgroundColor: 'rgba(45, 206, 137, 0.1)',
         fill: true,
+        tension: 0.4,
       },
     ],
   };
 
-  inventoryChartData: ChartData = {
-    labels: ["Vegetables", "Fruits", "Dairy", "Meat", "Grains"],
-    datasets: [
-      {
-        label: "Inventory Distribution",
-        data: [40, 25, 15, 10, 10],
-        backgroundColor: [
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(153, 102, 255, 0.6)",
-          "rgba(255, 159, 64, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 205, 86, 0.6)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  chartOptions: ChartConfiguration["options"] = {
+  salesChartOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true,
-        position: "top",
+        display: false,
       },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      },
+    },
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false
     },
     scales: {
       y: {
         beginAtZero: true,
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
+        border: {
+          display: false
         },
+        grid: {
+          color: 'rgba(0,0,0,0.1)',
+        },
+        ticks: {
+          color: 'rgba(0,0,0,0.6)',
+          maxTicksLimit: 5,
+          callback: function(value: string | number) {
+            const numValue = Number(value);
+            return !isNaN(numValue) && numValue >= 1000 ? 
+              (numValue / 1000).toFixed(1) + 'k' : 
+              value;
+          }
+        }
       },
       x: {
+        border: {
+          display: false
+        },
         grid: {
           display: false,
         },
+        ticks: {
+          color: 'rgba(0,0,0,0.6)',
+          maxRotation: 0,
+          autoSkipPadding: 15,
+          maxTicksLimit: 7
+        }
       },
     },
   };
+
+  stockChartData: ChartData = {
+    labels: ['Vegetables', 'Meat', 'Dairy', 'Grains', 'Others'],
+    datasets: [
+      {
+        data: [30, 25, 20, 15, 10],
+        backgroundColor: [
+          'rgba(45, 206, 137, 0.8)',
+          'rgba(65, 84, 241, 0.8)',
+          'rgba(252, 185, 44, 0.8)',
+          'rgba(250, 92, 124, 0.8)',
+          'rgba(159, 122, 234, 0.8)',
+        ],
+      },
+    ],
+  };
+
+  stockChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12
+          }
+        }
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      }
+    },
+    layout: {
+      padding: {
+        top: 20,
+        bottom: 20
+      }
+    }
+  };
+
+  // Sample Data
+  topItems: TopItem[] = [
+    {
+      name: 'Fresh Tomatoes',
+      category: 'Vegetables',
+      quantity: 250,
+      sales: 1200.50,
+      trend: 'up',
+      percentage: 15
+    },
+    {
+      name: 'Chicken Breast',
+      category: 'Meat',
+      quantity: 180,
+      sales: 2100.75,
+      trend: 'down',
+      percentage: 8
+    },
+    {
+      name: 'Mozzarella',
+      category: 'Dairy',
+      quantity: 120,
+      sales: 960.25,
+      trend: 'up',
+      percentage: 12
+    },
+    {
+      name: 'Pasta',
+      category: 'Grains',
+      quantity: 300,
+      sales: 750.00,
+      trend: 'neutral',
+      percentage: 0
+    }
+  ];
+
+  recentActivities: Activity[] = [
+    {
+      type: 'success',
+      icon: 'fa-box',
+      title: 'New Stock Arrived',
+      description: 'Fresh vegetables delivery received',
+      time: new Date()
+    },
+    {
+      type: 'warning',
+      icon: 'fa-exclamation-triangle',
+      title: 'Low Stock Alert',
+      description: 'Chicken breast stock is running low',
+      time: new Date(Date.now() - 3600000)
+    },
+    {
+      type: 'info',
+      icon: 'fa-chart-line',
+      title: 'Sales Milestone',
+      description: 'Monthly sales target achieved',
+      time: new Date(Date.now() - 7200000)
+    },
+    {
+      type: 'danger',
+      icon: 'fa-times-circle',
+      title: 'Items Expired',
+      description: '3 dairy products marked as expired',
+      time: new Date(Date.now() - 10800000)
+    }
+  ];
 
   constructor(
     private dashboardService: DashboardService,
@@ -122,37 +237,38 @@ export class DashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
-  private loadDashboardData(): void {
+  loadDashboardData(): void {
     this.spinnerService.show();
 
     forkJoin({
       financial: this.dashboardService.getFinancialMetrics(),
-      ingredients: this.dashboardService.getIngredientMetrics(),
-      customers: this.dashboardService.getCustomerMetrics(),
-      waste: this.dashboardService.getWasteMetrics(),
-      dishes: this.dashboardService.getDishMetrics(),
+      inventory: this.dashboardService.getIngredientMetrics(),
     })
       .pipe(
         catchError((error) => {
-          this.toastService.error("Failed to load dashboard data");
+          this.toastService.error(
+            "Error loading dashboard data. Please try again."
+          );
           throw error;
         }),
         finalize(() => this.spinnerService.hide())
       )
-      .subscribe((data) => {
-        this.financialMetrics = data.financial;
-        this.ingredientMetrics = data.ingredients;
-        this.customerMetrics = data.customers;
-        this.wasteMetrics = data.waste;
-        this.dishMetrics = data.dishes;
+      .subscribe({
+        next: (data) => {
+          this.financialMetrics = data.financial;
+          this.ingredientMetrics = data.inventory;
+        },
       });
   }
 
-  formatCurrency(value: number): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(value);
+  getTrendIcon(trend: string): string {
+    switch (trend) {
+      case 'up':
+        return 'fa-arrow-up';
+      case 'down':
+        return 'fa-arrow-down';
+      default:
+        return 'fa-minus';
+    }
   }
 }

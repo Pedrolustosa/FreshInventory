@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "^18.2.12",
     "@angular/router": "^18.2.12",
     "@fortawesome/fontawesome-free": "^6.7.1",
+    "@ngneat/input-mask": "^6.1.0",
     "@primeng/themes": "^18.0.0-rc.1",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.1",
@@ -48,6 +49,7 @@
     "@angular/cli": "^18.2.12",
     "@angular/compiler-cli": "^18.2.12",
     "@types/bootstrap": "^5.2.10",
+    "@types/inputmask": "^5.0.7",
     "@types/node": "^20.9.0",
     "typescript": "~5.4.5"
   }

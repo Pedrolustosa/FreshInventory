@@ -1,12 +1,12 @@
-<div class="container-fluid py-4">
-  <!-- Header Section -->
+<div class="ingredient-list-container">
+  <!-- Create Form Header -->
   <div class="content-header mb-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
       <div>
-        <h2 class="text-primary mb-0">
-          <i class="fas fa-plus-circle me-2"></i>Add New Ingredient
-        </h2>
-        <p class="text-muted mb-0">Create a new ingredient in your inventory</p>
+        <h1 class="content-title mb-1">
+          <i class="fas fa-plus-circle me-2 text-primary"></i>Add New Ingredient
+        </h1>
+        <p class="text-muted mb-0">Create a new ingredient for your inventory</p>
       </div>
       <button class="btn btn-outline-secondary" routerLink="/ingredients">
         <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -14,6 +14,7 @@
     </div>
   </div>
 
+  <!-- Ingredient Form -->
   <div class="card">
     <div class="card-body">
       <form [formGroup]="ingredientForm" (ngSubmit)="onSubmit()" class="ingredient-form">
@@ -22,14 +23,12 @@
           <!-- Basic Information Section -->
           <div class="form-section">
             <h5 class="form-section-title">
-              <i class="fas fa-info-circle"></i>Basic Information
+              <i class="fas fa-info-circle text-primary me-2"></i>Basic Information
             </h5>
 
             <!-- Name -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-tag"></i>Name
-              </label>
+              <label class="form-label required-field">Name</label>
               <input type="text" 
                      class="form-control" 
                      formControlName="name"
@@ -38,30 +37,58 @@
               <div class="invalid-feedback">{{ getControlError('name') }}</div>
             </div>
 
+            <!-- Quantity -->
+            <div class="mb-3">
+              <label class="form-label required-field">Quantity</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="quantity"
+                     placeholder="Enter quantity"
+                     [class.is-invalid]="ingredientForm.get('quantity')?.invalid && ingredientForm.get('quantity')?.touched">
+              <div class="invalid-feedback">{{ getControlError('quantity') }}</div>
+            </div>
+
             <!-- Unit -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-balance-scale"></i>Unit
-              </label>
+              <label class="form-label required-field">Unit</label>
               <select class="form-select" 
                       formControlName="unit"
                       [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched">
-                <option [ngValue]="null">Select a unit</option>
-                <option *ngFor="let unit of units" [ngValue]="unit">{{ unitLabels[unit] }}</option>
+                <option value="" selected>Select unit</option>
+                <option *ngFor="let unit of units" [value]="unit">
+                  {{ unitLabels[unit] }}
+                </option>
               </select>
               <div class="invalid-feedback">{{ getControlError('unit') }}</div>
             </div>
 
+            <!-- Unit Cost -->
+            <div class="mb-3">
+              <label class="form-label required-field">Unit Cost</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="unitCost"
+                     placeholder="Enter unit cost"
+                     step="0.01"
+                     [class.is-invalid]="ingredientForm.get('unitCost')?.invalid && ingredientForm.get('unitCost')?.touched">
+              <div class="invalid-feedback">{{ getControlError('unitCost') }}</div>
+            </div>
+          </div>
+
+          <!-- Additional Details Section -->
+          <div class="form-section">
+            <h5 class="form-section-title">
+              <i class="fas fa-clipboard-list text-primary me-2"></i>Additional Details
+            </h5>
+
             <!-- Category -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-boxes"></i>Category
-              </label>
+              <label class="form-label required-field">Category</label>
               <select class="form-select" 
                       formControlName="category"
                       [class.is-invalid]="ingredientForm.get('category')?.invalid && ingredientForm.get('category')?.touched">
-                <option [ngValue]="null">Select a category</option>
-                <option *ngFor="let category of categories" [ngValue]="category">
+                <option value="" selected>Select category</option>
+                <option *ngFor="let category of categories" [value]="category">
                   {{ categoryLabels[category] }}
                 </option>
               </select>
@@ -70,100 +97,45 @@
 
             <!-- Supplier -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-truck"></i>Supplier
-              </label>
+              <label class="form-label required-field">Supplier</label>
               <select class="form-select" 
                       formControlName="supplierId"
                       [class.is-invalid]="ingredientForm.get('supplierId')?.invalid && ingredientForm.get('supplierId')?.touched">
-                <option value="" disabled selected>Select a supplier</option>
-                <option *ngFor="let supplier of suppliers" [ngValue]="supplier.id">
+                <option value="" selected>Select supplier</option>
+                <option *ngFor="let supplier of suppliers" [value]="supplier.id">
                   {{ supplier.name }}
                 </option>
               </select>
               <div class="invalid-feedback">{{ getControlError('supplierId') }}</div>
             </div>
-          </div>
-
-          <!-- Inventory Information Section -->
-          <div class="form-section">
-            <h5 class="form-section-title">
-              <i class="fas fa-boxes"></i>Inventory Information
-            </h5>
-
-            <!-- Quantity -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-sort-amount-up"></i>Quantity
-              </label>
-              <input type="number" 
-                     class="form-control" 
-                     formControlName="quantity"
-                     placeholder="Enter quantity"
-                     step="1"
-                     [class.is-invalid]="ingredientForm.get('quantity')?.invalid && ingredientForm.get('quantity')?.touched">
-              <div class="invalid-feedback">{{ getControlError('quantity') }}</div>
-            </div>
-
-            <!-- Unit Cost -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-money-bill-wave"></i>Unit Cost
-              </label>
-              <input type="number" 
-                     class="form-control" 
-                     formControlName="unitCost"
-                     placeholder="Enter cost per unit"
-                     step="0.01"
-                     [class.is-invalid]="ingredientForm.get('unitCost')?.invalid && ingredientForm.get('unitCost')?.touched">
-              <div class="invalid-feedback">{{ getControlError('unitCost') }}</div>
-            </div>
 
             <!-- Purchase Date -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-calendar-day"></i>Purchase Date
-              </label>
-              <input type="text" 
-                     class="form-control" 
+              <label class="form-label required-field">Purchase Date</label>
+              <input type="text"
+                     class="form-control"
                      formControlName="purchaseDate"
-                     [bsConfig]="bsConfig"
+                     placeholder="YYYY-MM-DD"
                      bsDatepicker
+                     [bsConfig]="bsConfig"
                      [maxDate]="maxDate"
                      [minDate]="minDate"
-                     [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched"
-                     placeholder="Select purchase date">
+                     [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched">
               <div class="invalid-feedback">{{ getControlError('purchaseDate') }}</div>
             </div>
 
             <!-- Expiry Date -->
             <div class="mb-3">
-              <label class="form-label">
-                <i class="fas fa-calendar-times"></i>Expiry Date
-              </label>
-              <input type="text" 
-                     class="form-control" 
+              <label class="form-label required-field">Expiry Date</label>
+              <input type="text"
+                     class="form-control"
                      formControlName="expiryDate"
-                     [bsConfig]="bsConfig"
+                     placeholder="YYYY-MM-DD"
                      bsDatepicker
+                     [bsConfig]="bsConfig"
                      [minDate]="ingredientForm.get('purchaseDate')?.value || minDate"
-                     [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched"
-                     placeholder="Select expiry date">
+                     [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched">
               <div class="invalid-feedback">{{ getControlError('expiryDate') }}</div>
-            </div>
-
-            <!-- Reorder Level -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-sort-amount-down"></i>Reorder Level
-              </label>
-              <input type="number" 
-                     class="form-control" 
-                     formControlName="reorderLevel"
-                     placeholder="Enter reorder level"
-                     step="1"
-                     [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched">
-              <div class="invalid-feedback">{{ getControlError('reorderLevel') }}</div>
             </div>
 
             <!-- Is Perishable -->
@@ -174,9 +146,20 @@
                        formControlName="isPerishable" 
                        id="isPerishable">
                 <label class="form-check-label" for="isPerishable">
-                  <i class="fas fa-apple-alt me-2"></i>Perishable Item
+                  Perishable Item
                 </label>
               </div>
+            </div>
+
+            <!-- Reorder Level -->
+            <div class="mb-3">
+              <label class="form-label required-field">Reorder Level</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="reorderLevel"
+                     placeholder="Enter reorder level"
+                     [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched">
+              <div class="invalid-feedback">{{ getControlError('reorderLevel') }}</div>
             </div>
           </div>
         </div>
@@ -184,10 +167,10 @@
         <!-- Form Actions -->
         <div class="form-actions d-flex justify-content-end gap-3">
           <button type="button" class="btn btn-outline-secondary" routerLink="/ingredients">
-            <i class="fas fa-times me-2"></i>Cancel
+            Cancel
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="ingredientForm.invalid || isLoading">
-            <i class="fas fa-check me-2"></i>Create Ingredient
+          <button type="submit" class="btn btn-primary" [disabled]="!ingredientForm.valid">
+            Create Ingredient
           </button>
         </div>
       </form>
@@ -195,11 +178,3 @@
   </div>
 </div>
 
-<ngx-spinner 
-  bdColor="rgba(0, 0, 0, 0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-clip-rotate"
-  [fullScreen]="true">
-  <p style="color: white">Loading...</p>
-</ngx-spinner>

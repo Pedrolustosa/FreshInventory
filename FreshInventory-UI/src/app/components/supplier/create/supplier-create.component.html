@@ -1,19 +1,14 @@
-<div class="container-fluid py-4">
-  <!-- Header Section -->
+<div class="supplier-list-container">
+  <!-- Create Form Header -->
   <div class="content-header mb-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
       <div>
-        <h2 class="text-primary mb-0">
-          <i class="fas fa-plus-circle me-2"></i>Add New Supplier
-        </h2>
-        <p class="text-muted mb-0">Create a new supplier for your inventory</p>
+        <h1 class="content-title">Create Supplier</h1>
       </div>
-      <button class="btn btn-outline-secondary" routerLink="/suppliers">
-        <i class="fas fa-arrow-left me-2"></i>Back to List
-      </button>
     </div>
   </div>
 
+  <!-- Create Form Card -->
   <div class="card">
     <div class="card-body">
       <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="supplier-form">
@@ -21,15 +16,11 @@
         <div class="form-grid">
           <!-- Basic Information Section -->
           <div class="form-section">
-            <h5 class="form-section-title">
-              <i class="fas fa-info-circle"></i>Basic Information
-            </h5>
+            <h5 class="form-section-title">Basic Information</h5>
 
             <!-- Name -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-building"></i>Company Name
-              </label>
+              <label class="form-label required-field">Name</label>
               <input type="text" 
                      class="form-control" 
                      formControlName="name"
@@ -40,9 +31,7 @@
 
             <!-- Code -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-hashtag"></i>Supplier Code
-              </label>
+              <label class="form-label required-field">Code</label>
               <input type="text" 
                      class="form-control" 
                      formControlName="code"
@@ -51,57 +40,36 @@
               <div class="invalid-feedback">{{ getControlError('code') }}</div>
             </div>
 
-            <!-- Website -->
-            <div class="mb-3">
-              <label class="form-label">
-                <i class="fas fa-globe"></i>Website
-              </label>
-              <input type="url" 
-                     class="form-control" 
-                     formControlName="website"
-                     placeholder="Enter website URL"
-                     [class.is-invalid]="supplierForm.get('website')?.invalid && supplierForm.get('website')?.touched">
-              <div class="invalid-feedback">{{ getControlError('website') }}</div>
-            </div>
-
             <!-- Status -->
             <div class="mb-3">
               <div class="form-check">
                 <input type="checkbox" 
                        class="form-check-input" 
-                       formControlName="isActive" 
-                       id="isActive">
-                <label class="form-check-label" for="isActive">
-                  <i class="fas fa-toggle-on me-2"></i>Active Supplier
-                </label>
+                       id="isActive" 
+                       formControlName="isActive">
+                <label class="form-check-label" for="isActive">Active</label>
               </div>
             </div>
           </div>
 
           <!-- Contact Information Section -->
           <div class="form-section">
-            <h5 class="form-section-title">
-              <i class="fas fa-address-card"></i>Contact Information
-            </h5>
+            <h5 class="form-section-title">Contact Information</h5>
 
             <!-- Contact Name -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-user"></i>Contact Name
-              </label>
+              <label class="form-label required-field">Contact Name</label>
               <input type="text" 
                      class="form-control" 
                      formControlName="contactName"
-                     placeholder="Enter contact person's name"
+                     placeholder="Enter contact person name"
                      [class.is-invalid]="supplierForm.get('contactName')?.invalid && supplierForm.get('contactName')?.touched">
               <div class="invalid-feedback">{{ getControlError('contactName') }}</div>
             </div>
 
             <!-- Email -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-envelope"></i>Email
-              </label>
+              <label class="form-label required-field">Email</label>
               <input type="email" 
                      class="form-control" 
                      formControlName="email"
@@ -112,22 +80,19 @@
 
             <!-- Phone -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-phone"></i>Phone
-              </label>
-              <input type="tel" 
-                     class="form-control" 
+              <label class="form-label required-field">Phone</label>
+              <input type="tel"
+                     class="form-control"
                      formControlName="phone"
-                     placeholder="Enter phone number"
+                     [inputMask]="phoneMask"
+                     placeholder="(99) 99999-9999"
                      [class.is-invalid]="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
               <div class="invalid-feedback">{{ getControlError('phone') }}</div>
             </div>
 
             <!-- Address -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-map-marker-alt"></i>Address
-              </label>
+              <label class="form-label required-field">Address</label>
               <textarea class="form-control" 
                         formControlName="address"
                         rows="3"
@@ -135,29 +100,28 @@
                         [class.is-invalid]="supplierForm.get('address')?.invalid && supplierForm.get('address')?.touched"></textarea>
               <div class="invalid-feedback">{{ getControlError('address') }}</div>
             </div>
+
+            <!-- Website -->
+            <div class="mb-3">
+              <label class="form-label">Website</label>
+              <input type="url" 
+                     class="form-control" 
+                     formControlName="website"
+                     placeholder="Enter website URL"
+                     [class.is-invalid]="supplierForm.get('website')?.invalid && supplierForm.get('website')?.touched">
+              <div class="invalid-feedback">{{ getControlError('website') }}</div>
+            </div>
           </div>
         </div>
 
         <!-- Form Actions -->
         <div class="form-actions d-flex justify-content-end gap-3">
-          <button type="button" class="btn btn-outline-secondary" routerLink="/suppliers">
-            <i class="fas fa-times me-2"></i>Cancel
-          </button>
+          <button type="button" class="btn btn-outline-secondary" routerLink="/suppliers">Cancel</button>
           <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid || isLoading">
-            <i class="fas fa-check me-2"></i>Create Supplier
+            Create Supplier
           </button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
-<ngx-spinner 
-  bdColor="rgba(0, 0, 0, 0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-clip-rotate"
-  [fullScreen]="true"
->
-  <p style="color: white">Creating supplier...</p>
-</ngx-spinner>

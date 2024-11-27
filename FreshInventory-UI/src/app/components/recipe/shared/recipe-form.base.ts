@@ -11,29 +11,137 @@ import { Router } from "@angular/router";
 import { RecipeService } from "../../../services/recipe.service";
 import { IngredientService } from "../../../services/ingredient.service";
 import { Ingredient } from "../../../models/ingredient.model";
+import { CreateRecipe } from "../../../models/recipe.model";
 
 export abstract class RecipeFormBase {
-  recipeForm: FormGroup;
+  recipeForm!: FormGroup;
   availableIngredients: Ingredient[] = [];
   categories = ["Main Course", "Appetizer", "Dessert", "Beverage", "Side Dish"];
+  private fb = new FormBuilder();
 
   constructor(
     protected recipeService: RecipeService,
     protected ingredientService: IngredientService,
     protected router: Router
   ) {
-    this.recipeForm = new FormBuilder().group({
+    this.initForm();
+    this.loadAvailableIngredients();
+  }
+
+  private initForm(): void {
+    // Create form arrays first
+    const ingredientsArray = this.fb.array([]);
+    const instructionsArray = this.fb.array([]);
+
+    // Create the form
+    this.recipeForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
       category: ['', Validators.required],
       preparationTime: ['', [Validators.required, Validators.min(1)]],
       servings: ['', [Validators.required, Validators.min(1)]],
-      instructions: new FormArray([], this.minArrayLengthValidator(1)),
-      ingredients: new FormArray([], this.minArrayLengthValidator(1))
+      ingredients: ingredientsArray,
+      instructions: instructionsArray
     });
-    
 
-    this.loadAvailableIngredients();
+    // Add validators after form is created
+    ingredientsArray.setValidators(this.ingredientsValidator());
+    instructionsArray.setValidators(this.instructionsValidator());
+  }
+
+  private ingredientsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control instanceof FormArray) {        
+        const hasValidIngredient = control.controls.some(ctrl => {
+          if (ctrl instanceof FormGroup) {
+            const ingredientId = ctrl.get('ingredientId')?.value;
+            const quantity = ctrl.get('quantity')?.value;
+            return Boolean(ingredientId && quantity && Number(quantity) > 0);
+          }
+          return false;
+        });
+
+        return hasValidIngredient ? null : { required: true };
+      }
+      return null;
+    };
+  }
+
+  private instructionsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control instanceof FormArray) {
+        const hasValidInstruction = control.controls.some(ctrl => 
+          ctrl.value && typeof ctrl.value === 'string' && ctrl.value.trim().length > 0
+        );
+        return hasValidInstruction ? null : { minArrayLength: { requiredLength: 1, actualLength: 0 } };
+      }
+      return null;
+    };
+  }
+
+  get ingredientsArray(): FormArray {
+    return this.recipeForm.get('ingredients') as FormArray;
+  }
+
+  get instructionsArray(): FormArray {
+    return this.recipeForm.get('instructions') as FormArray;
+  }
+
+  addIngredient(): void {
+    const ingredientGroup = this.fb.group({
+      ingredientId: ['', Validators.required],
+      quantity: ['', [Validators.required, Validators.min(0.1)]],
+    });
+
+    this.ingredientsArray.push(ingredientGroup);
+
+    ingredientGroup.valueChanges.subscribe(() => {
+      const ingredientId = ingredientGroup.get('ingredientId')?.value;
+      const quantity = ingredientGroup.get('quantity')?.value;
+      
+      console.log('Valores alterados:', {
+        ingredientId,
+        quantity,
+        ingredientIdType: typeof ingredientId,
+        quantityType: typeof quantity,
+        maxQuantity: this.getMaxAvailableQuantity(ingredientId)
+      });
+      
+      if (ingredientId && quantity && Number(quantity) > 0) {
+        console.log('Limpando erros do grupo');
+        ingredientGroup.setErrors(null);
+        this.ingredientsArray.setErrors(null);
+        this.ingredientsArray.updateValueAndValidity({ emitEvent: false });
+      }
+    });
+  }
+
+  removeIngredient(index: number): void {
+    this.ingredientsArray.removeAt(index);
+    this.ingredientsArray.markAsTouched();
+    this.ingredientsArray.updateValueAndValidity();
+  }
+
+  addInstruction(): void {
+    const instructionControl = this.fb.control('', Validators.required);
+
+    instructionControl.valueChanges.subscribe(() => {
+      if (instructionControl.value && instructionControl.value.trim()) {
+        instructionControl.setErrors(null);
+      }
+      
+      this.instructionsArray.markAsTouched();
+      this.instructionsArray.updateValueAndValidity();
+    });
+
+    this.instructionsArray.push(instructionControl);
+    this.instructionsArray.updateValueAndValidity();
+  }
+
+  removeInstruction(index: number): void {
+    this.instructionsArray.removeAt(index);
+    this.instructionsArray.markAsTouched();
+    this.instructionsArray.updateValueAndValidity();
   }
 
   private loadAvailableIngredients(): void {
@@ -51,61 +159,67 @@ export abstract class RecipeFormBase {
       });
   }
 
-  get ingredientsArray(): FormArray {
-    return this.recipeForm.get("ingredients") as FormArray;
+  protected getFormattedRecipe(): CreateRecipe | null {
+    if (this.recipeForm.valid) {
+      const formValue = this.recipeForm.value;
+      console.log('Form value antes da formatação:', formValue);
+      
+      // Ensure ingredients are properly formatted
+      const ingredients = formValue.ingredients
+        .filter((ing: any) => {
+          const isValid = ing.ingredientId && ing.quantity && Number(ing.quantity) > 0;
+          console.log('Validando ingrediente na formatação:', {
+            ingrediente: ing,
+            isValid
+          });
+          return isValid;
+        })
+        .map((ing: any) => ({
+          ingredientId: Number(ing.ingredientId),
+          quantity: Number(ing.quantity)
+        }));
+
+      // Ensure instructions are properly formatted
+      const instructions = formValue.instructions
+        .filter((inst: string) => inst && inst.trim())
+        .map((inst: string) => inst.trim());
+
+      const recipe: CreateRecipe = {
+        name: formValue.name?.trim(),
+        category: formValue.category?.trim(),
+        description: formValue.description?.trim(),
+        preparationTime: Number(formValue.preparationTime),
+        servings: Number(formValue.servings),
+        ingredients,
+        instructions
+      };
+
+      console.log('Recipe formatada:', recipe);
+      return recipe;
+    }
+
+    console.log('Form inválido:', this.recipeForm.errors);
+    this.markFormGroupTouched(this.recipeForm);
+    return null;
   }
 
-  get instructionsArray(): FormArray {
-    return this.recipeForm.get("instructions") as FormArray;
-  }
-
-  addIngredient(): void {
-    const fb = new FormBuilder();
-    const ingredientGroup = fb.group({
-      ingredientId: ["", Validators.required],
-      quantity: ["", [Validators.required, Validators.min(0.1)]],
-    });
-
-    ingredientGroup.valueChanges.subscribe(() => {
-      this.recipeForm.updateValueAndValidity();
-    });
-
-    this.ingredientsArray.push(ingredientGroup);
-  }
-
-  removeIngredient(index: number): void {
-    this.ingredientsArray.removeAt(index);
-    this.recipeForm.updateValueAndValidity();
-  }
-
-  addInstruction(): void {
-    const fb = new FormBuilder();
-    const instructionControl = fb.control("", Validators.required);
-
-    instructionControl.valueChanges.subscribe(() => {
-      this.recipeForm.updateValueAndValidity();
-    });
-
-    this.instructionsArray.push(instructionControl);
-  }
-
-  removeInstruction(index: number): void {
-    this.instructionsArray.removeAt(index);
-    this.recipeForm.updateValueAndValidity();
-  }
-
-  private minArrayLengthValidator(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (control instanceof FormArray) {
-        const valid = control.controls.every((ctrl) => ctrl.valid);
-        return control.length >= minLength && valid
-          ? null
-          : { minArrayLength: { requiredLength: minLength, actualLength: control.length } };
+  protected markFormGroupTouched(formGroup: FormGroup | FormArray): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      } else if (control instanceof FormArray) {
+        this.markFormGroupTouched(control);
       }
-      return null;
-    };
+
+      if (control.errors) {
+        console.log('Erros no controle:', control.errors);
+      }
+    });
   }
-  
+
+  abstract onSubmit(): void;
 
   getIngredientName(ingredientId: number): string {
     const ingredient = this.availableIngredients.find(
@@ -114,25 +228,28 @@ export abstract class RecipeFormBase {
     return ingredient ? ingredient.name : "";
   }
 
-  getMaxAvailableQuantity(ingredientId: number): number {
+  getMaxAvailableQuantity(ingredientId: string | number | null | undefined): number {
+    if (!ingredientId) return 0;
+    
     const ingredient = this.availableIngredients.find(
-      (i) => i.id === ingredientId
+      (i) => i.id === Number(ingredientId)
     );
     return ingredient ? ingredient.quantity : 0;
   }
 
-  protected markFormGroupTouched(formGroup: FormGroup | FormArray): void {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-      if (control instanceof FormGroup || control instanceof FormArray) {
-        this.markFormGroupTouched(control);
+  getControlError(controlName: string): string {
+    const control = this.recipeForm.get(controlName);
+    if (control && control.errors && control.touched) {
+      if (control.errors['required']) {
+        return 'This field is required';
       }
-    });
-  }  
-
-  private validateArrayItems(array: FormArray): boolean {
-    return array.controls.every(control => control.valid);
+      if (control.errors['min']) {
+        return `Value must be at least ${control.errors['min'].min}`;
+      }
+      if (control.errors['minArrayLength']) {
+        return `At least ${control.errors['minArrayLength'].requiredLength} item(s) required`;
+      }
+    }
+    return '';
   }
-  
-
 }

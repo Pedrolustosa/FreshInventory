@@ -37,7 +37,26 @@ export class RecipeService {
   //   return this.http.post<Ingredient>(`${this.apiUrl}/CreateIngredient`, ingredient);
   // }
   createRecipe(recipe: CreateRecipe): Observable<Recipe> {
-    return this.http.post<Recipe>(`${this.apiUrl}/CreateRecipe`, recipe);
+    console.log('Dados recebidos do form:', recipe);
+
+    const recipeCreateDto = {
+      recipeCreateDto: {
+        Name: recipe.name,
+        Category: recipe.category,
+        Description: recipe.description,
+        PreparationTime: recipe.preparationTime.toString(),
+        Servings: recipe.servings.toString(),
+        Ingredients: recipe.ingredients.map(ing => ({
+          IngredientId: ing.ingredientId,
+          Quantity: ing.quantity
+        })),
+        Instructions: recipe.instructions
+      }
+    };
+
+    console.log('Dados formatados para API:', recipeCreateDto);
+
+    return this.http.post<Recipe>(`${this.apiUrl}/CreateRecipe`, recipeCreateDto);
   }
 
   updateRecipe(id: number, recipe: Partial<Recipe>): Observable<Recipe> {

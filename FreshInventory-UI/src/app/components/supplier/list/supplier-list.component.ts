@@ -1,30 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import { NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule } from '@angular/forms';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
-import { ToastService } from '../../../services/toast.service';
-import { SpinnerService } from '../../../services/spinner.service';
 import { Supplier } from '../../../models/supplier.model';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { finalize } from 'rxjs/operators';
 import { Modal } from 'bootstrap';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-supplier-list',
-  templateUrl: './supplier-list.component.html',
-  styleUrls: ['./supplier-list.component.css'],
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     RouterModule,
-    TooltipModule,
-    ModalModule,
-    NgxSpinnerModule
-  ]
+    FormsModule,
+    NgxSpinnerModule,
+    NgxMaskPipe,
+    PaginationModule
+  ],
+  templateUrl: './supplier-list.component.html',
+  styleUrls: ['./supplier-list.component.css']
 })
 export class SupplierListComponent implements OnInit {
   suppliers: Supplier[] = [];
@@ -33,14 +32,14 @@ export class SupplierListComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number = 0;
-  totalPages: number = 1;
+  maxSize: number = 5;
   Math = Math;
   private deleteModal?: Modal;
 
   constructor(
     private supplierService: SupplierService,
-    private toastService: ToastService,
-    private spinnerService: SpinnerService
+    private toastService: ToastrService,
+    private spinnerService: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
@@ -52,12 +51,16 @@ export class SupplierListComponent implements OnInit {
     this.supplierService.getSuppliers(this.currentPage, this.pageSize, this.searchName)
       .pipe(finalize(() => this.spinnerService.hide()))
       .subscribe({
-        next: (response) => {
-          this.suppliers = response.items;
-          this.totalItems = response.totalItems;
-          this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+        next: (response: any) => {
+          console.log('API Response:', response); // Debug log
+          if (response) {
+            this.suppliers = response.items || [];
+            this.totalItems = response.totalCount || 0;
+            this.currentPage = response.currentPage || 1;
+          }
         },
-        error: () => {
+        error: (error) => {
+          console.error('Error loading suppliers:', error);
           this.toastService.error('Failed to load suppliers. Please try again.');
         }
       });
@@ -68,28 +71,11 @@ export class SupplierListComponent implements OnInit {
     this.loadSuppliers();
   }
 
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
+  pageChanged(event: any): void {
+    if (event && event.page !== this.currentPage) {
+      this.currentPage = event.page;
       this.loadSuppliers();
     }
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxPages = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxPages / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
-
-    if (endPage - startPage + 1 < maxPages) {
-      startPage = Math.max(1, endPage - maxPages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
   }
 
   openDeleteModal(supplier: Supplier): void {

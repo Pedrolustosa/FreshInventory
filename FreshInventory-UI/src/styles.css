@@ -229,6 +229,51 @@ html {
   transition: all 0.3s ease;
 }
 
+/* Spinner Styles */
+.spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.spinner-icon {
+  font-size: 2.5rem;
+  color: var(--bs-primary);
+  margin-bottom: 1.5rem;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.spinner-message {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.spinner-progress {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.spinner-progress .progress-bar {
+  width: 100% !important;
+  background-color: var(--bs-primary) !important;
+}
+
 /* Scrollbar */
 body::-webkit-scrollbar {
   width: 0.8rem !important;
@@ -241,4 +286,33 @@ body::-webkit-scrollbar-thumb {
 
 body::-webkit-scrollbar-track {
   background: var(--bs-secondary) !important;
+}
+
+/* Spinner Responsive Styles */
+@media (max-width: 576px) {
+  .spinner-wrapper {
+    min-height: 180px;
+    padding: 1.5rem;
+  }
+
+  .spinner-title {
+    font-size: 1.25rem;
+  }
+
+  .spinner-message {
+    font-size: 0.9rem;
+  }
+
+  .spinner-progress {
+    width: 100%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

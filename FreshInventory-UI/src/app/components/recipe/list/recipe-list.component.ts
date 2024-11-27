@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { RecipeService } from '../../../services/recipe.service';
-import { Recipe } from '../../../models/recipe.model';
-import { DeleteConfirmationModalComponent } from 'src/app/shared/delete-confirmation-modal/delete-confirmation-modal.component';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { RecipeService } from 'src/app/services/recipe.service';
+import { Recipe } from 'src/app/models/recipe.model';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { FormsModule } from '@angular/forms';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-recipe-list',
@@ -14,69 +16,33 @@ import { DeleteConfirmationModalComponent } from 'src/app/shared/delete-confirma
   imports: [
     CommonModule,
     RouterModule,
+    PaginationModule,
+    TooltipModule,
     FormsModule,
-    NgxSpinnerModule,
-    DeleteConfirmationModalComponent
+    NgxSpinnerModule
   ],
   templateUrl: './recipe-list.component.html',
-  styleUrls: ['./recipe-list.component.css']
+  styleUrls: ['./recipe-list.component.scss']
 })
 export class RecipeListComponent implements OnInit {
   recipes: Recipe[] = [];
-  currentPage = 1;
-  pageSize = 10;
-  totalItems = 0;
-  searchTerm = '';
-  selectedCategory = '';
-  showOnlyAvailable = false;
-  selectedRecipe: any = null;
-  showDeleteModal: boolean = false;
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalItems: number = 0;
+  maxSize: number = 5;
+  selectedRecipe: Recipe | null = null;
+  searchName: string = '';
   protected readonly Math = Math;
-
-  categories = [
-    'Main Course',
-    'Appetizer',
-    'Dessert',
-    'Beverage',
-    'Side Dish'
-  ];
+  private deleteModal?: Modal;
 
   constructor(
     private recipeService: RecipeService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
     this.loadRecipes();
-  }
-
-  loadRecipes(): void {
-    this.recipeService.getRecipes(
-      this.currentPage,
-      this.pageSize,
-      this.searchTerm
-    ).subscribe({
-      next: (response) => {
-        this.recipes = response.items;
-        this.totalItems = response.totalCount;
-        this.filterRecipes();
-      },
-      error: () => {
-        this.toastr.error('Error loading recipes');
-      }
-    });
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadRecipes();
-  }
-
-  filterRecipes(): void {
-    this.recipes = this.recipes.filter(recipe => {
-      const matchesCategory = !this.selectedCategory || recipe.category === this.selectedCategory;
-      return matchesCategory;
-    });
   }
 
   onSearch(): void {
@@ -84,36 +50,98 @@ export class RecipeListComponent implements OnInit {
     this.loadRecipes();
   }
 
-  onCategoryChange(): void {
-    this.filterRecipes();
+  loadRecipes(): void {
+    this.spinner.show();
+    this.recipeService.getRecipes(this.currentPage, this.itemsPerPage, this.searchName)
+      .subscribe({
+        next: (response) => {
+          this.recipes = response.items || [];
+          this.totalItems = response.totalCount || 0;
+          console.debug('Loaded recipes:', this.recipes);
+        },
+        error: (error) => {
+          console.error('Error loading recipes:', error);
+          this.toastr.error('Failed to load recipes');
+        },
+        complete: () => {
+          this.spinner.hide();
+        }
+      });
   }
 
-  onAvailabilityChange(): void {
-    this.filterRecipes();
+  pageChanged(event: any): void {
+    this.currentPage = event.page;
+    this.loadRecipes();
   }
 
-  onDeleteClick(recipe: Recipe): void {
+  getCategoryBadgeClass(category: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'Main Course': 'primary',
+      'Appetizer': 'success',
+      'Dessert': 'warning',
+      'Beverage': 'info',
+      'Side Dish': 'secondary',
+      'Breakfast': 'danger',
+      'Snack': 'dark'
+    };
+    return categoryMap[category] || 'primary';
+  }
+
+  formatTime(minutes: number): string {
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0 
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
+  }
+
+  getServingsLabel(servings: number): string {
+    return `${servings} ${servings === 1 ? 'serving' : 'servings'}`;
+  }
+
+  getIngredientsLabel(count: number): string {
+    return `${count} ${count === 1 ? 'ingredient' : 'ingredients'}`;
+  }
+
+  getInstructionsLabel(count: number): string {
+    return `${count} ${count === 1 ? 'step' : 'steps'}`;
+  }
+
+  openDeleteModal(recipe: Recipe): void {
     this.selectedRecipe = recipe;
-    this.showDeleteModal = true;
+    const modalElement = document.getElementById('deleteModal');
+    if (modalElement) {
+      this.deleteModal = new Modal(modalElement);
+      this.deleteModal.show();
+    }
+  }
+
+  closeDeleteModal(): void {
+    this.deleteModal?.hide();
+    this.selectedRecipe = null;
   }
 
   confirmDelete(): void {
     if (this.selectedRecipe) {
-      this.recipeService.deleteRecipe(this.selectedRecipe.id).subscribe({
-        next: () => {
-          this.toastr.success('Recipe deleted successfully');
-          this.loadRecipes();
-          this.closeDeleteModal();
-        },
-        error: () => {
-          this.toastr.error('Error deleting recipe');
-          this.closeDeleteModal();
-        }
-      });
+      this.spinner.show();
+      this.recipeService.deleteRecipe(this.selectedRecipe.id)
+        .subscribe({
+          next: () => {
+            this.toastr.success('Recipe deleted successfully');
+            this.loadRecipes();
+          },
+          error: (error) => {
+            console.error('Error deleting recipe:', error);
+            this.toastr.error('Failed to delete recipe');
+          },
+          complete: () => {
+            this.spinner.hide();
+            this.closeDeleteModal();
+          }
+        });
     }
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal = false;
   }
 }

@@ -8,6 +8,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,6 +33,7 @@ export const appConfig: ApplicationConfig = {
         warning: 'toast-warning'
       }
     }),
+    provideEnvironmentNgxMask(),
     importProvidersFrom(
       BsDatepickerModule.forRoot(),
       BsDropdownModule.forRoot(),

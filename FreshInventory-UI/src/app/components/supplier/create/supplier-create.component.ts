@@ -6,8 +6,9 @@ import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { InputMaskModule, createMask } from '@ngneat/input-mask';
+import { NgxMaskDirective } from 'ngx-mask';
 import { phoneNumberValidator } from '../../../shared/validators/phone.validator';
+import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
 
 @Component({
   selector: 'app-supplier-create',
@@ -18,7 +19,7 @@ import { phoneNumberValidator } from '../../../shared/validators/phone.validator
     ReactiveFormsModule,
     NgxSpinnerModule,
     BsDatepickerModule,
-    InputMaskModule
+    NgxMaskDirective
   ],
   templateUrl: './supplier-create.component.html',
   styleUrls: ['./supplier-create.component.css']
@@ -26,7 +27,8 @@ import { phoneNumberValidator } from '../../../shared/validators/phone.validator
 export class SupplierCreateComponent implements OnInit {
   supplierForm!: FormGroup;
   isLoading = false;
-  phoneMask = createMask('(99) 99999-9999');
+  categories = Object.values(Category).filter((value) => typeof value === 'number') as Category[];
+  categoryLabels = CategoryLabels;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -44,12 +46,12 @@ export class SupplierCreateComponent implements OnInit {
     this.supplierForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       code: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9-]{3,10}$')]],
-      contactName: ['', [Validators.required, Validators.minLength(3)]],
+      contactPerson: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, phoneNumberValidator]],
       address: ['', [Validators.required, Validators.minLength(10)]],
-      website: ['', [Validators.pattern('^https?://.*')]],
-      isActive: [true]
+      category: ['', [Validators.required]],
+      status: [true]
     });
   }
 

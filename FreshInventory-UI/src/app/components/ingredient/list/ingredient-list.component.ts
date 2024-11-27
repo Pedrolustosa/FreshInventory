@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { IngredientService } from '../../../services/ingredient.service';
 import { ToastService } from '../../../services/toast.service';
 import { SpinnerService } from '../../../services/spinner.service';
@@ -22,7 +23,8 @@ import { Modal } from 'bootstrap';
     FormsModule,
     RouterModule,
     TooltipModule,
-    ModalModule
+    ModalModule,
+    PaginationModule
   ]
 })
 export class IngredientListComponent implements OnInit {
@@ -35,9 +37,13 @@ export class IngredientListComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number = 0;
-  totalPages: number = 1;
+  maxSize: number = 5;
   Math = Math;
-  userName: string = 'Admin'; // TODO: Get from auth service
+  private deleteModal?: Modal;
+
+  // Constants for expiry validation
+  readonly EXPIRY_WARNING_DAYS = 30;
+  readonly EXPIRY_DANGER_DAYS = 7;
 
   constructor(
     private ingredientService: IngredientService,
@@ -61,14 +67,17 @@ export class IngredientListComponent implements OnInit {
       finalize(() => this.spinnerService.hide())
     )
     .subscribe({
-      next: (response) => {
-        this.ingredients = response.items;
-        this.totalItems = response.totalItems;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+      next: (response: any) => {
+        console.log('API Response:', response); // Debug log
+        if (response) {
+          this.ingredients = response.items || [];
+          this.totalItems = response.totalCount || 0;
+          this.currentPage = response.currentPage || 1;
+        }
       },
       error: (error) => {
-        this.toastService.error('Failed to load ingredients. Please try again.');
         console.error('Error loading ingredients:', error);
+        this.toastService.error('Failed to load ingredients. Please try again.');
       }
     });
   }
@@ -78,47 +87,19 @@ export class IngredientListComponent implements OnInit {
     this.loadIngredients();
   }
 
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
+  pageChanged(event: any): void {
+    if (event && event.page !== this.currentPage) {
+      this.currentPage = event.page;
       this.loadIngredients();
     }
   }
 
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  }
-
-  getCategoryLabel(category: Category): string {
-    return CategoryLabels[category];
-  }
-
-  isExpiringSoon(date: Date): boolean {
-    const expiryDate = new Date(date);
-    const today = new Date();
-    const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return daysUntilExpiry <= 7 && daysUntilExpiry >= 0;
-  }
-
   openDeleteModal(ingredient: Ingredient): void {
     this.selectedIngredient = ingredient;
-    const modal = document.getElementById('deleteModal');
-    if (modal) {
-      const bsModal = new Modal(modal);
-      bsModal.show();
+    const modalElement = document.getElementById('deleteModal');
+    if (modalElement) {
+      this.deleteModal = new Modal(modalElement);
+      this.deleteModal.show();
     }
   }
 
@@ -147,5 +128,54 @@ export class IngredientListComponent implements OnInit {
           console.error('Error deleting ingredient:', error);
         }
       });
+  }
+
+  getCategoryLabel(category: Category): string {
+    return CategoryLabels[category];
+  }
+
+  getExpiryStatus(expiryDate: string | Date | null): { status: string; label: string } {
+    if (!expiryDate) {
+      return { status: 'secondary', label: 'No expiry date' };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const expiry = new Date(expiryDate);
+    expiry.setHours(0, 0, 0, 0);
+    
+    const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysUntilExpiry < 0) {
+      return { status: 'danger', label: 'Expired' };
+    } else if (daysUntilExpiry <= this.EXPIRY_DANGER_DAYS) {
+      return { status: 'danger', label: `Expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}` };
+    } else if (daysUntilExpiry <= this.EXPIRY_WARNING_DAYS) {
+      return { status: 'warning', label: `Expires in ${daysUntilExpiry} days` };
+    } else {
+      return { status: 'success', label: `Valid for ${daysUntilExpiry} days` };
+    }
+  }
+
+  formatDate(date: string | Date | null): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString();
+  }
+
+  getQuantityStatus(quantity: number, reorderLevel: number): string {
+    if (quantity <= 0) {
+      return 'danger';
+    } else if (quantity <= reorderLevel) {
+      return 'warning';
+    }
+    return 'success';
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(value);
   }
 }

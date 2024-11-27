@@ -38,23 +38,36 @@ export class RecipeCreateComponent extends RecipeFormBase implements OnInit {
     this.addInstruction();
   }
 
-  onSubmit(): void {
+  override onSubmit(): void {
+    console.log('Iniciando submissão do formulário');
+    console.log('Form válido:', this.recipeForm.valid);
+    console.log('Form value:', this.recipeForm.value);
+    console.log('Form errors:', this.recipeForm.errors);
+
     if (this.recipeForm.valid) {
-      this.spinner.show();
-      this.recipeService.createRecipe(this.recipeForm.value).subscribe({
-        next: () => {
-          this.spinner.hide();
-          this.toastr.success('Recipe created successfully', 'Success');
-          this.router.navigate(['/recipes']);
-        },
-        error: () => {
-          this.spinner.hide();
-          this.toastr.error('Error creating recipe', 'Error');
-        }
-      });
+      const recipe = this.getFormattedRecipe();
+      if (recipe !== null) {
+        this.spinner.show();
+        this.recipeService.createRecipe(recipe).subscribe({
+          next: () => {
+            this.spinner.hide();
+            this.toastr.success('Recipe created successfully', 'Success');
+            this.router.navigate(['/recipes']);
+          },
+          error: (error) => {
+            this.spinner.hide();
+            console.error('Erro ao criar receita:', error);
+            this.toastr.error('Error creating recipe', 'Error');
+          }
+        });
+      } else {
+        console.error('Recipe is null after formatting');
+        this.toastr.error('Please fill in all required fields', 'Validation Error');
+      }
     } else {
+      console.log('Form inválido - marcando campos como touched');
       this.markFormGroupTouched(this.recipeForm);
-      this.toastr.warning('Please fill in all required fields', 'Warning');
+      this.toastr.error('Please fill in all required fields', 'Validation Error');
     }
   }  
 }

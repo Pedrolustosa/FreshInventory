@@ -67,7 +67,10 @@
               <th class="border-0">Category</th>
               <th class="border-0">Supplier</th>
               <th class="border-0">Unit Cost</th>
+              <th class="border-0">Purchase Date</th>
               <th class="border-0">Expiry Date</th>
+              <th class="border-0">Reorder Level</th>
+              <th class="border-0">Status</th>
               <th class="border-0 text-center">Actions</th>
             </tr>
           </thead>
@@ -85,9 +88,11 @@
                 </div>
               </td>
               <td>
-                <span [ngClass]="{'text-danger': ingredient.quantity <= 10}">
-                  {{ ingredient.quantity }}
-                </span>
+                <div class="d-flex align-items-center">
+                  <span [class]="'badge rounded-pill bg-' + getQuantityStatus(ingredient.quantity, ingredient.reorderLevel) + '-subtle text-' + getQuantityStatus(ingredient.quantity, ingredient.reorderLevel)">
+                    {{ ingredient.quantity }}
+                  </span>
+                </div>
               </td>
               <td>
                 <span class="badge bg-light text-dark">
@@ -96,7 +101,7 @@
               </td>
               <td>
                 <span class="badge bg-primary-subtle text-primary">
-                  {{ ingredient.category }}
+                  {{ getCategoryLabel(ingredient.category) }}
                 </span>
               </td>
               <td>
@@ -108,16 +113,40 @@
               <td>
                 <div class="d-flex align-items-center">
                   <i class="fas fa-dollar-sign text-success me-1"></i>
-                  {{ ingredient.unitCost.toFixed(2) }}
+                  {{ formatCurrency(ingredient.unitCost) }}
                 </div>
               </td>
               <td>
                 <div class="d-flex align-items-center">
-                  <i class="fas fa-calendar me-2" [ngClass]="{'text-danger': isExpiringSoon(ingredient.expiryDate)}"></i>
-                  <span [ngClass]="{'text-danger fw-bold': isExpiringSoon(ingredient.expiryDate)}">
-                    {{ ingredient.expiryDate | date:'mediumDate' }}
-                  </span>
+                  <i class="fas fa-calendar-check text-primary me-2"></i>
+                  <span>{{ formatDate(ingredient.purchaseDate) }}</span>
                 </div>
+              </td>
+              <td>
+                <ng-container *ngIf="ingredient.expiryDate">
+                  <div class="d-flex align-items-center">
+                    <span [class]="'badge bg-' + getExpiryStatus(ingredient.expiryDate).status">
+                      <i class="fas fa-clock me-1"></i>
+                      {{ getExpiryStatus(ingredient.expiryDate).label }}
+                    </span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="!ingredient.expiryDate">
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-infinity me-1"></i>
+                    No expiry date
+                  </span>
+                </ng-container>
+              </td>
+              <td>
+                <span class="badge bg-info-subtle text-info">
+                  {{ ingredient.reorderLevel }}
+                </span>
+              </td>
+              <td>
+                <span [class]="'badge rounded-pill bg-' + (ingredient.isPerishable ? 'warning' : 'info') + '-subtle text-' + (ingredient.isPerishable ? 'warning' : 'info')">
+                  {{ ingredient.isPerishable ? 'Perishable' : 'Non-Perishable' }}
+                </span>
               </td>
               <td>
                 <div class="d-flex justify-content-center gap-2">
@@ -141,7 +170,7 @@
               </td>
             </tr>
             <tr *ngIf="ingredients.length === 0">
-              <td colspan="8">
+              <td colspan="11">
                 <div class="text-center py-5">
                   <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                   <h5 class="text-muted mb-0">No ingredients found</h5>
@@ -159,29 +188,25 @@
       <!-- Pagination Section -->
       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4">
         <div class="text-muted small">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} 
+          Showing {{ ingredients.length ? ((currentPage - 1) * pageSize) + 1 : 0 }} to {{ Math.min(currentPage * pageSize, totalItems) }}
           of {{ totalItems }} entries
         </div>
-        <nav aria-label="Page navigation">
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(currentPage - 1)">
-                <i class="fas fa-chevron-left"></i>
-              </a>
-            </li>
-            <li class="page-item" *ngFor="let page of getPageNumbers()" 
-                [class.active]="page === currentPage">
-              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">
-                {{ page }}
-              </a>
-            </li>
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(currentPage + 1)">
-                <i class="fas fa-chevron-right"></i>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <pagination
+          [totalItems]="totalItems"
+          [itemsPerPage]="pageSize"
+          [maxSize]="maxSize"
+          [(ngModel)]="currentPage"
+          (pageChanged)="pageChanged($event)"
+          [boundaryLinks]="true"
+          [rotate]="true"
+          [firstText]="'«'"
+          [lastText]="'»'"
+          [previousText]="'‹'"
+          [nextText]="'›'"
+          [directionLinks]="true"
+          class="pagination-sm mb-0"
+          *ngIf="totalItems > pageSize">
+        </pagination>
       </div>
     </div>
   </div>

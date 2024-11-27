@@ -88,7 +88,7 @@ export class IngredientUpdateComponent implements OnInit {
 
   private loadSuppliers(): void {
     this.supplierService.getSuppliers(1, 100, "", "name", "asc").subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.suppliers = response.items.filter(
           (supplier: Supplier) => supplier.status
         );

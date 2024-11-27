@@ -18,7 +18,7 @@ export class SupplierService {
     name?: string,
     sortBy?: string,
     sortDirection?: string
-  ): Observable<any> {
+  ): Observable<Supplier> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
@@ -27,7 +27,7 @@ export class SupplierService {
     if (sortBy) params = params.set('sortBy', sortBy);
     if (sortDirection) params = params.set('sortDirection', sortDirection);
 
-    return this.http.get<any>(`${this.apiUrl}/GetAllSuppliers`, { params });
+    return this.http.get<Supplier>(`${this.apiUrl}/GetAllSuppliers`, { params });
   }
 
   getSupplierById(id: number): Observable<Supplier> {

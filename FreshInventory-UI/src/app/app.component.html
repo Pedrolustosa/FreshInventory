@@ -9,15 +9,24 @@
   </div>
 
   <ngx-spinner 
-    bdColor="rgba(0, 0, 0, 0.8)" 
+    bdColor="rgba(0, 0, 0, 0.7)" 
     size="medium" 
-    color="var(--bs-success)" 
-    type="ball-spin-clockwise"
+    color="var(--bs-primary)" 
+    type="ball-clip-rotate-multiple"
     [fullScreen]="true">
-    <div class="spinner-content">
-      <p class="loading-text">Loading...</p>
-      <div class="progress-container">
-        <div class="progress-bar"></div>
+    <div class="spinner-wrapper">
+      <div class="spinner-icon">
+        <i class="bi bi-arrow-repeat"></i>
+      </div>
+      <h4 class="spinner-title">Processing Request</h4>
+      <p class="spinner-message">Please wait while we process your request...</p>
+      <div class="progress spinner-progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+             role="progressbar" 
+             aria-valuenow="100" 
+             aria-valuemin="0" 
+             aria-valuemax="100">
+        </div>
       </div>
     </div>
   </ngx-spinner>

@@ -6,9 +6,10 @@ import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { InputMaskModule, createMask } from '@ngneat/input-mask';
+import { NgxMaskDirective } from 'ngx-mask';
 import { phoneNumberValidator } from '../../../shared/validators/phone.validator';
 import { Supplier } from '../../../models/supplier.model';
+import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
 
 @Component({
   selector: 'app-supplier-update',
@@ -19,7 +20,7 @@ import { Supplier } from '../../../models/supplier.model';
     ReactiveFormsModule,
     NgxSpinnerModule,
     BsDatepickerModule,
-    InputMaskModule
+    NgxMaskDirective
   ],
   templateUrl: './supplier-update.component.html',
   styleUrls: ['./supplier-update.component.css']
@@ -27,8 +28,9 @@ import { Supplier } from '../../../models/supplier.model';
 export class SupplierUpdateComponent implements OnInit {
   supplierForm!: FormGroup;
   isLoading = false;
-  phoneMask = createMask('(99) 99999-9999');
   supplierId!: number;
+  categories = Object.values(Category).filter((value) => typeof value === 'number') as Category[];
+  categoryLabels = CategoryLabels;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,13 +55,12 @@ export class SupplierUpdateComponent implements OnInit {
     this.supplierForm = this.formBuilder.group({
       id: [''],
       name: ['', [Validators.required, Validators.minLength(3)]],
-      code: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9-]{3,10}$')]],
-      contactName: ['', [Validators.required, Validators.minLength(3)]],
+      contactPerson: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, phoneNumberValidator]],
       address: ['', [Validators.required, Validators.minLength(10)]],
-      website: ['', [Validators.pattern('^https?://.*')]],
-      isActive: [true]
+      category: ['', [Validators.required]],
+      status: ['', [Validators.required]]
     });
   }
 
@@ -67,13 +68,23 @@ export class SupplierUpdateComponent implements OnInit {
     this.spinner.show();
     this.supplierService.getSupplierById(id).subscribe({
       next: (supplier: Supplier) => {
-        this.supplierForm.patchValue(supplier);
+        this.supplierForm.patchValue({
+          id: supplier.id,
+          name: supplier.name,
+          contactPerson: supplier.contactPerson,
+          email: supplier.email,
+          phone: supplier.phone,
+          address: supplier.address,
+          category: supplier.category,
+          status: supplier.status
+        });
         this.spinner.hide();
       },
       error: (error: any) => {
         console.error('Error loading supplier:', error);
-        this.toastr.error('Failed to load supplier');
         this.spinner.hide();
+        this.toastr.error('Failed to load supplier');
+        this.router.navigate(['/suppliers']);
       }
     });
   }

@@ -75,17 +75,20 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  override onSubmit(): void {
     if (this.recipeForm.valid) {
-      this.recipeService.updateRecipe(this.recipeId, this.recipeForm.value).subscribe({
-        next: () => {
-          this.toastr.success('Recipe updated successfully');
-          this.router.navigate(['/recipes']);
-        },
-        error: () => {
-          this.toastr.error('Error updating recipe');
-        }
-      });
+      const recipe = this.getFormattedRecipe();
+      if (recipe !== null) {
+        this.recipeService.updateRecipe(this.recipeId, recipe).subscribe({
+          next: () => {
+            this.toastr.success('Recipe updated successfully');
+            this.router.navigate(['/recipes']);
+          },
+          error: () => {
+            this.toastr.error('Error updating recipe');
+          }
+        });
+      }
     } else {
       this.markFormGroupTouched(this.recipeForm);
       this.toastr.warning('Please fill in all required fields');

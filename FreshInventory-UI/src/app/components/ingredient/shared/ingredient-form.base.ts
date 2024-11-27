@@ -26,9 +26,9 @@ export abstract class IngredientFormBase {
     this.ingredientForm = new FormBuilder().group({
       name: ["", [Validators.required]],
       quantity: ["", [Validators.required, Validators.min(0)]],
-      unit: [null, [Validators.required]],
+      unit: ["", [Validators.required]],
       unitCost: ["", [Validators.required, Validators.min(0)]],
-      category: [null, [Validators.required]],
+      category: ["", [Validators.required]],
       supplierId: ["", [Validators.required]],
       purchaseDate: ["", [Validators.required]],
       expiryDate: ["", [Validators.required]],

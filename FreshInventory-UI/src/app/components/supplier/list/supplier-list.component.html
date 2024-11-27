@@ -1,13 +1,4 @@
 <div class="supplier-list-container">
-  <ngx-spinner
-    bdColor="rgba(0, 0, 0, 0.8)"
-    size="medium"
-    color="#fff"
-    type="ball-clip-rotate"
-  >
-    <p style="color: white">Loading...</p>
-  </ngx-spinner>
-
   <!-- Header -->
   <div class="content-header mb-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
@@ -17,40 +8,28 @@
         </h1>
         <p class="text-muted mb-0">Manage your inventory suppliers</p>
       </div>
-      <button
-        class="btn btn-primary"
-        routerLink="/suppliers/create"
-        tooltip="Add new supplier"
-        placement="left"
-      >
+      <button class="btn btn-primary" routerLink="/suppliers/create" tooltip="Add new supplier" placement="left">
         <i class="fas fa-plus me-2"></i>Add Supplier
       </button>
     </div>
   </div>
 
-  <!-- Search and Filter -->
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="search-box">
-        <div class="input-group">
-          <span class="input-group-text border-end-0 bg-transparent">
-            <i class="fas fa-search text-muted"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control border-start-0 ps-0" 
-            [(ngModel)]="searchName" 
-            placeholder="Search suppliers..."
-            (keyup.enter)="onSearch()"
-          >
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Suppliers Table -->
+  <!-- Suppliers Table and earch and Filter-->
   <div class="card">
     <div class="card-body">
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="search-box">
+            <div class="input-group">
+              <span class="input-group-text border-end-0 bg-transparent">
+                <i class="fas fa-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="searchName"
+                placeholder="Search suppliers..." (keyup.enter)="onSearch()">
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="bg-light">
@@ -111,20 +90,12 @@
               </td>
               <td>
                 <div class="d-flex justify-content-center gap-2">
-                  <button 
-                    class="btn btn-sm btn-light" 
-                    [routerLink]="['update', supplier.id]"
-                    tooltip="Edit Supplier"
-                    placement="top"
-                  >
+                  <button class="btn btn-sm btn-light" [routerLink]="['update', supplier.id]" tooltip="Edit Supplier"
+                    placement="top">
                     <i class="fas fa-pen text-primary"></i>
                   </button>
-                  <button 
-                    class="btn btn-sm btn-light" 
-                    (click)="openDeleteModal(supplier)"
-                    tooltip="Delete Supplier"
-                    placement="top"
-                  >
+                  <button class="btn btn-sm btn-light" (click)="openDeleteModal(supplier)" tooltip="Delete Supplier"
+                    placement="top">
                     <i class="fas fa-trash-alt text-danger"></i>
                   </button>
                 </div>
@@ -149,7 +120,7 @@
       <!-- Pagination -->
       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4">
         <div class="text-muted small">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} 
+          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }}
           of {{ totalItems }} entries
         </div>
         <nav aria-label="Page navigation">
@@ -159,8 +130,7 @@
                 <i class="fas fa-chevron-left"></i>
               </a>
             </li>
-            <li class="page-item" *ngFor="let page of getPageNumbers()" 
-                [class.active]="page === currentPage">
+            <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
               <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">
                 {{ page }}
               </a>

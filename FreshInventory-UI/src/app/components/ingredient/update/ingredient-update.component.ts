@@ -1,19 +1,19 @@
 import { Unit, UnitLabels } from "../../../models/enums/unit.enum";
 import { Category, CategoryLabels } from "../../../models/enums/category.enum";
-import { Ingredient } from "../../../models/ingredient.model";
+import { Ingredient, UpdateIngredient } from "../../../models/ingredient.model";
 import { Component, OnInit } from "@angular/core";
-import { IngredientFormBase } from "../shared/ingredient-form.base";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { IngredientService } from "src/app/services/ingredient.service";
 import { SupplierService } from "src/app/services/supplier.service";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { NgxSpinnerModule } from "ngx-spinner";
+import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
 import { ToastrService } from "ngx-toastr";
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { Supplier } from "src/app/models/supplier.model";
 
 @Component({
   selector: "app-ingredient-update",
@@ -31,98 +31,134 @@ import { NgxSpinnerService } from 'ngx-spinner';
   templateUrl: "./ingredient-update.component.html",
   styleUrls: ["./ingredient-update.component.css"]
 })
-export class IngredientUpdateComponent extends IngredientFormBase implements OnInit {
-  // Get only numeric values from enums
-  override units = Object.values(Unit).filter(value => typeof value === 'number') as Unit[];
-  override categories = Object.values(Category).filter(value => typeof value === 'number') as Category[];
-  override categoryLabels = CategoryLabels;
-  override unitLabels = UnitLabels;
+export class IngredientUpdateComponent implements OnInit {
+  ingredientForm!: FormGroup;
+  units = Object.values(Unit).filter(value => typeof value === 'number') as Unit[];
+  categories = Object.values(Category).filter(value => typeof value === 'number') as Category[];
+  categoryLabels = CategoryLabels;
+  unitLabels = UnitLabels;
+  suppliers: Supplier[] = [];
   isLoading = false;
   maxDate = new Date();
   minDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
   bsConfig = {
-    dateInputFormat: 'DD/MM/YYYY',
+    dateInputFormat: 'YYYY-MM-DD',
     containerClass: 'theme-default',
-    showWeekNumbers: false,
-    adaptivePosition: true
+    adaptivePosition: true,
+    showWeekNumbers: false
   };
 
   constructor(
-    protected override ingredientService: IngredientService,
-    protected override supplierService: SupplierService,
-    protected override router: Router,
+    private ingredientService: IngredientService,
+    private supplierService: SupplierService,
+    private router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService,
-    private spinner: NgxSpinnerService
+    private formBuilder: FormBuilder,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {
-    super(ingredientService, supplierService, router);
+    this.createForm();
+    this.loadSuppliers();
   }
 
   ngOnInit(): void {
-    this.loadIngredient();
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id) {
+        this.loadIngredient(id);
+      }
+    });
   }
 
-  private loadIngredient(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (id) {
-      this.isLoading = true;
-      this.spinner.show();
-      this.ingredientService.getIngredientById(id).subscribe({
-        next: (ingredient: Ingredient) => {
-          console.log('Ingredient from API:', ingredient);
-          console.log('Unit type:', typeof ingredient.unit);
-          console.log('Category type:', typeof ingredient.category);
-          
-          // Convert enum string names to their numeric values
-          const formValue = {
-            ...ingredient,
-            unit: typeof ingredient.unit === 'string' ? this.getUnitValue(ingredient.unit) : ingredient.unit,
-            category: typeof ingredient.category === 'string' ? this.getCategoryValue(ingredient.category) : ingredient.category,
-            purchaseDate: new Date(ingredient.purchaseDate),
-            expiryDate: ingredient.expiryDate ? new Date(ingredient.expiryDate) : null
-          };
-          
-          console.log('Form values after conversion:', formValue);
-          this.ingredientForm.patchValue(formValue);
-          
-          this.isLoading = false;
-          this.spinner.hide();
-        },
-        error: (error: any) => {
-          console.error('Error loading ingredient:', error);
-          this.toastr.error('Failed to load ingredient details');
-          this.isLoading = false;
-          this.spinner.hide();
-          this.router.navigate(['/ingredients']);
-        }
-      });
-    }
+  private createForm(): void {
+    this.ingredientForm = this.formBuilder.group({
+      id: [''],
+      name: ['', [Validators.required]],
+      quantity: ['', [Validators.required, Validators.min(0)]],
+      unit: [null, [Validators.required]],
+      unitCost: ['', [Validators.required, Validators.min(0)]],
+      category: [null, [Validators.required]],
+      supplierId: ['', [Validators.required]],
+      purchaseDate: ['', [Validators.required]],
+      expiryDate: ['', [Validators.required]],
+      isPerishable: [false],
+      reorderLevel: ['', [Validators.required, Validators.min(0)]]
+    });
+  }
+
+  private loadSuppliers(): void {
+    this.supplierService.getSuppliers(1, 100, "", "name", "asc").subscribe({
+      next: (response) => {
+        this.suppliers = response.items.filter(
+          (supplier: Supplier) => supplier.status
+        );
+      },
+      error: (error: any) => {
+        console.error("Error loading suppliers:", error);
+        this.toastr.error("Failed to load suppliers");
+      }
+    });
+  }
+
+  private loadIngredient(id: number): void {
+    this.spinner.show();
+    this.ingredientService.getIngredientById(id).subscribe({
+      next: (ingredient: Ingredient) => {
+
+        // Convert string/number values to enum values
+        const unitValue = typeof ingredient.unit === 'string' 
+          ? Unit[ingredient.unit as keyof typeof Unit]
+          : ingredient.unit;
+        
+        const categoryValue = typeof ingredient.category === 'string'
+          ? Category[ingredient.category as keyof typeof Category]
+          : ingredient.category;
+
+        // Set form values with the correct enum values
+        const formValues = {
+          ...ingredient,
+          unit: unitValue,
+          category: categoryValue,
+          purchaseDate: new Date(ingredient.purchaseDate),
+          expiryDate: new Date(ingredient.expiryDate)
+        };
+        
+        this.ingredientForm.patchValue(formValues);
+        this.spinner.hide();
+      },
+      error: (error: any) => {
+        console.error('Error loading ingredient:', error);
+        this.toastr.error('Failed to load ingredient');
+        this.spinner.hide();
+      }
+    });
   }
 
   onSubmit(): void {
     if (this.ingredientForm.valid) {
-      this.isLoading = true;
       this.spinner.show();
-      const id = Number(this.route.snapshot.paramMap.get('id'));
       const formData = this.ingredientForm.value;
-      formData.id = id;
+      const ingredient: UpdateIngredient = {
+        ...formData,
+        unit: Number(formData.unit),
+        category: Number(formData.category)
+      };
 
-      this.ingredientService.updateIngredient(id, formData).subscribe({
+      this.ingredientService.updateIngredient(ingredient.id, ingredient).subscribe({
         next: () => {
-          this.toastr.success('Ingredient updated successfully');
-          this.isLoading = false;
           this.spinner.hide();
+          this.toastr.success('Ingredient updated successfully!');
           this.router.navigate(['/ingredients']);
         },
         error: (error: any) => {
           console.error('Error updating ingredient:', error);
-          this.toastr.error('Failed to update ingredient');
-          this.isLoading = false;
           this.spinner.hide();
+          this.toastr.error('Failed to update ingredient');
         }
       });
     } else {
       this.markFormGroupTouched(this.ingredientForm);
+      this.toastr.warning('Please fill in all required fields');
     }
   }
 
@@ -136,14 +172,12 @@ export class IngredientUpdateComponent extends IngredientFormBase implements OnI
     return '';
   }
 
-  // Helper methods to convert enum string names to values
-  private getUnitValue(unitName: string): Unit {
-    const unitEntry = Object.entries(Unit).find(([key]) => key === unitName);
-    return unitEntry ? unitEntry[1] as Unit : Unit.Unit; // Default to Unit if not found
-  }
-
-  private getCategoryValue(categoryName: string): Category {
-    const categoryEntry = Object.entries(Category).find(([key]) => key === categoryName);
-    return categoryEntry ? categoryEntry[1] as Category : Category.Other; // Default to Other if not found
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 }

@@ -1,65 +1,95 @@
-<div class="container-fluid py-4">
-  <!-- Header Section -->
+<div class="ingredient-list-container">
+  <!-- Update Form Header -->
   <div class="content-header mb-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
       <div>
         <h1 class="content-title mb-1">
           <i class="fas fa-edit me-2 text-primary"></i>Edit Ingredient
         </h1>
-        <p class="text-muted mb-0">Update ingredient details and inventory information</p>
+        <p class="text-muted mb-0">Update ingredient information</p>
       </div>
-      <button class="btn btn-outline-secondary" routerLink="/ingredients" tooltip="Return to ingredients list">
+      <button class="btn btn-outline-secondary" routerLink="/ingredients">
         <i class="fas fa-arrow-left me-2"></i>Back to List
       </button>
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- Ingredient Form -->
   <div class="card">
     <div class="card-body">
       <form [formGroup]="ingredientForm" (ngSubmit)="onSubmit()" class="ingredient-form">
-        <!-- Basic Information -->
+        <input type="hidden" formControlName="id">
+        
+        <!-- Form Grid -->
         <div class="form-grid">
+          <!-- Basic Information Section -->
           <div class="form-section">
             <h5 class="form-section-title">
-              <i class="fas fa-info-circle"></i>Basic Information
+              <i class="fas fa-info-circle text-primary me-2"></i>Basic Information
             </h5>
+
             <!-- Name -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-tag me-2"></i>Name
-              </label>
-              <input type="text" class="form-control" 
+              <label class="form-label required-field">Name</label>
+              <input type="text" 
+                     class="form-control" 
                      formControlName="name"
                      placeholder="Enter ingredient name"
-                     [class.is-invalid]="ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched"
-                     tooltip="Enter the ingredient's name">
+                     [class.is-invalid]="ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched">
               <div class="invalid-feedback">{{ getControlError('name') }}</div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="mb-3">
+              <label class="form-label required-field">Quantity</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="quantity"
+                     placeholder="Enter quantity"
+                     [class.is-invalid]="ingredientForm.get('quantity')?.invalid && ingredientForm.get('quantity')?.touched">
+              <div class="invalid-feedback">{{ getControlError('quantity') }}</div>
             </div>
 
             <!-- Unit -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-balance-scale me-2"></i>Unit
-              </label>
+              <label class="form-label required-field">Unit</label>
               <select class="form-select" 
                       formControlName="unit"
                       [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched">
-                <option [ngValue]="null">Select a unit</option>
-                <option *ngFor="let unit of units" [ngValue]="unit">{{ unitLabels[unit] }}</option>
+                <option [ngValue]="null">Select unit</option>
+                <option *ngFor="let unit of units" [ngValue]="unit">
+                  {{ unitLabels[unit] }}
+                </option>
               </select>
               <div class="invalid-feedback">{{ getControlError('unit') }}</div>
             </div>
 
+            <!-- Unit Cost -->
+            <div class="mb-3">
+              <label class="form-label required-field">Unit Cost</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="unitCost"
+                     placeholder="Enter unit cost"
+                     step="0.01"
+                     [class.is-invalid]="ingredientForm.get('unitCost')?.invalid && ingredientForm.get('unitCost')?.touched">
+              <div class="invalid-feedback">{{ getControlError('unitCost') }}</div>
+            </div>
+          </div>
+
+          <!-- Additional Details Section -->
+          <div class="form-section">
+            <h5 class="form-section-title">
+              <i class="fas fa-clipboard-list text-primary me-2"></i>Additional Details
+            </h5>
+
             <!-- Category -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-boxes me-2"></i>Category
-              </label>
+              <label class="form-label required-field">Category</label>
               <select class="form-select" 
                       formControlName="category"
                       [class.is-invalid]="ingredientForm.get('category')?.invalid && ingredientForm.get('category')?.touched">
-                <option [ngValue]="null">Select a category</option>
+                <option [ngValue]="null">Select category</option>
                 <option *ngFor="let category of categories" [ngValue]="category">
                   {{ categoryLabels[category] }}
                 </option>
@@ -69,140 +99,83 @@
 
             <!-- Supplier -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-truck"></i>Supplier
-              </label>
+              <label class="form-label required-field">Supplier</label>
               <select class="form-select" 
                       formControlName="supplierId"
                       [class.is-invalid]="ingredientForm.get('supplierId')?.invalid && ingredientForm.get('supplierId')?.touched">
-                <option value="" disabled selected>Select a supplier</option>
-                <option *ngFor="let supplier of suppliers" [ngValue]="supplier.id">
+                <option value="" selected>Select supplier</option>
+                <option *ngFor="let supplier of suppliers" [value]="supplier.id">
                   {{ supplier.name }}
                 </option>
               </select>
               <div class="invalid-feedback">{{ getControlError('supplierId') }}</div>
             </div>
-          </div>
-
-          <!-- Inventory Information -->
-          <div class="form-section">
-            <h5 class="form-section-title">
-              <i class="fas fa-boxes"></i>Inventory Information
-            </h5>
-            <!-- Quantity -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-cubes me-2"></i>Quantity
-              </label>
-              <input type="number" class="form-control" 
-                     formControlName="quantity"
-                     placeholder="Enter quantity"
-                     [class.is-invalid]="ingredientForm.get('quantity')?.invalid && ingredientForm.get('quantity')?.touched"
-                     tooltip="Enter the quantity in stock">
-              <div class="invalid-feedback">{{ getControlError('quantity') }}</div>
-            </div>
-
-            <!-- Unit Cost -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-dollar-sign me-2"></i>Unit Cost
-              </label>
-              <input type="number" class="form-control" 
-                     formControlName="unitCost"
-                     placeholder="Enter unit cost"
-                     [class.is-invalid]="ingredientForm.get('unitCost')?.invalid && ingredientForm.get('unitCost')?.touched"
-                     tooltip="Enter the cost per unit">
-              <div class="invalid-feedback">{{ getControlError('unitCost') }}</div>
-            </div>
 
             <!-- Purchase Date -->
             <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-calendar-alt me-2"></i>Purchase Date
-              </label>
+              <label class="form-label required-field">Purchase Date</label>
               <input type="text"
                      class="form-control"
                      formControlName="purchaseDate"
-                     placeholder="Select purchase date"
-                     [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched"
+                     placeholder="YYYY-MM-DD"
+                     bsDatepicker
                      [bsConfig]="bsConfig"
                      [maxDate]="maxDate"
-                     bsDatepicker
-                     tooltip="Select the purchase date">
+                     [minDate]="minDate"
+                     [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched">
               <div class="invalid-feedback">{{ getControlError('purchaseDate') }}</div>
             </div>
 
             <!-- Expiry Date -->
             <div class="mb-3">
-              <label class="form-label">
-                <i class="fas fa-calendar-times me-2"></i>Expiry Date
-              </label>
+              <label class="form-label required-field">Expiry Date</label>
               <input type="text"
                      class="form-control"
                      formControlName="expiryDate"
-                     placeholder="Select expiry date"
-                     [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched"
-                     [bsConfig]="bsConfig"
-                     [minDate]="minDate"
+                     placeholder="YYYY-MM-DD"
                      bsDatepicker
-                     tooltip="Select the expiry date">
+                     [bsConfig]="bsConfig"
+                     [minDate]="ingredientForm.get('purchaseDate')?.value || minDate"
+                     [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched">
               <div class="invalid-feedback">{{ getControlError('expiryDate') }}</div>
-            </div>
-
-            <!-- Reorder Level -->
-            <div class="mb-3">
-              <label class="form-label required-field">
-                <i class="fas fa-level-down-alt me-2"></i>Reorder Level
-              </label>
-              <input type="number" class="form-control" 
-                     formControlName="reorderLevel"
-                     placeholder="Enter reorder level"
-                     [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched"
-                     tooltip="Enter the quantity at which to reorder">
-              <div class="invalid-feedback">{{ getControlError('reorderLevel') }}</div>
             </div>
 
             <!-- Is Perishable -->
             <div class="mb-3">
-              <label class="form-label d-block">
-                <i class="fas fa-clock me-2"></i>Perishable Item
-              </label>
-              <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" 
-                       formControlName="isPerishable"
-                       id="isPerishable"
-                       tooltip="Mark if the ingredient is perishable">
+              <div class="form-check">
+                <input type="checkbox" 
+                       class="form-check-input" 
+                       formControlName="isPerishable" 
+                       id="isPerishable">
                 <label class="form-check-label" for="isPerishable">
-                  This ingredient can expire
+                  Perishable Item
                 </label>
               </div>
+            </div>
+
+            <!-- Reorder Level -->
+            <div class="mb-3">
+              <label class="form-label required-field">Reorder Level</label>
+              <input type="number" 
+                     class="form-control" 
+                     formControlName="reorderLevel"
+                     placeholder="Enter reorder level"
+                     [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched">
+              <div class="invalid-feedback">{{ getControlError('reorderLevel') }}</div>
             </div>
           </div>
         </div>
 
         <!-- Form Actions -->
         <div class="form-actions d-flex justify-content-end gap-3">
-          <button type="button" class="btn btn-outline-secondary" 
-                  routerLink="/ingredients"
-                  [disabled]="isLoading">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/ingredients">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary" 
-                  [disabled]="!ingredientForm.valid || isLoading">
-            <i class="fas fa-save me-2"></i>Save Changes
+          <button type="submit" class="btn btn-primary" [disabled]="!ingredientForm.valid">
+            Update Ingredient
           </button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
-<!-- Loading Spinner -->
-<ngx-spinner 
-  bdColor="rgba(0, 0, 0, 0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-clip-rotate"
-  [fullScreen]="true">
-  <p style="color: white">Loading...</p>
-</ngx-spinner>

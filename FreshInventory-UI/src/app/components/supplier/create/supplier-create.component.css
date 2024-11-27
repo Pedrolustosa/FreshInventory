@@ -3,7 +3,22 @@
 }
 
 .content-header {
+  background: linear-gradient(to right, var(--bs-primary-bg-subtle), var(--bs-light));
+  border-radius: 0.5rem;
+  padding: 1.5rem;
   margin-bottom: 2rem;
+}
+
+.content-title {
+  color: #2c3e50;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .supplier-form {
@@ -27,6 +42,7 @@
 .form-section-title {
   color: #2c3e50;
   font-size: 1.25rem;
+  font-weight: 500;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;

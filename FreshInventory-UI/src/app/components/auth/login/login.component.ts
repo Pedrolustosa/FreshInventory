@@ -23,6 +23,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   showPassword = false;
   isLoading = false;
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,49 +48,33 @@ export class LoginComponent {
     });
   }
 
-  async onSubmit(): Promise<void> {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.spinner.show();
-
-      const MIN_LOADING_TIME = 2000;
-      const startTime = Date.now();
-
-      this.authService.login(this.loginForm.value).subscribe({
-        next: async () => {
-          const elapsedTime = Date.now() - startTime;
-          if (elapsedTime < MIN_LOADING_TIME) {
-            await this.delay(MIN_LOADING_TIME - elapsedTime);
-          }
-
-          this.spinner.hide();
-          this.isLoading = false;
-          this.toastr.success("Login successful! Welcome back.");
-          this.router.navigate(["/dashboard"]);
-        },
-        error: async (err) => {
-          const elapsedTime = Date.now() - startTime;
-          if (elapsedTime < MIN_LOADING_TIME) {
-            await this.delay(MIN_LOADING_TIME - elapsedTime);
-          }
-
-          this.spinner.hide();
-          this.isLoading = false;
-          this.toastr.error(
-            err?.error?.message || "Invalid email or password. Please try again."
-          );
-        },
-      });
-    } else {
-      this.markFormGroupTouched(this.loginForm);
-      this.toastr.warning(
-        "Please complete all required fields correctly to proceed."
-      );
-    }
+  // Getter for easy access to form fields
+  get f() {
+    return this.loginForm.controls;
   }
 
-  togglePassword(): void {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  async onSubmit(): Promise<void> {
+    this.submitted = true;
+
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      const credentials = this.loginForm.value;
+      await this.authService.login(credentials).toPromise();
+      this.toastr.success('Login successful!');
+      this.router.navigate(['/dashboard']);
+    } catch (error: any) {
+      this.toastr.error(error.message || 'Login failed. Please try again.');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {

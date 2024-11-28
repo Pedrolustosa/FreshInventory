@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CreateRecipe, Recipe } from '../models/recipe.model';
+import { CreateRecipe, Recipe, RecipeCreateDto } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,30 +33,22 @@ export class RecipeService {
   getRecipeById(id: number): Observable<Recipe> {
     return this.http.get<Recipe>(`${this.apiUrl}/GetRecipeById/${id}`);
   }
-  // createIngredient(ingredient: CreateIngredient): Observable<Ingredient> {
-  //   return this.http.post<Ingredient>(`${this.apiUrl}/CreateIngredient`, ingredient);
-  // }
-  createRecipe(recipe: CreateRecipe): Observable<Recipe> {
-    console.log('Dados recebidos do form:', recipe);
 
-    const recipeCreateDto = {
-      recipeCreateDto: {
-        Name: recipe.name,
-        Category: recipe.category,
-        Description: recipe.description,
-        PreparationTime: recipe.preparationTime.toString(),
-        Servings: recipe.servings.toString(),
-        Ingredients: recipe.ingredients.map(ing => ({
-          IngredientId: ing.ingredientId,
-          Quantity: ing.quantity
-        })),
-        Instructions: recipe.instructions
-      }
+  createRecipe(recipe: CreateRecipe): Observable<RecipeCreateDto> {
+    const recipeDto: RecipeCreateDto = {
+      Name: recipe.name,
+      Category: recipe.category,
+      PreparationTime: recipe.preparationTime.toString(),
+      Servings: recipe.servings.toString(),
+      Description: recipe.description,
+      IsAvailable: recipe.isAvailable,
+      Instructions: recipe.instructions,
+      Ingredients: recipe.ingredients.map(ing => ({
+        IngredientId: ing.ingredientId,
+        Quantity: ing.quantity
+      }))
     };
-
-    console.log('Dados formatados para API:', recipeCreateDto);
-
-    return this.http.post<Recipe>(`${this.apiUrl}/CreateRecipe`, recipeCreateDto);
+    return this.http.post<RecipeCreateDto>(`${this.apiUrl}/CreateRecipe`, recipeDto);
   }
 
   updateRecipe(id: number, recipe: Partial<Recipe>): Observable<Recipe> {

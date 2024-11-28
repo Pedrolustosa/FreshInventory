@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FreshInventory.Application.DTO.RecipeDTO
+﻿namespace FreshInventory.Application.DTO.RecipeDTO
 {
     public class RecipeCreateDto
     {
@@ -10,7 +8,7 @@ namespace FreshInventory.Application.DTO.RecipeDTO
         public string PreparationTime { get; set; }
         public string Servings { get; set; }
         public bool IsAvailable { get; set; }
-        public List<string> Instructions { get; set; }
-        public List<RecipeIngredientCreateDto> Ingredients { get; set; }
+        public List<string> Instructions { get; set; } = new List<string>();
+        public List<RecipeIngredientCreateDto> Ingredients { get; set; } = new List<RecipeIngredientCreateDto>();
     }
 }

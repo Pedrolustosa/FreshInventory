@@ -13,6 +13,7 @@ export interface CreateRecipe {
   description: string;
   ingredients: RecipeIngredient[];
   instructions: string[];
+  isAvailable: boolean;
 }
 
 // Interface que representa o DTO da API (PascalCase)
@@ -22,6 +23,7 @@ export interface RecipeCreateDto {
   PreparationTime: string;
   Servings: string;
   Description: string;
+  IsAvailable: boolean;
   Ingredients: {
     IngredientId: number;
     Quantity: number;
@@ -39,6 +41,7 @@ export interface Recipe {
   description: string;
   ingredients: RecipeIngredient[];
   instructions: string[];
+  isAvailable: boolean;
   isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

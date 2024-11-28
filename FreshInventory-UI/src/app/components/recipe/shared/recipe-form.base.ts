@@ -39,9 +39,10 @@ export abstract class RecipeFormBase {
       description: ['', Validators.required],
       category: ['', Validators.required],
       preparationTime: ['', [Validators.required, Validators.min(1)]],
-      servings: ['', [Validators.required, Validators.min(1)]],
+      servings: ['', [Validators.required, Validators.min(1)]], 
+      isAvailable: [true], // Adding isAvailable field with default value true
       ingredients: ingredientsArray,
-      instructions: instructionsArray
+      instructions: instructionsArray 
     });
 
     // Add validators after form is created
@@ -190,6 +191,7 @@ export abstract class RecipeFormBase {
         description: formValue.description?.trim(),
         preparationTime: Number(formValue.preparationTime),
         servings: Number(formValue.servings),
+        isAvailable: formValue.isAvailable,
         ingredients,
         instructions
       };

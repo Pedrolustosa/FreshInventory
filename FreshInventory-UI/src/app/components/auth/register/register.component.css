@@ -1,120 +1,135 @@
-.row.g-3>.col {
-  margin-bottom: 0.5rem;
+.login-background {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
 }
 
-/* Social Links (caso sejam necessários futuramente) */
-.social-links {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
 }
 
-.social-link {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  transition: all 0.3s ease-in-out;
-  text-decoration: none;
-}
-
-.social-link:hover {
-  transform: scale(1.1);
-}
-
-/* Botão Principal */
-.btn-primary {
-  background-color: var(--bs-primary) !important;
-  border: none !important;
-  transition: all 0.3s ease-in-out !important;
-}
-
-.btn-primary:hover {
-  background-color: #364ad9 !important;
-}
-
-/* Card Styles */
-.card {
-  border-radius: 15px !important;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-}
-
-.card-body {
-  padding: .8rem !important;
-}
-
-/* Text Colors */
-.text-primary {
-  color: var(--bs-primary) !important;
-}
-
-.text-primary:hover {
-  color: #364ad9 !important;
-  text-decoration: underline !important;
-}
-
-/* Form Control Focus */
-.form-floating {
-  margin-bottom: 1rem !important;
-}
-
-.form-floating label {
-  font-size: .8rem;
-  font-weight: 500;
-}
-
-.form-control {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  border-radius: 5px;
-}
-
-.form-control-lg {
-  padding: 0.75rem;
-  font-size: 1rem;
-}
-
-.form-control:focus {
-  border-color: var(--bs-primary) !important;
-  box-shadow: 0 0 0 0.25rem rgba(65, 84, 241, 0.25) !important;
-}
-
-/* Password Strength */
-.progress {
-  height: 4px;
-  margin-top: 0.25rem;
-}
-
-.progress-bar {
-  border-radius: 2px;
-}
-
-.progress-bar-weak {
-  background-color: var(--bs-danger) !important;
-}
-
-.progress-bar-medium {
-  background-color: var(--bs-warning) !important;
-}
-
-.progress-bar-strong {
-  background-color: var(--bs-success) !important;
-}
-
-/* Responsividade */
-@media (max-width: 991px) {
-  .bg-primary {
-    display: none !important;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+.card {
+  border-radius: 1rem !important;
+  transition: transform 0.3s ease;
+}
+
+.logo-img {
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+.form-floating {
+  position: relative;
+}
+
+.form-control {
+  border: 1.5px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6c757d;
+  padding: 0;
+  z-index: 4;
+}
+
+.password-toggle:hover {
+  color: #0d6efd;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:disabled {
+  background-color: #0d6efd;
+  opacity: 0.65;
+}
+
+a {
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #0a58ca !important;
+}
+
+/* Password Strength Styles */
+.password-strength-wrapper {
+  margin-top: 0.5rem;
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+.password-requirements {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  transition: color 0.3s ease;
+  margin-bottom: 0.25rem;
+}
+
+.password-requirements li.text-success {
+  color: #198754 !important;
+}
+
+.password-requirements i {
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 576px) {
+  .card {
+    margin: 1rem;
+  }
+  
   .card-body {
-    padding: 1.5rem !important;
+    padding: 1.5rem;
   }
 }

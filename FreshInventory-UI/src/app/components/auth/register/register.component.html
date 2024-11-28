@@ -1,168 +1,177 @@
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-secondary bg-opacity-10">
+<div class="min-vh-100 d-flex align-items-center justify-content-center login-background">
   <div class="container py-4">
-    <div class="card border-0 shadow-lg">
-      <div class="row g-0">
-        <!-- Left side - Image -->
-        <div class="col-lg-5 d-none d-lg-block bg-primary">
-          <div class="h-100 w-100 position-relative">
-            <img src="assets/Integrated_Inventory_System.png" alt="Fresh Inventory"
-              class="w-100 h-100 object-fit-cover">
-            <div class="position-absolute bottom-0 start-0 p-4 text-white bg-opacity-75">
-              <h3 class="fw-bold mb-2">Fresh Inventory</h3>
-              <p class="mb-0">Smart Kitchen Management System</p>
-            </div>
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg fade-in">
+          <!-- Card Header with Logo -->
+          <div class="card-header bg-white border-0 text-center pt-4">
+            <img src="assets/logo.png" alt="Fresh Inventory Logo" class="mb-3 logo-img" width="64">
+            <h2 class="fw-bold text-primary mb-2">Create Account</h2>
+            <p class="text-muted">Join Fresh Inventory today</p>
           </div>
-        </div>
 
-        <!-- Right side - Form -->
-        <div class="col-lg-7">
-          <div class="card-body">
-            <div class="text-center mb-3">
-              <h2 class="fw-bold text-primary mb-2">Create Account</h2>
-              <p class="text-muted">Join us to manage your fresh ingredients inventory</p>
-            </div>
-
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-              <div class="row g-3">
-                <!-- Full Name -->
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="text" class="form-control form-control-lg" id="fullName" formControlName="fullName"
-                      placeholder="Enter your full name"
-                      [class.is-invalid]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched">
-                    <label for="fullName"><i class="fas fa-user me-2"></i>Full Name</label>
-                    <div class="invalid-feedback">
-                      {{ getFieldError('fullName') }}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Date of Birth -->
-                <div class="col-md-6">
-                  <div class="form-floating position-relative">
-                    <input type="text" class="form-control form-control-lg" id="dateOfBirth"
-                      formControlName="dateOfBirth" placeholder="Select your date of birth" bsDatepicker
-                      [bsConfig]="{ containerClass: 'theme-default', dateInputFormat: 'DD/MM/YYYY' }"
-                      [maxDate]="maxDate"
-                      [class.is-invalid]="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched">
-                    <label for="dateOfBirth"><i class="fas fa-calendar me-2"></i>Date of Birth</label>
-                    <div class="invalid-feedback">
-                      Date of birth is required
-                    </div>
-                  </div>
+          <!-- Card Body -->
+          <div class="card-body px-4 py-4">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+              <!-- Full Name Field -->
+              <div class="form-floating mb-3">
+                <input type="text" 
+                       class="form-control" 
+                       id="fullNameInput" 
+                       formControlName="fullName" 
+                       placeholder="John Doe"
+                       [ngClass]="{'is-invalid': submitted && f['fullName'].errors}"
+                       required>
+                <label for="fullNameInput">Full Name</label>
+                <div class="invalid-feedback" *ngIf="submitted && f['fullName'].errors">
+                  <div *ngIf="f['fullName'].errors['required']">Full name is required</div>
+                  <div *ngIf="f['fullName'].errors['minlength']">Full name must be at least 3 characters</div>
                 </div>
               </div>
 
-              <div class="row g-3 ">
-                <!-- Email -->
-                <div class="col-12">
-                  <div class="form-floating">
-                    <input type="email" class="form-control form-control-lg" id="email" formControlName="email"
-                      placeholder="Enter your email"
-                      [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-                    <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
-                    <div class="invalid-feedback">
-                      {{ getFieldError('email') }}
-                    </div>
-                  </div>
+              <!-- Email Field -->
+              <div class="form-floating mb-3">
+                <input type="email" 
+                       class="form-control" 
+                       id="emailInput" 
+                       formControlName="email" 
+                       placeholder="name@example.com"
+                       [ngClass]="{'is-invalid': submitted && f['email'].errors}"
+                       required>
+                <label for="emailInput">Email address</label>
+                <div class="invalid-feedback" *ngIf="submitted && f['email'].errors">
+                  <div *ngIf="f['email'].errors['required']">Email is required</div>
+                  <div *ngIf="f['email'].errors['email']">Please enter a valid email</div>
                 </div>
               </div>
 
-              <div class="row g-3 ">
-                <!-- Password -->
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input [type]="showPassword ? 'text' : 'password'" class="form-control form-control-lg"
-                      id="password" formControlName="password" placeholder="Create a password"
-                      [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-                    <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
-                    <div class="invalid-feedback">
-                      {{ getFieldError('password') }}
-                    </div>
-                  </div>
-                  <!-- Password Strength -->
-                  <div class="">
-                    <div class="progress">
-                      <div class="progress-bar" [style.width.%]="passwordStrength"
-                        [class.progress-bar-weak]="passwordStrength <= 40"
-                        [class.progress-bar-medium]="passwordStrength > 40 && passwordStrength <= 80"
-                        [class.progress-bar-strong]="passwordStrength > 80"></div>
-                    </div>
-                    <small class="mt-1 d-block fw-bold" [class.text-danger]="passwordStrength <= 40"
-                      [class.text-warning]="passwordStrength > 40 && passwordStrength <= 80"
-                      [class.text-success]="passwordStrength > 80">
-                      Password Strength: {{ getPasswordStrengthText() }}
-                    </small>
-                  </div>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control form-control-lg"
-                      id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm your password"
-                      [class.is-invalid]="registerForm.hasError('mismatch') || (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched)">
-                    <label for="confirmPassword"><i class="fas fa-lock me-2"></i>Confirm Password</label>
-                    <div class="invalid-feedback">
-                      Passwords do not match
-                    </div>
-                  </div>
+              <!-- Date of Birth Field -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dateOfBirth"
+                  formControlName="dateOfBirth"
+                  placeholder="Date of Birth"
+                  bsDatepicker
+                  [bsConfig]="bsConfig"
+                  [maxDate]="maxDate"
+                  [ngClass]="{
+                    'is-invalid': f['dateOfBirth'].errors && (f['dateOfBirth'].touched || submitted)
+                  }"
+                />
+                <label for="dateOfBirth">Date of Birth</label>
+                <div class="invalid-feedback">
+                  {{ getFieldError("dateOfBirth") }}
                 </div>
               </div>
 
-              <!-- Password Criteria -->
-              <div class="card mt-3">
-                <div class="card-body">
-                  <p class="mb-2 fw-bold text-primary">Password Requirements:</p>
-                  <ul class="list-unstyled mb-0 small">
-                    <li class="mb-1 d-flex align-items-center" [class.text-success]="passwordCriteria.length">
-                      <i class="fas me-2" [class.fa-check]="passwordCriteria.length"
-                        [class.fa-times]="!passwordCriteria.length"></i>
+              <!-- Password Field -->
+              <div class="form-floating mb-3">
+                <input [type]="showPassword ? 'text' : 'password'"
+                       class="form-control" 
+                       id="passwordInput" 
+                       formControlName="password"
+                       placeholder="Password"
+                       [ngClass]="{'is-invalid': submitted && f['password'].errors}"
+                       required>
+                <label for="passwordInput">Password</label>
+                <button type="button" 
+                        class="btn btn-link password-toggle" 
+                        (click)="togglePasswordVisibility()">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+                <div class="invalid-feedback" *ngIf="submitted && f['password'].errors">
+                  <div *ngIf="f['password'].errors['required']">Password is required</div>
+                  <div *ngIf="f['password'].errors['pattern']">Password must contain at least 8 characters, including uppercase, lowercase, number and special character</div>
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="form-floating mb-3">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="confirmPassword"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm Password"
+                  [ngClass]="{
+                    'is-invalid': (f['confirmPassword'].errors && (f['confirmPassword'].touched || submitted))
+                  }"
+                />
+                <label for="confirmPassword">Confirm Password</label>
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="{
+                      'bi-eye-fill': !showPassword,
+                      'bi-eye-slash-fill': showPassword
+                    }"
+                  ></i>
+                </button>
+                <div class="invalid-feedback" *ngIf="f['confirmPassword'].errors?.['required'] && (f['confirmPassword'].touched || submitted)">
+                  Confirm Password is required
+                </div>
+                <div class="invalid-feedback" *ngIf="f['confirmPassword'].errors?.['mismatch'] && (f['confirmPassword'].touched || submitted)">
+                  Passwords do not match
+                </div>
+              </div>
+
+              <!-- Password Strength -->
+              <div class="password-strength mb-4" *ngIf="registerForm.get('password')?.value">
+                <div class="progress mb-2" style="height: 5px;">
+                  <div class="progress-bar" [style.width.%]="passwordStrength"
+                       [ngClass]="{
+                         'bg-danger': passwordStrength <= 40,
+                         'bg-warning': passwordStrength > 40 && passwordStrength <= 80,
+                         'bg-success': passwordStrength > 80
+                       }">
+                  </div>
+                </div>
+                <div class="password-requirements small">
+                  <p class="mb-1 text-muted">Password must contain:</p>
+                  <ul class="list-unstyled mb-0">
+                    <li [ngClass]="{'text-success': passwordCriteria.length}">
+                      <i class="bi" [ngClass]="passwordCriteria.length ? 'bi-check-circle-fill' : 'bi-circle'"></i>
                       At least 8 characters
                     </li>
-                    <li class="mb-1 d-flex align-items-center" [class.text-success]="passwordCriteria.lowercase">
-                      <i class="fas me-2" [class.fa-check]="passwordCriteria.lowercase"
-                        [class.fa-times]="!passwordCriteria.lowercase"></i>
+                    <li [ngClass]="{'text-success': passwordCriteria.lowercase}">
+                      <i class="bi" [ngClass]="passwordCriteria.lowercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
                       One lowercase letter
                     </li>
-                    <li class="mb-1 d-flex align-items-center" [class.text-success]="passwordCriteria.uppercase">
-                      <i class="fas me-2" [class.fa-check]="passwordCriteria.uppercase"
-                        [class.fa-times]="!passwordCriteria.uppercase"></i>
+                    <li [ngClass]="{'text-success': passwordCriteria.uppercase}">
+                      <i class="bi" [ngClass]="passwordCriteria.uppercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
                       One uppercase letter
                     </li>
-                    <li class="mb-1 d-flex align-items-center" [class.text-success]="passwordCriteria.number">
-                      <i class="fas me-2" [class.fa-check]="passwordCriteria.number"
-                        [class.fa-times]="!passwordCriteria.number"></i>
+                    <li [ngClass]="{'text-success': passwordCriteria.number}">
+                      <i class="bi" [ngClass]="passwordCriteria.number ? 'bi-check-circle-fill' : 'bi-circle'"></i>
                       One number
                     </li>
-                    <li class="d-flex align-items-center" [class.text-success]="passwordCriteria.special">
-                      <i class="fas me-2" [class.fa-check]="passwordCriteria.special"
-                        [class.fa-times]="!passwordCriteria.special"></i>
+                    <li [ngClass]="{'text-success': passwordCriteria.special}">
+                      <i class="bi" [ngClass]="passwordCriteria.special ? 'bi-check-circle-fill' : 'bi-circle'"></i>
                       One special character
                     </li>
                   </ul>
                 </div>
               </div>
 
-              <!-- Buttons -->
-              <div class="row g-0 mt-4">
-                <div class="col-12">
-                  <button type="submit" class="btn btn-primary btn-lg w-100"
-                    [disabled]="registerForm.invalid || isLoading">
-                    <i class="fas" [ngClass]="{
-                          'fa-user-plus': !isLoading,
-                          'fa-spinner': isLoading,
-                          'fa-spin': isLoading
-                        }"></i>
-                    {{ isLoading ? 'Creating Account...' : 'Create Account' }}
-                  </button>
-                </div>
-                <div class="col-12 mt-1">
-                  <a routerLink="/auth/login" class="btn btn-outline-secondary btn-lg w-100">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Login
-                  </a>
-                </div>
-              </div>
+              <!-- Submit Button -->
+              <button type="submit" 
+                      class="btn btn-primary w-100 py-2 mb-3"
+                      [disabled]="registerForm.invalid || isLoading">
+                <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+                {{ isLoading ? 'Creating account...' : 'Create Account' }}
+              </button>
+
+              <!-- Login Link -->
+              <p class="text-center mb-0">
+                Already have an account? 
+                <a routerLink="/auth/login" class="text-primary text-decoration-none">Sign in</a>
+              </p>
             </form>
           </div>
         </div>

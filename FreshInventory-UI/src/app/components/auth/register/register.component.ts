@@ -30,16 +30,24 @@ import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
 export class RegisterComponent {
   registerForm: FormGroup;
   showPassword = false;
-  showConfirmPassword = false;
   isLoading = false;
   passwordStrength = 0;
   maxDate = new Date();
+  submitted = false;
+  bsConfig = {
+    containerClass: 'theme-default',
+    dateInputFormat: 'DD/MM/YYYY',
+    showWeekNumbers: false,
+    adaptivePosition: true,
+    isAnimated: true
+  };
   passwordCriteria = {
     length: false,
     lowercase: false,
     uppercase: false,
     number: false,
     special: false,
+    specialChar: false
   };
 
   constructor(
@@ -49,43 +57,51 @@ export class RegisterComponent {
     private toastr: ToastrService,
     private spinner: NgxSpinnerService
   ) {
-    this.registerForm = this.fb.group(
-      {
-        fullName: ["", [Validators.required, Validators.minLength(3)]],
-        email: [
-          "",
-          [
-            Validators.required,
-            Validators.email,
-            Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$"),
-          ],
+    this.registerForm = this.fb.group({
+      fullName: ["", [Validators.required, Validators.minLength(3)]],
+      email: [
+        "",
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$"),
         ],
-        dateOfBirth: [null, [Validators.required]],
-        password: [
-          "",
-          [
-            Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-            ),
-          ],
+      ],
+      dateOfBirth: [null, [Validators.required]],
+      password: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
         ],
-        confirmPassword: ["", [Validators.required]],
-      },
-      {
-        validator: this.passwordMatchValidator,
-      }
-    );
+      ],
+      confirmPassword: ["", [Validators.required]]
+    }, {
+      validator: this.passwordMatchValidator('password', 'confirmPassword')
+    });
 
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
 
     this.registerForm.get("password")?.valueChanges.subscribe((password) => {
-      this.updatePasswordStrength(password);
+      this.updatePasswordStrength(password || "");
     });
   }
 
+  // Getter for easy access to form fields
+  get f() {
+    return this.registerForm.controls;
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit(): void {
+    this.submitted = true;
+    
     if (this.registerForm.valid) {
       this.spinner.show();
       const formValue = this.registerForm.value;
@@ -102,6 +118,7 @@ export class RegisterComponent {
           this.toastr.success(
             "Registration successful! Welcome to Fresh Inventory."
           );
+          this.router.navigate(["/auth/login"]);
         },
         error: (error) => {
           this.spinner.hide();
@@ -120,36 +137,24 @@ export class RegisterComponent {
     this.router.navigate(["/auth/login"]);
   }
 
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  toggleConfirmPassword(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
   getFieldError(fieldName: string): string {
     const control = this.registerForm.get(fieldName);
-    if (control?.errors && control.touched) {
+    if (control?.errors && (control.touched || this.submitted)) {
       if (control.errors["required"]) {
-        return `${this.formatFieldName(fieldName)} is a required field.`;
+        return `${this.formatFieldName(fieldName)} is required`;
       }
       if (control.errors["email"]) {
-        return `Please enter a valid email address. Example: user@example.com.`;
+        return `Please enter a valid email address`;
       }
       if (control.errors["minlength"]) {
         const requiredLength = control.errors["minlength"].requiredLength;
-        return `${this.formatFieldName(
-          fieldName
-        )} must have at least ${requiredLength} characters.`;
+        return `${this.formatFieldName(fieldName)} must be at least ${requiredLength} characters`;
       }
       if (control.errors["pattern"]) {
-        return `The ${this.formatFieldName(
-          fieldName
-        )} doesn't meet the required format. Please review it.`;
-      }
-      if (control.errors["mismatch"]) {
-        return `Passwords do not match. Please make sure both passwords are identical.`;
+        if (fieldName === 'password') {
+          return 'Password must contain at least 8 characters, including uppercase, lowercase, number and special character';
+        }
+        return `Invalid ${this.formatFieldName(fieldName)} format`;
       }
     }
     return "";
@@ -168,7 +173,7 @@ export class RegisterComponent {
       case "confirmPassword":
         return "Confirm Password";
       default:
-        return "This field";
+        return fieldName;
     }
   }
 
@@ -179,18 +184,13 @@ export class RegisterComponent {
       uppercase: /[A-Z]/.test(password),
       number: /\d/.test(password),
       special: /[@$!%*?&]/.test(password),
+      specialChar: /[@$!%*?&]/.test(password),
     };
 
     const criteriaCount = Object.values(this.passwordCriteria).filter(
       Boolean
     ).length;
-    this.passwordStrength = (criteriaCount / 5) * 100;
-  }
-
-  getPasswordStrengthClass(): string {
-    if (this.passwordStrength <= 20) return "weak";
-    if (this.passwordStrength <= 60) return "medium";
-    return "strong";
+    this.passwordStrength = (criteriaCount / 6) * 100;
   }
 
   getPasswordStrengthText(): string {
@@ -203,10 +203,21 @@ export class RegisterComponent {
     }
   }
 
-  private passwordMatchValidator(g: FormGroup) {
-    return g.get("password")?.value === g.get("confirmPassword")?.value
-      ? null
-      : { mismatch: true };
+  private passwordMatchValidator(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+      const control = formGroup.controls[controlName];
+      const matchingControl = formGroup.controls[matchingControlName];
+
+      if (matchingControl.errors && !matchingControl.errors["mismatch"]) {
+        return;
+      }
+
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ mismatch: true });
+      } else {
+        matchingControl.setErrors(null);
+      }
+    };
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {

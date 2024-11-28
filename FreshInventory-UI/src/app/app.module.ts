@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { ToastrModule } from "ngx-toastr";
 import { jwtInterceptor } from "./interceptors/jwt.interceptor";
@@ -17,6 +18,7 @@ import { jwtInterceptor } from "./interceptors/jwt.interceptor";
     ReactiveFormsModule,
     NgxSpinnerModule.forRoot(),
     BsDropdownModule.forRoot(),
+    BsDatepickerModule.forRoot(),
     ToastrModule.forRoot()
   ],
   providers: [

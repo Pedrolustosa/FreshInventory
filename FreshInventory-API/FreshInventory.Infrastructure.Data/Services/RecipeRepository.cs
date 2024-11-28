@@ -17,7 +17,7 @@ public class RecipeRepository(ApplicationDbContext context, ILogger<RecipeReposi
     {
         try
         {
-            var query = _context.Recipes.AsNoTracking();
+            var query = _context.Recipes.Include(x => x.Ingredients).AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(r => r.Name.Contains(name));

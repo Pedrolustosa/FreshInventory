@@ -15,10 +15,8 @@
         public DateTime UpdatedDate { get; private set; }
         public ICollection<RecipeIngredient> Ingredients { get; private set; } = new List<RecipeIngredient>();
 
-        // Construtor vazio para EF Core
         public Recipe() { }
 
-        // Método para atualizar dados
         public void Update(string name, string description, string category, string preparationTime, string servings, bool isAvailable, List<RecipeIngredient> ingredients, List<string> instructions)
         {
             Name = name;
@@ -27,8 +25,8 @@
             PreparationTime = preparationTime;
             Servings = servings;
             IsAvailable = isAvailable;
-            Ingredients = ingredients ?? new List<RecipeIngredient>();
-            Instructions = instructions ?? new List<string>();
+            Ingredients = ingredients ?? [];
+            Instructions = instructions ?? [];
             UpdatedDate = DateTime.UtcNow;
         }
     }

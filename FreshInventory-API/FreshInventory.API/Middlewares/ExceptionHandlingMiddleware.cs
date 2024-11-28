@@ -27,19 +27,27 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, string message, HttpStatusCode statusCode)
+    private Task HandleExceptionAsync(HttpContext context, string message, HttpStatusCode statusCode)
     {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)statusCode;
-
-        var response = new
+        try
         {
-            StatusCode = context.Response.StatusCode,
-            Message = message
-        };
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)statusCode;
 
-        var jsonResponse = JsonSerializer.Serialize(response);
+            var response = new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = message
+            };
 
-        return context.Response.WriteAsync(jsonResponse);
+            var jsonResponse = JsonSerializer.Serialize(response);
+
+            return context.Response.WriteAsync(jsonResponse);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred.");
+            throw;
+        }
     }
 }

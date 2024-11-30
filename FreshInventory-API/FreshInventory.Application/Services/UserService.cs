@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using FreshInventory.Application.CQRS.Users.Command.CreateUser;
 using FreshInventory.Application.CQRS.Users.Command.LoginUser;
 using FreshInventory.Application.CQRS.Users.Queries;
+using FreshInventory.Application.CQRS.Users.Queries.GetUserByEmail;
 
 namespace FreshInventory.Application.Services;
 
@@ -77,9 +78,9 @@ public class UserService(IMediator mediator, IMapper mapper, ILogger<UserService
         }
     }
 
-    public async Task<UserDto> GetUserByIdAsync(string userId)
+    public async Task<UserDto> GetUserByIdAsync(Guid userId)
     {
-        if (string.IsNullOrWhiteSpace(userId))
+        if (userId == Guid.Empty)
         {
             _logger.LogWarning("Received null or empty userId for GetUserByIdAsync.");
             throw new ArgumentException("UserId cannot be null or empty.", nameof(userId));
@@ -106,10 +107,39 @@ public class UserService(IMediator mediator, IMapper mapper, ILogger<UserService
         }
     }
 
+    public async Task<UserDto?> GetUserByEmailAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            _logger.LogWarning("Received null or empty email for GetUserByEmailAsync.");
+            throw new ArgumentException("Email cannot be null or empty.", nameof(email));
+        }
+
+        try
+        {
+            var query = new GetUserByEmailQuery { Email = email };
+            var user = await _mediator.Send(query);
+
+            if (user == null)
+            {
+                _logger.LogWarning("User with email {Email} not found.", email);
+                return null;
+            }
+
+            _logger.LogInformation("User with email {Email} retrieved successfully.", email);
+            return _mapper.Map<UserDto>(user);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving user with email {Email}.", email);
+            throw;
+        }
+    }
+
+
     public async Task<bool> UpdateUserAsync(UpdateUserDto updateUserDto)
     {
         var command = _mapper.Map<UpdateUserCommand>(updateUserDto);
         return await _mediator.Send(command);
     }
-
 }

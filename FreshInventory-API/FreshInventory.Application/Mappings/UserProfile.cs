@@ -17,6 +17,8 @@ namespace FreshInventory.Application.Mappings
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
             CreateMap<LoginUserDto, LoginUserCommand>().ReverseMap();
             CreateMap<UpdateUserDto, User>().ReverseMap();
+            CreateMap<UpdateUserDto, UpdateUserCommand>().ReverseMap();
+            CreateMap<UpdateUserCommand, User>().ReverseMap();
         }
     }
 }

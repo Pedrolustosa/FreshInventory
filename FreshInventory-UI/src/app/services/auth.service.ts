@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
-import { tap, catchError } from "rxjs/operators";
+import { tap, catchError, map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
 import {
   LoginRequest,
   RegisterRequest,
-  UpdateUserRequest,
+  UpdateUserDto,
   AuthResponse,
   AuthError,
 } from "../models/auth.model";
@@ -74,28 +74,29 @@ export class AuthService {
       );
   }
 
-  updateUser(userData: UpdateUserRequest): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/update`, userData).pipe(
-      tap(() => {
-        const currentUser = this.currentUserValue;
-        if (currentUser) {
-          const updatedUser = {
-            ...currentUser,
-            user: {
+  updateUser(userData: UpdateUserDto): Observable<boolean> {
+    return this.http.put<boolean>(`${this.apiUrl}/profile`, userData).pipe(
+      tap((success) => {
+        if (success) {
+          // Atualiza o estado do usuário local com os novos dados
+          const currentUser = this.currentUserSubject.value;
+          if (currentUser) {
+            const updatedUser: AuthResponse = {
               ...currentUser,
               fullName: userData.fullName,
-              dateOfBirth: userData.dateOfBirth,
-              email: userData.email,
-            },
-          };
-          this.setCurrentUser(updatedUser);
+              email: userData.email || currentUser.email,
+              dateOfBirth: userData.dateOfBirth ? new Date(userData.dateOfBirth) : currentUser.dateOfBirth
+            };
+            
+            this.currentUserSubject.next(updatedUser);
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          }
         }
-        this.toastr.success("Profile updated successfully");
       }),
       catchError((error) => {
-        const errorMessage = error.error?.message || "Failed to update profile";
+        const errorMessage = error.error || 'Erro ao atualizar usuário';
         this.toastr.error(errorMessage);
-        return throwError(() => error);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }
@@ -147,5 +148,26 @@ export class AuthService {
 
   get token(): string | null {
     return this.currentUserValue?.token ?? null;
+  }
+
+  getUserByEmail(email: string): Observable<AuthResponse> {
+    return this.http.get<AuthResponse>(`${this.apiUrl}/email/${email}`).pipe(
+      tap((response) => {
+        // Atualiza o estado do usuário atual com os dados mais recentes
+        const currentUser = this.currentUserSubject.value;
+        if (currentUser) {
+          this.currentUserSubject.next({
+            ...currentUser,
+            ...response
+          });
+          localStorage.setItem('currentUser', JSON.stringify(this.currentUserSubject.value));
+        }
+      }),
+      catchError((error) => {
+        const errorMessage = error.error?.message || 'Erro ao buscar dados do usuário';
+        this.toastr.error(errorMessage);
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 }

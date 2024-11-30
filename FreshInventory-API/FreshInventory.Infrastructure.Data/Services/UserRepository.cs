@@ -12,11 +12,11 @@ public class UserRepository(UserManager<User> userManager, ILogger<UserRepositor
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILogger<UserRepository> _logger = logger;
 
-    public async Task<User> GetUserByIdAsync(string userId)
+    public async Task<User> GetUserByIdAsync(Guid userId)
     {
         try
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 _logger.LogWarning("User with ID {UserId} not found.", userId);

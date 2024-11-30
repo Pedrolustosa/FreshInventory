@@ -10,18 +10,28 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface UpdateUserRequest {
+export interface UserProfile {
   id: string;
   fullName: string;
-  dateOfBirth: Date;
   email: string;
+  dateOfBirth: Date;
+  phone?: string;
+  zipCode?: string;
+  city?: string;
+  state?: string;
+  address?: string;
+  profileImage?: string;
 }
 
-export interface AuthResponse {
+export interface UpdateUserDto {
   id: string;
   fullName: string;
-  email: string;
-  dateOfBirth: Date;
+  email?: string;
+  password?: string;
+  dateOfBirth?: Date | string;
+}
+
+export interface AuthResponse extends UserProfile {
   token: string;
 }
 

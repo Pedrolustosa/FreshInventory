@@ -49,7 +49,7 @@ export class IngredientListComponent implements OnInit {
     private ingredientService: IngredientService,
     private toastService: ToastService,
     private spinnerService: SpinnerService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadIngredients();
@@ -98,8 +98,8 @@ export class IngredientListComponent implements OnInit {
     this.selectedIngredient = ingredient;
     const modalElement = document.getElementById('deleteModal');
     if (modalElement) {
-      this.deleteModal = new Modal(modalElement);
-      this.deleteModal.show();
+      // Garantir que não há instância anterior do modal
+      Modal.getOrCreateInstance(modalElement).show();
     }
   }
 
@@ -111,10 +111,18 @@ export class IngredientListComponent implements OnInit {
       .pipe(
         finalize(() => {
           this.spinnerService.hide();
-          const modal = document.getElementById('deleteModal');
-          if (modal) {
-            const bsModal = Modal.getInstance(modal);
-            bsModal?.hide();
+          // Fecha o modal após a operação
+          const modalElement = document.getElementById('deleteModal');
+          if (modalElement) {
+            const modal = Modal.getInstance(modalElement);
+            if (modal) {
+              modal.hide();
+              // Remove o backdrop manualmente se necessário
+              const backdrop = document.querySelector('.modal-backdrop');
+              if (backdrop) {
+                backdrop.remove();
+              }
+            }
           }
         })
       )
@@ -122,10 +130,11 @@ export class IngredientListComponent implements OnInit {
         next: () => {
           this.toastService.success('Ingredient deleted successfully');
           this.loadIngredients();
+          this.selectedIngredient = null; // Limpa a seleção
         },
         error: (error) => {
-          this.toastService.error('Failed to delete ingredient. Please try again.');
           console.error('Error deleting ingredient:', error);
+          this.toastService.error(error?.error || 'Failed to delete ingredient. Please try again.');
         }
       });
   }

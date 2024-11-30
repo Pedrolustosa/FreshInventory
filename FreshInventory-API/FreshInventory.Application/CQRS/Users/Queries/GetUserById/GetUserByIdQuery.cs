@@ -5,6 +5,6 @@ namespace FreshInventory.Application.CQRS.Users.Queries
 {
     public class GetUserByIdQuery : IRequest<UserDto>
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

@@ -1,65 +1,87 @@
 <div class="profile-container">
   <div class="profile-header">
     <div class="profile-avatar">
-      <img src="../../../assets/avatar-placeholder.png" alt="Profile Picture">
-      <button class="btn btn-sm btn-light upload-btn">
+      <img [src]="profileImage || '../../../assets/avatar-placeholder.png'" [alt]="profileForm.get('fullName')?.value">
+      <button class="btn upload-btn" (click)="onUploadImage()" [disabled]="!isEditing">
         <i class="fas fa-camera"></i>
       </button>
     </div>
 
     <div class="profile-title">
-      <h1>My Profile</h1>
-      <p>Manage your account information</p>
+      <h1>Meu Perfil</h1>
+      <p>Gerencie suas informações pessoais</p>
     </div>
 
-    <button class="btn" [class.btn-primary]="!isEditing" [class.btn-success]="isEditing"
+    <button class="btn btn-action" [class.btn-primary]="!isEditing" [class.btn-success]="isEditing"
       (click)="isEditing ? onSubmit() : toggleEdit()">
       <i class="fas" [class.fa-edit]="!isEditing" [class.fa-save]="isEditing"></i>
-      {{isEditing ? 'Save Changes' : 'Edit Profile'}}
+      {{isEditing ? 'Salvar' : 'Editar'}}
     </button>
   </div>
 
   <div class="profile-content">
     <form [formGroup]="profileForm">
       <div class="form-section">
-        <h2>Account Information</h2>
-
+        <h2>Informações Pessoais</h2>
         <div class="row">
+          <input type="hidden" formControlName="id">
+          
           <div class="col-md-6 mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" formControlName="fullName">
-            <div class="invalid-feedback"
-              *ngIf="profileForm.get('fullName')?.errors?.['required'] && profileForm.get('fullName')?.touched">
-              Full name is required
+            <label class="form-label">Nome Completo</label>
+            <input type="text" class="form-control" formControlName="fullName" 
+                   [class.is-invalid]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched"
+                   [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('fullName')?.errors?.['required']">
+              Nome completo é obrigatório
             </div>
           </div>
 
           <div class="col-md-6 mb-3">
-            <label class="form-label">Email Address</label>
-            <input type="email" class="form-control" formControlName="email">
-            <div class="invalid-feedback"
-              *ngIf="profileForm.get('email')?.errors?.['required'] && profileForm.get('email')?.touched">
-              Email is required
+            <label class="form-label">E-mail</label>
+            <input type="email" class="form-control" formControlName="email" 
+                   [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+                   [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('email')?.errors?.['required']">
+              E-mail é obrigatório
             </div>
-            <div class="invalid-feedback"
-              *ngIf="profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched">
-              Please enter a valid email address
+            <div class="invalid-feedback" *ngIf="profileForm.get('email')?.errors?.['email']">
+              Digite um e-mail válido
             </div>
           </div>
 
           <div class="col-md-6 mb-3">
-            <label class="form-label">Date of Birth</label>
+            <label class="form-label">Data de Nascimento</label>
             <input type="text" class="form-control" formControlName="dateOfBirth"
-              [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-default' }" bsDatepicker
-              [maxDate]="maxDate"
-              [class.is-invalid]="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched">
-            <div class="invalid-feedback"
-              *ngIf="profileForm.get('dateOfBirth')?.errors?.['required'] && profileForm.get('dateOfBirth')?.touched">
-              Date of birth is required
+                   [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-default' }"
+                   [maxDate]="maxDate"
+                   bsDatepicker
+                   [class.is-invalid]="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched"
+                   [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('dateOfBirth')?.errors?.['required']">
+              Data de nascimento é obrigatória
             </div>
+          </div>
+
+          <div class="col-md-6 mb-3" *ngIf="isEditing">
+            <label class="form-label">Nova Senha (opcional)</label>
+            <input type="password" class="form-control" formControlName="password"
+                   placeholder="Deixe em branco para manter a senha atual">
           </div>
         </div>
+      </div>
+
+      <div class="action-buttons" *ngIf="isEditing">
+        <button type="button" class="btn btn-light btn-action" (click)="cancelEdit()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary btn-action" (click)="onSubmit()" [disabled]="!profileForm.valid">
+          Salvar Alterações
+        </button>
       </div>
     </form>
   </div>
 </div>
+
+<ngx-spinner type="ball-scale-multiple">
+  <p style="color: white">Carregando...</p>
+</ngx-spinner>

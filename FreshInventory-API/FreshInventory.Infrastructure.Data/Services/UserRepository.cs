@@ -4,109 +4,125 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Exceptions;
 
-namespace FreshInventory.Infrastructure.Data.Services;
-
-public class UserRepository(UserManager<User> userManager, ILogger<UserRepository> logger) : IUserRepository, IDisposable
+namespace FreshInventory.Infrastructure.Data.Services
 {
-    private bool _disposed = false;
-    private readonly UserManager<User> _userManager = userManager;
-    private readonly ILogger<UserRepository> _logger = logger;
-
-    public async Task<User> GetUserByIdAsync(Guid userId)
+    public class UserRepository(UserManager<User> userManager, ILogger<UserRepository> logger) : IUserRepository, IDisposable
     {
-        try
+        private bool _disposed = false;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly ILogger<UserRepository> _logger = logger;
+
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
+            try
             {
-                _logger.LogWarning("User with ID {UserId} not found.", userId);
-                throw new RepositoryException($"User with ID {userId} not found.");
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found.", userId);
+                    throw new RepositoryException($"User with ID {userId} not found.");
+                }
+                _logger.LogInformation("User with ID {UserId} retrieved successfully.", userId);
+                return user;
             }
-            _logger.LogInformation("User with ID {UserId} retrieved successfully.", userId);
-            return user;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving user with ID {UserId}.", userId);
-            throw new RepositoryException("An error occurred while retrieving the user.", ex);
-        }
-    }
-
-    public async Task<User> GetUserByEmailAsync(string email)
-    {
-        try
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            catch (Exception ex)
             {
-                _logger.LogWarning("User with email {Email} not found.", email);
-                throw new RepositoryException($"User with email {email} not found.");
+                _logger.LogError(ex, "An error occurred while retrieving user with ID {UserId}.", userId);
+                throw new RepositoryException("An error occurred while retrieving the user.", ex);
             }
-            _logger.LogInformation("User with email {Email} retrieved successfully.", email);
-            return user;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving user with email {Email}.", email);
-            throw new RepositoryException("An error occurred while retrieving the user by email.", ex);
-        }
-    }
 
-    public async Task<bool> RegisterUserAsync(User user, string password)
-    {
-        try
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            var result = await _userManager.CreateAsync(user, password);
-            if (!result.Succeeded)
+            try
             {
-                _logger.LogWarning("User registration failed for {UserName}. Errors: {Errors}", user.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
-                throw new RepositoryException("User registration failed.");
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    _logger.LogWarning("User with email {Email} not found.", email);
+                    throw new RepositoryException($"User with email {email} not found.");
+                }
+                _logger.LogInformation("User with email {Email} retrieved successfully.", email);
+                return user;
             }
-            _logger.LogInformation("User {UserName} registered successfully.", user.UserName);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while registering user {UserName}.", user.UserName);
-            throw new RepositoryException("An error occurred while registering the user.", ex);
-        }
-    }
-
-    public async Task<bool> CheckPasswordAsync(User user, string password)
-    {
-        try
-        {
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
-            if (!isPasswordValid)
+            catch (Exception ex)
             {
-                _logger.LogWarning("Invalid password for user {UserName}.", user.UserName);
+                _logger.LogError(ex, "An error occurred while retrieving user with email {Email}.", email);
+                throw new RepositoryException("An error occurred while retrieving the user by email.", ex);
             }
-            return isPasswordValid;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while checking password for user {UserName}.", user.UserName);
-            throw new RepositoryException("An error occurred while checking the user's password.", ex);
-        }
-    }
-    public async Task<bool> UpdateUserAsync(User user)
-    {
-        var result = await _userManager.UpdateAsync(user);
-        return result.Succeeded;
-    }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
+        public async Task<bool> RegisterUserAsync(User user, string password)
         {
-            if (disposing) _userManager.Dispose();
-            _disposed = true;
+            try
+            {
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    _logger.LogWarning("User registration failed for {UserName}. Errors: {Errors}", user.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+                    throw new RepositoryException("User registration failed.");
+                }
+                _logger.LogInformation("User {UserName} registered successfully.", user.UserName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while registering user {UserName}.", user.UserName);
+                throw new RepositoryException("An error occurred while registering the user.", ex);
+            }
         }
-    }
 
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        public async Task<bool> CheckPasswordAsync(User user, string password)
+        {
+            try
+            {
+                var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
+                if (!isPasswordValid)
+                {
+                    _logger.LogWarning("Invalid password for user {UserName}.", user.UserName);
+                }
+                return isPasswordValid;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while checking password for user {UserName}.", user.UserName);
+                throw new RepositoryException("An error occurred while checking the user's password.", ex);
+            }
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            try
+            {
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    _logger.LogWarning("Failed to update user {UserName}. Errors: {Errors}", user.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+                    throw new RepositoryException("Failed to update the user.");
+                }
+                _logger.LogInformation("User {UserName} updated successfully.", user.UserName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating user {UserName}.", user.UserName);
+                throw new RepositoryException("An error occurred while updating the user.", ex);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing) _userManager.Dispose();
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

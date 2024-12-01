@@ -20,12 +20,12 @@ namespace FreshInventory.Infrastructure.IoC.DependencyInjection
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<FreshInventoryDbContext>()
             .AddDefaultTokenProviders();
 
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["SecurityKey"]);
+            var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
 
             services.AddAuthentication(options =>
             {
@@ -37,11 +37,13 @@ namespace FreshInventory.Infrastructure.IoC.DependencyInjection
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
                     ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 

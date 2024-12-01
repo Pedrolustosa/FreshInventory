@@ -1,53 +1,53 @@
-﻿using System.Net;
+﻿using FreshInventory.Domain.Exceptions;
+using System.Net;
 using System.Text.Json;
-using FreshInventory.Application.Exceptions;
+using FluentValidation;
 
-namespace FreshInventory.API.Middlewares;
-
-public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+namespace FreshInventory.API.Middlewares
 {
-    private readonly RequestDelegate _next = next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
-
-    public async Task Invoke(HttpContext context)
+    public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
-        try
-        {
-            await _next(context);
-        }
-        catch (ServiceException ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            await HandleExceptionAsync(context, ex.Message, HttpStatusCode.BadRequest);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred.");
-            await HandleExceptionAsync(context, "An unexpected error occurred.", HttpStatusCode.InternalServerError);
-        }
-    }
+        private readonly RequestDelegate _next = next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
-    private Task HandleExceptionAsync(HttpContext context, string message, HttpStatusCode statusCode)
-    {
-        try
+        public async Task Invoke(HttpContext context)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)statusCode;
-
-            var response = new
+            try
             {
-                StatusCode = context.Response.StatusCode,
-                Message = message
-            };
-
-            var jsonResponse = JsonSerializer.Serialize(response);
-
-            return context.Response.WriteAsync(jsonResponse);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred.");
-            throw;
+                await _next(context);
+            }
+            catch (RepositoryException rex)
+            {
+                _logger.LogWarning(rex, "A repository exception occurred.");
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                var response = new { message = rex.Message };
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
+            catch (UnauthorizedAccessException uex)
+            {
+                _logger.LogWarning(uex, "An unauthorized access exception occurred.");
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                var response = new { message = uex.Message };
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
+            catch (ValidationException vex)
+            {
+                _logger.LogWarning(vex, "A validation exception occurred.");
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                var response = new { message = "Validation failed.", errors = vex.Errors };
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unhandled exception occurred.");
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                var response = new { message = "An unexpected error occurred. Please try again later." };
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
         }
     }
 }

@@ -50,34 +50,33 @@ namespace FreshInventory.Infrastructure.IoC.DependencyInjection
                 });
 
                 options.OperationFilter<AuthorizeCheckOperationFilter>();
-
             });
 
             return services;
         }
-    }
 
-    public class AuthorizeCheckOperationFilter : IOperationFilter
-    {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        public class AuthorizeCheckOperationFilter : IOperationFilter
         {
-            var hasAuthorize = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
-                                 .OfType<AuthorizeAttribute>().Any() ||
-                               context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
-
-            if (hasAuthorize)
+            public void Apply(OpenApiOperation operation, OperationFilterContext context)
             {
-                operation.Security = new List<OpenApiSecurityRequirement>
+                var hasAuthorize = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+                                     .OfType<AuthorizeAttribute>().Any() ||
+                                   context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
+
+                if (hasAuthorize)
                 {
-                    new OpenApiSecurityRequirement
+                    operation.Security = new List<OpenApiSecurityRequirement>
                     {
-                        [ new OpenApiSecurityScheme { Reference = new OpenApiReference
+                        new OpenApiSecurityRequirement
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        } } ] = new string[] { }
-                    }
-                };
+                            [ new OpenApiSecurityScheme { Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            } } ] = new string[] { }
+                        }
+                    };
+                }
             }
         }
     }

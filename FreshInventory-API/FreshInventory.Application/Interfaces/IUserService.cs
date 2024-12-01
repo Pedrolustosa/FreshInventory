@@ -1,14 +1,13 @@
 ﻿using FreshInventory.Application.DTO.UserDTO;
-using FreshInventory.Domain.Entities;
 
 namespace FreshInventory.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> RegisterUserAsync(RegisterUserDto registerUserDto);
-        Task<LoginUserResponseDto> LoginUserAsync(LoginUserDto loginUserDto);
-        Task<UserDto> GetUserByEmailAsync(string email);
-        Task<UserDto> GetUserByIdAsync(Guid userId);
-        Task<bool> UpdateUserAsync(UpdateUserDto updateUserDto);
+        Task<UserReadDto> RegisterUserAsync(UserCreateDto registerUserDto);
+        Task<UserLoginResponseDto> LoginUserAsync(UserLoginDto loginUserDto);
+        Task<UserReadDto> GetUserByEmailAsync(string email);
+        Task<UserReadDto> GetUserByIdAsync(Guid userId);
+        Task<UserReadDto> UpdateUserAsync(Guid userId, UserUpdateDto updateUserDto);
     }
 }

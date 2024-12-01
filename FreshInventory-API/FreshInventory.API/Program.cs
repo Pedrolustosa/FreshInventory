@@ -1,30 +1,46 @@
+// Program.cs
+using AutoMapper;
 using FreshInventory.API.Middlewares;
 using FreshInventory.Infrastructure.IoC.DependencyInjection;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-// Add services to the container.
+
+// Configure Serilog
+builder.Host.UseSerilog();
+
+// Adicionar serviços ao container.
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentityConfiguration(builder.Configuration);
 builder.Services.AddSwaggerWithJwtSupport(builder.Configuration);
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// Configure the HTTP request pipeline.
+// Construir o app
 var app = builder.Build();
+
+// Middleware de tratamento de exceções
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseCors(opt => opt.AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials()
                       .WithOrigins("http://localhost:4200", "https://localhost:4200"));
+
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
+// Teste de configuração do AutoMapper
+//var mapper = app.Services.GetRequiredService<IMapper>();
+//mapper.ConfigurationProvider.AssertConfigurationIsValid();
+
 app.Run();

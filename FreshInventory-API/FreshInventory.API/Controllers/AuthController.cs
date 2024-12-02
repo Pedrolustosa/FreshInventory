@@ -2,17 +2,20 @@
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.DTO.UserDTO;
 using FreshInventory.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreshInventory.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AuthController(IUserService userService, ILogger<AuthController> logger) : ControllerBase
     {
         private readonly IUserService _userService = userService;
         private readonly ILogger<AuthController> _logger = logger;
 
         [HttpPost("register")]
+        [Authorize]
         public async Task<IActionResult> Register([FromBody] UserCreateDto registerUserDto)
         {
             if (registerUserDto == null)
@@ -85,6 +88,7 @@ namespace FreshInventory.API.Controllers
         }
 
         [HttpPut("profile")]
+        [Authorize]
         public async Task<IActionResult> UpdateUser([FromQuery] string userId, [FromBody] UserUpdateDto updateUserDto)
         {
             if (updateUserDto == null)
@@ -120,6 +124,7 @@ namespace FreshInventory.API.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             if (id == Guid.Empty)
@@ -154,6 +159,7 @@ namespace FreshInventory.API.Controllers
         }
 
         [HttpGet("email/{email}")]
+        [Authorize]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))

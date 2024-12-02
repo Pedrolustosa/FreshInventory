@@ -13,6 +13,7 @@ using FreshInventory.Infrastructure.Data.Services;
 using FreshInventory.Application.Features.Users.Handlers;
 using FreshInventory.Application.Features.Users.Validators;
 using FreshInventory.Application.Profiles;
+using FreshInventory.Infrastructure.Data.Repositories;
 
 namespace FreshInventory.Infrastructure.IoC.DependencyInjection
 {
@@ -36,6 +37,15 @@ namespace FreshInventory.Infrastructure.IoC.DependencyInjection
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<ISupplierService, SupplierService>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
+
+            services.AddScoped<IIngredientService, IngredientService>();
+            services.AddScoped<IIngredientRepository, IngredientRepository>();
+
+            services.AddScoped<IRecipeService, RecipeService>();
+            services.AddScoped<IRecipeRepository, RecipeRepository>();
 
             return services;
         }

@@ -3,6 +3,7 @@ using System;
 using FreshInventory.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshInventory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FreshInventoryDbContext))]
-    partial class FreshInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241202023929_AddRecipesAndIngredients.v1.1")]
+    partial class AddRecipesAndIngredientsv11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -43,8 +46,8 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ReorderLevel")
                         .HasColumnType("INTEGER");
@@ -113,7 +116,7 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("QuantityRequired")
-                        .HasPrecision(18)
+                        .HasPrecision(18, 2)
                         .HasColumnType("INTEGER");
 
                     b.HasKey("RecipeId", "IngredientId");

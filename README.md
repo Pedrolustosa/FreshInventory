@@ -8,9 +8,10 @@
 
 ## Technologies Used
 
-- ![.NET](https://img.shields.io/badge/.NET_8.0-blue)
-- ![Entity Framework Core](https://img.shields.io/badge/Entity_Framework_Core-green)
+- ![Angular](https://img.shields.io/badge/Angular_18-red)
+- ![.NET](https://img.shields.io/badge/.NET_8.0-purple)
 - ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-purple)
+- ![Entity Framework Core](https://img.shields.io/badge/Entity_Framework_Core-green)
 - ![CQRS](https://img.shields.io/badge/CQRS-brightgreen)
 - ![MediatR](https://img.shields.io/badge/MediatR-yellow)
 - ![AutoMapper](https://img.shields.io/badge/AutoMapper-orange)

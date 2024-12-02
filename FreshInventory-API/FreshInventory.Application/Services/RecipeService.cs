@@ -6,132 +6,130 @@ using FreshInventory.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FreshInventory.Application.Services
+namespace FreshInventory.Application.Services;
+
+public class RecipeService(IMediator mediator, IMapper mapper, ILogger<RecipeService> logger) : IRecipeService
 {
-    public class RecipeService : IRecipeService
+    private readonly IMediator _mediator = mediator;
+    private readonly IMapper _mapper = mapper;
+    private readonly ILogger<RecipeService> _logger = logger;
+
+    public async Task<RecipeReadDto> CreateRecipeAsync(RecipeCreateDto recipeCreateDto)
     {
-        private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
-        private readonly ILogger<RecipeService> _logger;
-
-        public RecipeService(IMediator mediator, IMapper mapper, ILogger<RecipeService> logger)
+        if (recipeCreateDto == null)
         {
-            _mediator = mediator;
-            _mapper = mapper;
-            _logger = logger;
+            _logger.LogWarning("Received null data for recipe creation.");
+            throw new ArgumentNullException(nameof(recipeCreateDto), "RecipeCreateDto cannot be null.");
         }
 
-        public async Task<RecipeReadDto> CreateRecipeAsync(RecipeCreateDto recipeCreateDto)
+        try
         {
-            if (recipeCreateDto == null)
-            {
-                _logger.LogWarning("Received null data for recipe creation.");
-                throw new ArgumentNullException(nameof(recipeCreateDto), "RecipeCreateDto cannot be null.");
-            }
+            var command = _mapper.Map<CreateRecipeCommand>(recipeCreateDto);
+            var recipeReadDto = await _mediator.Send(command);
 
-            try
-            {
-                var command = _mapper.Map<CreateRecipeCommand>(recipeCreateDto);
-                var recipeReadDto = await _mediator.Send(command);
+            _logger.LogInformation("Recipe created successfully: {Name}", recipeCreateDto.Name);
+            return recipeReadDto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during recipe creation for Name: {Name}.", recipeCreateDto?.Name);
+            throw;
+        }
+    }
 
-                _logger.LogInformation("Recipe created successfully: {Name}", recipeCreateDto.Name);
-                return recipeReadDto;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred during recipe creation.");
-                throw;
-            }
+    public async Task<RecipeReadDto> UpdateRecipeAsync(int recipeId, RecipeUpdateDto recipeUpdateDto)
+    {
+        if (recipeUpdateDto == null)
+        {
+            _logger.LogWarning("Received null data for recipe update.");
+            throw new ArgumentNullException(nameof(recipeUpdateDto), "RecipeUpdateDto cannot be null.");
         }
 
-        public async Task<RecipeReadDto> UpdateRecipeAsync(int recipeId, RecipeUpdateDto recipeUpdateDto)
+        try
         {
-            if (recipeUpdateDto == null)
+            var command = new UpdateRecipeCommand(recipeId, recipeUpdateDto);
+            var updatedRecipe = await _mediator.Send(command);
+
+            _logger.LogInformation("Recipe with ID {RecipeId} updated successfully.", recipeId);
+            return updatedRecipe;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during recipe update for ID: {RecipeId}.", recipeId);
+            throw;
+        }
+    }
+
+    public async Task<bool> DeleteRecipeAsync(int recipeId)
+    {
+        try
+        {
+            var command = new DeleteRecipeCommand(recipeId);
+            var isDeleted = await _mediator.Send(command);
+
+            if (isDeleted)
             {
-                _logger.LogWarning("Received null data for recipe update.");
-                throw new ArgumentNullException(nameof(recipeUpdateDto), "RecipeUpdateDto cannot be null.");
+                _logger.LogInformation("Recipe with ID {RecipeId} deleted successfully.", recipeId);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to delete recipe with ID {RecipeId}.", recipeId);
             }
 
-            try
-            {
-                var command = new UpdateRecipeCommand(recipeId, recipeUpdateDto);
-                var updatedRecipe = await _mediator.Send(command);
+            return isDeleted;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during recipe deletion for ID: {RecipeId}.", recipeId);
+            throw;
+        }
+    }
 
-                _logger.LogInformation("Recipe with ID {RecipeId} updated successfully.", recipeId);
-                return updatedRecipe;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred during recipe update.");
-                throw;
-            }
+    public async Task<RecipeReadDto> GetRecipeByIdAsync(int recipeId)
+    {
+        if (recipeId <= 0)
+        {
+            _logger.LogWarning("Invalid recipe ID received: {RecipeId}", recipeId);
+            throw new ArgumentException("Recipe ID must be greater than zero.", nameof(recipeId));
         }
 
-        public async Task<bool> DeleteRecipeAsync(int recipeId)
+        try
         {
-            try
-            {
-                var command = new DeleteRecipeCommand(recipeId);
-                var isDeleted = await _mediator.Send(command);
+            var query = new GetRecipeByIdQuery(recipeId);
+            var recipe = await _mediator.Send(query);
 
-                if (isDeleted)
-                {
-                    _logger.LogInformation("Recipe with ID {RecipeId} deleted successfully.", recipeId);
-                }
-                else
-                {
-                    _logger.LogWarning("Failed to delete recipe with ID {RecipeId}.", recipeId);
-                }
-
-                return isDeleted;
-            }
-            catch (Exception ex)
+            if (recipe != null)
             {
-                _logger.LogError(ex, "An error occurred during recipe deletion.");
-                throw;
+                _logger.LogInformation("Recipe with ID {RecipeId} retrieved successfully.", recipeId);
             }
+            else
+            {
+                _logger.LogWarning("Recipe with ID {RecipeId} not found.", recipeId);
+            }
+
+            return recipe;
         }
-
-        public async Task<RecipeReadDto> GetRecipeByIdAsync(int recipeId)
+        catch (Exception ex)
         {
-            try
-            {
-                var query = new GetRecipeByIdQuery(recipeId);
-                var recipe = await _mediator.Send(query);
-
-                if (recipe != null)
-                {
-                    _logger.LogInformation("Recipe with ID {RecipeId} retrieved successfully.", recipeId);
-                }
-                else
-                {
-                    _logger.LogWarning("Recipe with ID {RecipeId} not found.", recipeId);
-                }
-
-                return recipe;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving recipe with ID {RecipeId}.", recipeId);
-                throw;
-            }
+            _logger.LogError(ex, "Error retrieving recipe with ID {RecipeId}.", recipeId);
+            throw;
         }
+    }
 
-        public async Task<IEnumerable<RecipeReadDto>> GetAllRecipesAsync()
+    public async Task<IEnumerable<RecipeReadDto>> GetAllRecipesAsync()
+    {
+        try
         {
-            try
-            {
-                var query = new GetAllRecipesQuery();
-                var recipes = await _mediator.Send(query);
+            var query = new GetAllRecipesQuery();
+            var recipes = await _mediator.Send(query);
 
-                _logger.LogInformation("Retrieved all recipes successfully.");
-                return recipes;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving all recipes.");
-                throw;
-            }
+            _logger.LogInformation("All recipes retrieved successfully.");
+            return recipes;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all recipes.");
+            throw;
         }
     }
 }

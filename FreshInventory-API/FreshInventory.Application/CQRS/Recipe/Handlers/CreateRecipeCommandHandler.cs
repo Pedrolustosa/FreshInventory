@@ -4,25 +4,37 @@ using FreshInventory.Application.DTO.RecipeDTO;
 using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Application.Features.Recipes.Commands;
+using Microsoft.Extensions.Logging;
 
-namespace FreshInventory.Application.Features.Recipes.Handlers
+namespace FreshInventory.Application.Features.Recipes.Handlers;
+
+public class CreateRecipeCommandHandler(IRecipeRepository recipeRepository, IMapper mapper, ILogger<CreateRecipeCommandHandler> logger) : IRequestHandler<CreateRecipeCommand, RecipeReadDto>
 {
-    public class CreateRecipeCommandHandler : IRequestHandler<CreateRecipeCommand, RecipeReadDto>
-    {
-        private readonly IRecipeRepository _recipeRepository;
-        private readonly IMapper _mapper;
+    private readonly IRecipeRepository _recipeRepository = recipeRepository;
+    private readonly IMapper _mapper = mapper;
+    private readonly ILogger<CreateRecipeCommandHandler> _logger = logger;
 
-        public CreateRecipeCommandHandler(IRecipeRepository recipeRepository, IMapper mapper)
+    public async Task<RecipeReadDto> Handle(CreateRecipeCommand request, CancellationToken cancellationToken)
+    {
+        if (request.RecipeCreateDto == null)
         {
-            _recipeRepository = recipeRepository;
-            _mapper = mapper;
+            _logger.LogWarning("Received null RecipeCreateDto in CreateRecipeCommand.");
+            throw new ArgumentNullException(nameof(request.RecipeCreateDto), "RecipeCreateDto cannot be null.");
         }
 
-        public async Task<RecipeReadDto> Handle(CreateRecipeCommand request, CancellationToken cancellationToken)
+        try
         {
             var recipe = _mapper.Map<Recipe>(request.RecipeCreateDto);
             await _recipeRepository.AddRecipeAsync(recipe);
+
+            _logger.LogInformation("Recipe created successfully with ID: {RecipeId}, Name: {RecipeName}", recipe.Id, recipe.Name);
+
             return _mapper.Map<RecipeReadDto>(recipe);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while creating a recipe: {RecipeName}", request.RecipeCreateDto.Name);
+            throw;
         }
     }
 }

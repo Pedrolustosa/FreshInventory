@@ -14,7 +14,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
     private readonly IUserService _userService = userService;
     private readonly ILogger<AuthController> _logger = logger;
 
-    [HttpPost("register", Name = "RegisterUser")]
+    [HttpPost("RegisterUser")]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] UserCreateDto registerUserDto)
     {
@@ -49,7 +49,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpPost("login", Name = "LoginUser")]
+    [HttpPost("LoginUser")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] UserLoginDto loginUserDto)
     {
@@ -84,7 +84,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpPut("profile", Name = "UpdateUserProfile")]
+    [HttpPut("UpdateUserProfile")]
     public async Task<IActionResult> UpdateUser([FromQuery] string userId, [FromBody] UserUpdateDto updateUserDto)
     {
         if (updateUserDto == null)
@@ -124,7 +124,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpGet("{id}", Name = "GetUserById")]
+    [HttpGet("GetById/{id}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
         if (id == Guid.Empty)
@@ -158,7 +158,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpGet("email/{email}", Name = "GetUserByEmail")]
+    [HttpGet("GetByEmail/{email}")]
     public async Task<IActionResult> GetUserByEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))

@@ -8,18 +8,12 @@ namespace FreshInventory.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class RecipeController : ControllerBase
+    public class RecipeController(IRecipeService recipeService, ILogger<RecipeController> logger) : ControllerBase
     {
-        private readonly IRecipeService _recipeService;
-        private readonly ILogger<RecipeController> _logger;
+        private readonly IRecipeService _recipeService = recipeService;
+        private readonly ILogger<RecipeController> _logger = logger;
 
-        public RecipeController(IRecipeService recipeService, ILogger<RecipeController> logger)
-        {
-            _recipeService = recipeService;
-            _logger = logger;
-        }
-
-        [HttpPost(Name = "CreateRecipe")]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateRecipe([FromBody] RecipeCreateDto recipeDto)
         {
             if (recipeDto == null)
@@ -41,7 +35,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpGet("{id}", Name = "GetRecipeById")]
+        [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetRecipeById(int id)
         {
             if (id <= 0)
@@ -69,7 +63,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpGet(Name = "GetAllRecipes")]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllRecipes()
         {
             try
@@ -85,7 +79,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpPut("{id}", Name = "UpdateRecipe")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateRecipe(int id, [FromBody] RecipeUpdateDto recipeDto)
         {
             if (recipeDto == null)
@@ -113,7 +107,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpDelete("{id}", Name = "DeleteRecipe")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
             if (id <= 0)

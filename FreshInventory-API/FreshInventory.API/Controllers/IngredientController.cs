@@ -14,7 +14,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
     private readonly IIngredientService _ingredientService = ingredientService;
     private readonly ILogger<IngredientController> _logger = logger;
 
-    [HttpPost(Name = "CreateIngredient")]
+    [HttpPost("Create")]
     public async Task<IActionResult> CreateIngredient([FromBody] IngredientCreateDto ingredientDto)
     {
         if (ingredientDto == null)
@@ -41,7 +41,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpGet("{id}", Name = "GetIngredientById")]
+    [HttpGet("GetById/{id}")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
         if (id <= 0)
@@ -70,7 +70,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpGet(Name = "GetAllIngredients")]
+    [HttpGet("GetAll")]
     public async Task<IActionResult> GetAllIngredients()
     {
         try
@@ -86,7 +86,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpPut("{id}", Name = "UpdateIngredient")]
+    [HttpPut("Update/{id}")]
     public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientUpdateDto ingredientDto)
     {
         if (ingredientDto == null)
@@ -113,7 +113,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpDelete("{id}", Name = "DeleteIngredient")]
+    [HttpDelete("Delete/{id}")]
     public async Task<IActionResult> DeleteIngredient(int id)
     {
         if (id <= 0)

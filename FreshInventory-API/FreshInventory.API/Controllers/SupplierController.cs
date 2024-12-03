@@ -13,7 +13,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
     private readonly ISupplierService _supplierService = supplierService;
     private readonly ILogger<SupplierController> _logger = logger;
 
-    [HttpPost(Name = "CreateSupplier")]
+    [HttpPost("Create")]
     public async Task<IActionResult> CreateSupplier([FromBody] SupplierCreateDto supplierDto)
     {
         if (supplierDto == null)
@@ -35,7 +35,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpGet("{id}", Name = "GetSupplierById")]
+    [HttpGet("GetById/{id}")]
     public async Task<IActionResult> GetSupplierById(int id)
     {
         if (id <= 0)
@@ -63,7 +63,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpGet(Name = "GetAllSuppliers")]
+    [HttpGet("GetAll")]
     public async Task<IActionResult> GetAllSuppliers()
     {
         try
@@ -79,7 +79,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpPut("{id}", Name = "UpdateSupplier")]
+    [HttpPut("Update/{id}")]
     public async Task<IActionResult> UpdateSupplier(int id, [FromBody] SupplierUpdateDto supplierDto)
     {
         if (supplierDto == null)
@@ -107,7 +107,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpDelete("{id}", Name = "DeleteSupplier")]
+    [HttpDelete("Delete/{id}")]
     public async Task<IActionResult> DeleteSupplier(int id)
     {
         if (id <= 0)

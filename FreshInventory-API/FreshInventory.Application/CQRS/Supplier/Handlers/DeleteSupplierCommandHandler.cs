@@ -2,21 +2,19 @@
 using FreshInventory.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FreshInventory.Application.Features.Suppliers.Commands
+namespace FreshInventory.Application.Features.Suppliers.Commands;
+
+public class DeleteSupplierCommandHandler(ISupplierRepository supplierRepository, ILogger<DeleteSupplierCommandHandler> logger) : IRequestHandler<DeleteSupplierCommand, bool>
 {
-    public class DeleteSupplierCommandHandler : IRequestHandler<DeleteSupplierCommand, bool>
+    private readonly ISupplierRepository _supplierRepository = supplierRepository;
+    private readonly ILogger<DeleteSupplierCommandHandler> _logger = logger;
+
+    public async Task<bool> Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
     {
-        private readonly ISupplierRepository _supplierRepository;
-        private readonly ILogger<DeleteSupplierCommandHandler> _logger;
-
-        public DeleteSupplierCommandHandler(ISupplierRepository supplierRepository, ILogger<DeleteSupplierCommandHandler> logger)
+        try
         {
-            _supplierRepository = supplierRepository;
-            _logger = logger;
-        }
+            _logger.LogInformation("Attempting to deactivate supplier with ID {SupplierId}.", request.SupplierId);
 
-        public async Task<bool> Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
-        {
             var supplier = await _supplierRepository.GetByIdAsync(request.SupplierId);
             if (supplier == null)
             {
@@ -32,15 +30,33 @@ namespace FreshInventory.Application.Features.Suppliers.Commands
             }
 
             supplier.Deactivate();
-
             var result = await _supplierRepository.UpdateAsync(supplier);
+
             if (result)
             {
                 _logger.LogInformation("Supplier with ID {SupplierId} deactivated successfully.", request.SupplierId);
             }
+            else
+            {
+                _logger.LogWarning("Failed to deactivate supplier with ID {SupplierId}.", request.SupplierId);
+            }
 
             return result;
         }
-
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Error while attempting to deactivate supplier with ID {SupplierId}.", request.SupplierId);
+            throw;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Operation not allowed for supplier with ID {SupplierId}.", request.SupplierId);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while deactivating supplier with ID {SupplierId}.", request.SupplierId);
+            throw;
+        }
     }
 }

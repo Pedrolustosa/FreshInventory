@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.DTO.SupplierDTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreshInventory.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SupplierController(ISupplierService supplierService, ILogger<SupplierController> logger) : ControllerBase
 {
     private readonly ISupplierService _supplierService = supplierService;
     private readonly ILogger<SupplierController> _logger = logger;
 
-    [HttpPost]
+    [HttpPost(Name = "CreateSupplier")]
     public async Task<IActionResult> CreateSupplier([FromBody] SupplierCreateDto supplierDto)
     {
         if (supplierDto == null)
@@ -33,7 +35,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetSupplierById")]
     public async Task<IActionResult> GetSupplierById(int id)
     {
         if (id <= 0)
@@ -61,7 +63,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GetAllSuppliers")]
     public async Task<IActionResult> GetAllSuppliers()
     {
         try
@@ -77,7 +79,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "UpdateSupplier")]
     public async Task<IActionResult> UpdateSupplier(int id, [FromBody] SupplierUpdateDto supplierDto)
     {
         if (supplierDto == null)
@@ -105,7 +107,7 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteSupplier")]
     public async Task<IActionResult> DeleteSupplier(int id)
     {
         if (id <= 0)

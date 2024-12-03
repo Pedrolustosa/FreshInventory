@@ -2,17 +2,19 @@
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.DTO.IngredientDTO;
 using FreshInventory.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreshInventory.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class IngredientController(IIngredientService ingredientService, ILogger<IngredientController> logger) : ControllerBase
 {
     private readonly IIngredientService _ingredientService = ingredientService;
     private readonly ILogger<IngredientController> _logger = logger;
 
-    [HttpPost]
+    [HttpPost(Name = "CreateIngredient")]
     public async Task<IActionResult> CreateIngredient([FromBody] IngredientCreateDto ingredientDto)
     {
         if (ingredientDto == null)
@@ -39,7 +41,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetIngredientById")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
         if (id <= 0)
@@ -68,7 +70,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GetAllIngredients")]
     public async Task<IActionResult> GetAllIngredients()
     {
         try
@@ -84,7 +86,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "UpdateIngredient")]
     public async Task<IActionResult> UpdateIngredient(int id, [FromBody] IngredientUpdateDto ingredientDto)
     {
         if (ingredientDto == null)
@@ -111,7 +113,7 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteIngredient")]
     public async Task<IActionResult> DeleteIngredient(int id)
     {
         if (id <= 0)

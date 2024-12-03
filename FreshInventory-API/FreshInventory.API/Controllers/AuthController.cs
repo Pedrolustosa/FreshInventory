@@ -8,13 +8,14 @@ namespace FreshInventory.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class AuthController(IUserService userService, ILogger<AuthController> logger) : ControllerBase
 {
     private readonly IUserService _userService = userService;
     private readonly ILogger<AuthController> _logger = logger;
 
-    [HttpPost("register")]
-    [Authorize]
+    [HttpPost("register", Name = "RegisterUser")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] UserCreateDto registerUserDto)
     {
         if (registerUserDto == null)
@@ -48,7 +49,8 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpPost("login")]
+    [HttpPost("login", Name = "LoginUser")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] UserLoginDto loginUserDto)
     {
         if (loginUserDto == null)
@@ -82,8 +84,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpPut("profile")]
-    [Authorize]
+    [HttpPut("profile", Name = "UpdateUserProfile")]
     public async Task<IActionResult> UpdateUser([FromQuery] string userId, [FromBody] UserUpdateDto updateUserDto)
     {
         if (updateUserDto == null)
@@ -123,8 +124,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpGet("{id}")]
-    [Authorize]
+    [HttpGet("{id}", Name = "GetUserById")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
         if (id == Guid.Empty)
@@ -158,8 +158,7 @@ public class AuthController(IUserService userService, ILogger<AuthController> lo
         }
     }
 
-    [HttpGet("email/{email}")]
-    [Authorize]
+    [HttpGet("email/{email}", Name = "GetUserByEmail")]
     public async Task<IActionResult> GetUserByEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))

@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.DTO.RecipeDTO;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreshInventory.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RecipeController : ControllerBase
     {
         private readonly IRecipeService _recipeService;
@@ -18,7 +19,7 @@ namespace FreshInventory.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateRecipe")]
         public async Task<IActionResult> CreateRecipe([FromBody] RecipeCreateDto recipeDto)
         {
             if (recipeDto == null)
@@ -40,7 +41,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetRecipeById")]
         public async Task<IActionResult> GetRecipeById(int id)
         {
             if (id <= 0)
@@ -68,7 +69,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllRecipes")]
         public async Task<IActionResult> GetAllRecipes()
         {
             try
@@ -84,7 +85,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateRecipe")]
         public async Task<IActionResult> UpdateRecipe(int id, [FromBody] RecipeUpdateDto recipeDto)
         {
             if (recipeDto == null)
@@ -112,7 +113,7 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteRecipe")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
             if (id <= 0)

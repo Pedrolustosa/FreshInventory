@@ -3,24 +3,37 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Application.DTO.SupplierDTO;
 using FreshInventory.Application.Features.Suppliers.Queries;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace FreshInventory.Application.Features.Suppliers.Handlers
+namespace FreshInventory.Application.Features.Suppliers.Handlers;
+
+public class GetAllSuppliersQueryHandler(ISupplierRepository supplierRepository, IMapper mapper, ILogger<GetAllSuppliersQueryHandler> logger) : IRequestHandler<GetAllSuppliersQuery, IEnumerable<SupplierReadDto>>
 {
-    public class GetAllSuppliersQueryHandler : IRequestHandler<GetAllSuppliersQuery, IEnumerable<SupplierReadDto>>
+    private readonly ISupplierRepository _supplierRepository = supplierRepository;
+    private readonly IMapper _mapper = mapper;
+    private readonly ILogger<GetAllSuppliersQueryHandler> _logger = logger;
+
+    public async Task<IEnumerable<SupplierReadDto>> Handle(GetAllSuppliersQuery request, CancellationToken cancellationToken)
     {
-        private readonly ISupplierRepository _supplierRepository;
-        private readonly IMapper _mapper;
-
-        public GetAllSuppliersQueryHandler(ISupplierRepository supplierRepository, IMapper mapper)
+        try
         {
-            _supplierRepository = supplierRepository;
-            _mapper = mapper;
-        }
+            _logger.LogInformation("Retrieving all suppliers...");
 
-        public async Task<IEnumerable<SupplierReadDto>> Handle(GetAllSuppliersQuery request, CancellationToken cancellationToken)
-        {
             var suppliers = await _supplierRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<SupplierReadDto>>(suppliers);
+            if (suppliers == null || !suppliers.Any())
+            {
+                _logger.LogWarning("No suppliers found.");
+                return Enumerable.Empty<SupplierReadDto>();
+            }
+
+            var supplierDtos = _mapper.Map<IEnumerable<SupplierReadDto>>(suppliers);
+            _logger.LogInformation("Successfully retrieved {Count} suppliers.", supplierDtos.Count());
+            return supplierDtos;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving all suppliers.");
+            throw;
         }
     }
 }

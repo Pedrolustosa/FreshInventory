@@ -4,25 +4,38 @@ using FreshInventory.Domain.Interfaces;
 using FreshInventory.Application.DTO.SupplierDTO;
 using FreshInventory.Application.Features.Suppliers.Commands;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace FreshInventory.Application.Features.Suppliers.Handlers
+namespace FreshInventory.Application.Features.Suppliers.Handlers;
+
+public class CreateSupplierCommandHandler(ISupplierRepository supplierRepository, IMapper mapper, ILogger<CreateSupplierCommandHandler> logger) : IRequestHandler<CreateSupplierCommand, SupplierReadDto>
 {
-    public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierCommand, SupplierReadDto>
-    {
-        private readonly ISupplierRepository _supplierRepository;
-        private readonly IMapper _mapper;
+    private readonly ISupplierRepository _supplierRepository = supplierRepository;
+    private readonly IMapper _mapper = mapper;
+    private readonly ILogger<CreateSupplierCommandHandler> _logger = logger;
 
-        public CreateSupplierCommandHandler(ISupplierRepository supplierRepository, IMapper mapper)
+    public async Task<SupplierReadDto> Handle(CreateSupplierCommand request, CancellationToken cancellationToken)
+    {
+        if (request == null || request.SupplierCreateDto == null)
         {
-            _supplierRepository = supplierRepository;
-            _mapper = mapper;
+            _logger.LogWarning("Received null data for supplier creation.");
+            throw new ArgumentNullException(nameof(request), "SupplierCreateDto cannot be null.");
         }
 
-        public async Task<SupplierReadDto> Handle(CreateSupplierCommand request, CancellationToken cancellationToken)
+        try
         {
+            _logger.LogInformation("Creating supplier: {SupplierName}", request.SupplierCreateDto.Name);
+
             var supplier = _mapper.Map<Supplier>(request.SupplierCreateDto);
             var createdSupplier = await _supplierRepository.AddAsync(supplier);
+
+            _logger.LogInformation("Supplier created successfully with ID: {SupplierId}", createdSupplier.Id);
             return _mapper.Map<SupplierReadDto>(createdSupplier);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while creating supplier: {SupplierName}", request.SupplierCreateDto.Name);
+            throw;
         }
     }
 }

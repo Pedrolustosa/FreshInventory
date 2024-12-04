@@ -3,6 +3,7 @@ using FreshInventory.Application.DTO.RecipeDTO;
 using FreshInventory.Application.Features.Recipes.Commands;
 using FreshInventory.Application.Features.Recipes.Queries;
 using FreshInventory.Application.Interfaces;
+using FreshInventory.Domain.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -116,20 +117,22 @@ public class RecipeService(IMediator mediator, IMapper mapper, ILogger<RecipeSer
         }
     }
 
-    public async Task<IEnumerable<RecipeReadDto>> GetAllRecipesAsync()
+    public async Task<PaginatedList<RecipeReadDto>> GetAllRecipesPagedAsync(int pageNumber, int pageSize)
     {
         try
         {
-            var query = new GetAllRecipesQuery();
-            var recipes = await _mediator.Send(query);
+            var query = new GetAllRecipesPagedQuery(pageNumber, pageSize);
+            var paginatedRecipes = await _mediator.Send(query);
 
-            _logger.LogInformation("All recipes retrieved successfully.");
-            return recipes;
+            _logger.LogInformation("Successfully retrieved paginated recipes. Page: {PageNumber}, Size: {PageSize}", pageNumber, pageSize);
+
+            return paginatedRecipes;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving all recipes.");
+            _logger.LogError(ex, "An error occurred while retrieving paginated recipes.");
             throw;
         }
     }
+
 }

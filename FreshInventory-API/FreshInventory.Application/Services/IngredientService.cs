@@ -4,6 +4,7 @@ using FreshInventory.Application.DTO.IngredientDTO;
 using FreshInventory.Application.Features.Ingredients.Commands;
 using FreshInventory.Application.Features.Ingredients.Queries;
 using FreshInventory.Application.Interfaces;
+using FreshInventory.Domain.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -44,22 +45,23 @@ public class IngredientService(IMediator mediator, IMapper mapper, ILogger<Ingre
         }
     }
 
-    public async Task<IEnumerable<IngredientReadDto>> GetAllIngredientsAsync()
+    public async Task<PaginatedList<IngredientReadDto>> GetAllIngredientsPagedAsync(int pageNumber, int pageSize)
     {
         try
         {
-            var query = new GetAllIngredientsQuery();
+            var query = new GetAllIngredientsPagedQuery(pageNumber, pageSize);
             var result = await _mediator.Send(query);
 
-            _logger.LogInformation("Retrieved all ingredients successfully. Total count: {Count}.", result.Count());
+            _logger.LogInformation("Retrieved paginated ingredients successfully. Page: {PageNumber}, PageSize: {PageSize}, TotalCount: {TotalCount}.", pageNumber, pageSize, result.TotalCount);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving all ingredients.");
+            _logger.LogError(ex, "An error occurred while retrieving paginated ingredients.");
             throw;
         }
     }
+
 
     public async Task<IngredientReadDto> GetIngredientByIdAsync(int ingredientId)
     {

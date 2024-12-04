@@ -1,4 +1,5 @@
-﻿using FreshInventory.Domain.Entities;
+﻿using FreshInventory.Domain.Common.Models;
+using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
@@ -39,26 +40,31 @@ public class IngredientRepository(FreshInventoryDbContext context, ILogger<Ingre
         }
     }
 
-    public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync()
+    public async Task<PaginatedList<Ingredient>> GetAllIngredientsPagedAsync(int pageNumber, int pageSize)
     {
         try
         {
-            _logger.LogInformation("Attempting to retrieve all ingredients");
+            _logger.LogInformation("Retrieving paginated ingredients. Page: {PageNumber}, PageSize: {PageSize}", pageNumber, pageSize);
 
-            var ingredients = await _context.Ingredients
+            var totalCount = await _context.Ingredients.CountAsync();
+
+            var items = await _context.Ingredients
                 .Include(i => i.Supplier)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            _logger.LogInformation("Successfully retrieved all ingredients. Total: {Count}", ingredients.Count);
+            _logger.LogInformation("Successfully retrieved {Count} ingredients on page {PageNumber}. Total count: {TotalCount}.", items.Count, pageNumber, totalCount);
 
-            return ingredients;
+            return new PaginatedList<Ingredient>(items, totalCount, pageNumber, pageSize);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while retrieving all ingredients");
+            _logger.LogError(ex, "Error occurred while retrieving paginated ingredients.");
             throw;
         }
     }
+
 
     public async Task AddIngredientAsync(Ingredient ingredient)
     {

@@ -7,7 +7,7 @@ namespace FreshInventory.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RecipeController(IRecipeService recipeService, ILogger<RecipeController> logger) : ControllerBase
     {
         private readonly IRecipeService _recipeService = recipeService;
@@ -63,18 +63,18 @@ namespace FreshInventory.API.Controllers
             }
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAllRecipes()
+        [HttpGet("GetAllPaged")]
+        public async Task<IActionResult> GetAllRecipesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var recipes = await _recipeService.GetAllRecipesAsync();
-                _logger.LogInformation("All recipes retrieved successfully.");
-                return Ok(recipes);
+                var paginatedRecipes = await _recipeService.GetAllRecipesPagedAsync(pageNumber, pageSize);
+                _logger.LogInformation("Paged recipes retrieved successfully. Page {PageNumber}, Size {PageSize}.", pageNumber, pageSize);
+                return Ok(paginatedRecipes);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving all recipes.");
+                _logger.LogError(ex, "An error occurred while retrieving paginated recipes.");
                 return StatusCode(500, new { message = "An error occurred while processing your request." });
             }
         }

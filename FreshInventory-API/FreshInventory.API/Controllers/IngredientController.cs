@@ -8,7 +8,7 @@ namespace FreshInventory.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class IngredientController(IIngredientService ingredientService, ILogger<IngredientController> logger) : ControllerBase
 {
     private readonly IIngredientService _ingredientService = ingredientService;
@@ -70,18 +70,18 @@ public class IngredientController(IIngredientService ingredientService, ILogger<
         }
     }
 
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAllIngredients()
+    [HttpGet("GetAllPaged")]
+    public async Task<IActionResult> GetAllIngredientsPaged(int pageNumber = 1, int pageSize = 10)
     {
         try
         {
-            var ingredients = await _ingredientService.GetAllIngredientsAsync();
-            _logger.LogInformation("All ingredients retrieved successfully.");
+            var ingredients = await _ingredientService.GetAllIngredientsPagedAsync(pageNumber, pageSize);
+            _logger.LogInformation("Ingredients retrieved successfully. Page: {PageNumber}, PageSize: {PageSize}, TotalCount: {TotalCount}.", pageNumber, pageSize, ingredients.TotalCount);
             return Ok(ingredients);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving all ingredients.");
+            _logger.LogError(ex, "An error occurred while retrieving paginated ingredients.");
             return StatusCode(500, new { message = "An error occurred while processing your request." });
         }
     }

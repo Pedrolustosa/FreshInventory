@@ -7,7 +7,7 @@ namespace FreshInventory.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class SupplierController(ISupplierService supplierService, ILogger<SupplierController> logger) : ControllerBase
 {
     private readonly ISupplierService _supplierService = supplierService;
@@ -63,18 +63,18 @@ public class SupplierController(ISupplierService supplierService, ILogger<Suppli
         }
     }
 
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAllSuppliers()
+    [HttpGet("GetAllPaged")]
+    public async Task<IActionResult> GetAllSuppliersPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            var suppliers = await _supplierService.GetAllSuppliersAsync();
-            _logger.LogInformation("Retrieved all suppliers successfully.");
-            return Ok(suppliers);
+            var paginatedSuppliers = await _supplierService.GetAllSuppliersPagedAsync(pageNumber, pageSize);
+            _logger.LogInformation("Successfully retrieved paginated suppliers. Page: {PageNumber}, Size: {PageSize}", pageNumber, pageSize);
+            return Ok(paginatedSuppliers);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving all suppliers.");
+            _logger.LogError(ex, "An error occurred while retrieving paginated suppliers.");
             return StatusCode(500, new { message = "An error occurred while processing your request." });
         }
     }

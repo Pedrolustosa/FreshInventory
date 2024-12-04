@@ -1,4 +1,5 @@
 ﻿using FreshInventory.Application.DTO.RecipeDTO;
+using FreshInventory.Domain.Common.Models;
 
 namespace FreshInventory.Application.Interfaces
 {
@@ -8,6 +9,6 @@ namespace FreshInventory.Application.Interfaces
         Task<RecipeReadDto> UpdateRecipeAsync(int recipeId, RecipeUpdateDto recipeUpdateDto);
         Task<bool> DeleteRecipeAsync(int recipeId);
         Task<RecipeReadDto> GetRecipeByIdAsync(int recipeId);
-        Task<IEnumerable<RecipeReadDto>> GetAllRecipesAsync();
+        Task<PaginatedList<RecipeReadDto>> GetAllRecipesPagedAsync(int pageNumber, int pageSize);
     }
 }

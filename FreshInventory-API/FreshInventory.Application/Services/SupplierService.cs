@@ -4,6 +4,7 @@ using FreshInventory.Application.DTO.SupplierDTO;
 using FreshInventory.Application.Features.Suppliers.Commands;
 using FreshInventory.Application.Features.Suppliers.Queries;
 using FreshInventory.Application.Interfaces;
+using FreshInventory.Domain.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -101,24 +102,25 @@ public class SupplierService(IMediator mediator, IMapper mapper, ILogger<Supplie
         }
     }
 
-    public async Task<IEnumerable<SupplierReadDto>> GetAllSuppliersAsync()
+    public async Task<PaginatedList<SupplierReadDto>> GetAllSuppliersPagedAsync(int pageNumber, int pageSize)
     {
         try
         {
-            _logger.LogInformation("Retrieving all suppliers.");
+            _logger.LogInformation("Retrieving paginated suppliers. Page: {PageNumber}, Size: {PageSize}", pageNumber, pageSize);
 
-            var query = new GetAllSuppliersQuery();
-            var suppliers = await _mediator.Send(query);
+            var query = new GetAllSuppliersPagedQuery(pageNumber, pageSize);
+            var paginatedSuppliers = await _mediator.Send(query);
 
-            _logger.LogInformation("All suppliers retrieved successfully. Count: {Count}", suppliers.Count());
-            return suppliers;
+            _logger.LogInformation("Successfully retrieved paginated suppliers. Page: {PageNumber}, Size: {PageSize}", pageNumber, pageSize);
+            return paginatedSuppliers;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving all suppliers.");
+            _logger.LogError(ex, "An error occurred while retrieving paginated suppliers.");
             throw;
         }
     }
+
 
     public async Task<bool> DeleteSupplierAsync(int supplierId)
     {

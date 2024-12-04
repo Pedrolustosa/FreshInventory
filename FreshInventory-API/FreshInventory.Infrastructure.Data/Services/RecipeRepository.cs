@@ -1,4 +1,5 @@
-﻿using FreshInventory.Domain.Entities;
+﻿using FreshInventory.Domain.Common.Models;
+using FreshInventory.Domain.Entities;
 using FreshInventory.Domain.Interfaces;
 using FreshInventory.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
@@ -39,22 +40,48 @@ public class RecipeRepository(FreshInventoryDbContext context, ILogger<RecipeRep
         }
     }
 
-    public async Task<List<Recipe>> GetAllRecipesAsync()
+    public async Task<PaginatedList<Recipe>> GetAllRecipesPagedAsync(int pageNumber, int pageSize)
     {
         try
         {
-            _logger.LogInformation("Retrieving all recipes.");
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                _logger.LogWarning("Invalid pagination parameters. PageNumber: {PageNumber}, PageSize: {PageSize}.", pageNumber, pageSize);
+                throw new ArgumentException("PageNumber and PageSize must be greater than zero.");
+            }
+
+            _logger.LogInformation("Fetching paginated recipes. PageNumber: {PageNumber}, PageSize: {PageSize}.", pageNumber, pageSize);
+
+            _logger.LogDebug("Fetching the total count of recipes.");
+            var totalCount = await _context.Recipes.CountAsync();
+
+            _logger.LogDebug("Fetching recipes for PageNumber: {PageNumber}, PageSize: {PageSize}.", pageNumber, pageSize);
             var recipes = await _context.Recipes
                 .Include(r => r.Ingredients)
                 .ThenInclude(ri => ri.Ingredient)
+                .Where(r => r.Ingredients != null && r.Ingredients.Any())
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            _logger.LogInformation("All recipes retrieved successfully.");
-            return recipes;
+            if (recipes.Count==0)
+            {
+                _logger.LogWarning("No recipes found for the given page. PageNumber: {PageNumber}, PageSize: {PageSize}.", pageNumber, pageSize);
+                return new PaginatedList<Recipe>(new List<Recipe>(), totalCount, pageNumber, pageSize);
+            }
+
+            _logger.LogInformation("Successfully fetched paginated recipes. PageNumber: {PageNumber}, PageSize: {PageSize}, TotalCount: {TotalCount}.", pageNumber, pageSize, totalCount);
+
+            return new PaginatedList<Recipe>(recipes, totalCount, pageNumber, pageSize);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid pagination parameters received. PageNumber: {PageNumber}, PageSize: {PageSize}.", pageNumber, pageSize);
+            throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving all recipes.");
+            _logger.LogError(ex, "An error occurred while fetching paginated recipes.");
             throw;
         }
     }

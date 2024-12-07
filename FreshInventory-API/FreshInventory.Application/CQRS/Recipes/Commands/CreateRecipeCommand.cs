@@ -12,4 +12,5 @@ namespace FreshInventory.Application.Features.Recipes.Commands
             RecipeCreateDto = recipeCreateDto;
         }
     }
+
 }

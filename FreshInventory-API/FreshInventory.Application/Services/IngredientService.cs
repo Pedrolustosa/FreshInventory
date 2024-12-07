@@ -5,15 +5,17 @@ using FreshInventory.Application.Features.Ingredients.Commands;
 using FreshInventory.Application.Features.Ingredients.Queries;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Domain.Common.Models;
+using FreshInventory.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace FreshInventory.Application.Services;
 
-public class IngredientService(IMediator mediator, IMapper mapper, ILogger<IngredientService> logger) : IIngredientService
+public class IngredientService(IMediator mediator, IMapper mapper, ILogger<IngredientService> logger, ISupplierRepository supplierRepository) : IIngredientService
 {
     private readonly IMediator _mediator = mediator;
     private readonly IMapper _mapper = mapper;
+    private readonly ISupplierRepository _supplierRepository = supplierRepository;
     private readonly ILogger<IngredientService> _logger = logger;
 
     public async Task<IngredientReadDto> CreateIngredientAsync(IngredientCreateDto ingredientCreateDto)
@@ -102,6 +104,16 @@ public class IngredientService(IMediator mediator, IMapper mapper, ILogger<Ingre
 
         try
         {
+            // Validar se o SupplierId é válido
+            _logger.LogInformation("Validating supplier with ID {SupplierId}.", ingredientUpdateDto.SupplierId);
+            var supplierExists = await _supplierRepository.GetByIdAsync(ingredientUpdateDto.SupplierId);
+
+            if (supplierExists == null)
+            {
+                _logger.LogWarning("Supplier with ID {SupplierId} does not exist.", ingredientUpdateDto.SupplierId);
+                throw new ArgumentException($"Supplier with ID {ingredientUpdateDto.SupplierId} does not exist.");
+            }
+
             var command = new UpdateIngredientCommand(ingredientId, ingredientUpdateDto);
             var result = await _mediator.Send(command);
 
@@ -113,6 +125,11 @@ public class IngredientService(IMediator mediator, IMapper mapper, ILogger<Ingre
 
             _logger.LogInformation("Ingredient with ID {IngredientId} updated successfully.", ingredientId);
             return result;
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid argument during ingredient update.");
+            throw;
         }
         catch (Exception ex)
         {

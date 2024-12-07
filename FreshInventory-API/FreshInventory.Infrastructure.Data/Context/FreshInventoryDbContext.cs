@@ -12,7 +12,6 @@ namespace FreshInventory.Infrastructure.Data.Context
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +21,6 @@ namespace FreshInventory.Infrastructure.Data.Context
             modelBuilder.ApplyConfiguration(new IngredientConfiguration());
             modelBuilder.ApplyConfiguration(new SupplierConfiguration());
             modelBuilder.ApplyConfiguration(new RecipeConfiguration());
-            modelBuilder.ApplyConfiguration(new RecipeIngredientConfiguration());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

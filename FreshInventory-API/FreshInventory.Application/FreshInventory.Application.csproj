@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CQRS\Supplier\Validators\" />
+    <Folder Include="CQRS\Suppliers\Validators\" />
   </ItemGroup>
 
 </Project>

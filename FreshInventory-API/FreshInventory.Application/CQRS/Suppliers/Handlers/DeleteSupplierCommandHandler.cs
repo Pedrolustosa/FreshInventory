@@ -29,8 +29,7 @@ public class DeleteSupplierCommandHandler(ISupplierRepository supplierRepository
                 throw new InvalidOperationException("Cannot deactivate supplier with linked ingredients.");
             }
 
-            supplier.Deactivate();
-            var result = await _supplierRepository.UpdateAsync(supplier);
+            var result = await _supplierRepository.DeleteAsync(request.SupplierId);
 
             if (result)
             {

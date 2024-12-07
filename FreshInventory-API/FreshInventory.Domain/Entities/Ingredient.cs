@@ -1,166 +1,73 @@
-﻿using FreshInventory.Domain.Enums;
-
-namespace FreshInventory.Domain.Entities
+﻿namespace FreshInventory.Domain.Entities
 {
-    public class Ingredient
+    public class Ingredient : EntityBase
     {
         public int Id { get; private set; }
         public string Name { get; private set; }
         public int Quantity { get; private set; }
-        public Unit Unit { get; private set; }
         public decimal UnitCost { get; private set; }
-        public decimal TotalCost => Quantity * UnitCost;
-        public Category Category { get; private set; }
         public int SupplierId { get; private set; }
         public Supplier Supplier { get; private set; }
-        public DateTime PurchaseDate { get; private set; }
-        public DateTime ExpiryDate { get; private set; }
-        public bool IsPerishable { get; private set; }
-        public int ReorderLevel { get; private set; }
-        public DateTime CreatedDate { get; private set; }
-        public DateTime UpdatedDate { get; private set; }
 
         private Ingredient() { }
 
-        public Ingredient(
-            string name,
-            int quantity,
-            Unit unit,
-            decimal unitCost,
-            Category category,
-            int supplierId,
-            DateTime purchaseDate,
-            DateTime expiryDate,
-            bool isPerishable,
-            int reorderLevel)
+        public Ingredient(string name, int quantity, decimal unitCost, Supplier supplier)
         {
             SetName(name);
             SetQuantity(quantity);
-            SetUnit(unit);
             SetUnitCost(unitCost);
-            SetCategory(category);
-            SetSupplier(supplierId);
-            SetPurchaseDate(purchaseDate);
-            SetExpiryDate(expiryDate);
-            SetIsPerishable(isPerishable);
-            SetReorderLevel(reorderLevel);
-            CreatedDate = DateTime.UtcNow;
-            UpdatedDate = DateTime.UtcNow;
+            SetSupplier(supplier);
+
+            SetCreatedDate();
         }
 
-        public void DecreaseStock(int quantity)
+        public void Update(string name, int quantity, decimal unitCost, Supplier supplier)
         {
-            if (quantity <= 0) throw new ArgumentException("Quantity to decrease must be positive.");
-            if (quantity > Quantity) throw new InvalidOperationException($"Insufficient stock to decrease for {Name}.");
+            SetName(name);
+            SetQuantity(quantity);
+            SetUnitCost(unitCost);
+            SetSupplier(supplier);
 
-            Quantity -= quantity;
             UpdateTimestamp();
         }
 
-        public void ReduceQuantity(int quantity)
+        public void AdjustQuantity(int adjustment)
         {
-            if (quantity <= 0) throw new ArgumentException("Quantity to reduce must be positive.");
-            if (quantity > Quantity) throw new InvalidOperationException("Insufficient quantity to reduce.");
+            if (Quantity + adjustment < 0)
+                throw new InvalidOperationException("Not enough stock for the adjustment.");
 
-            Quantity -= quantity;
+            Quantity += adjustment;
             UpdateTimestamp();
         }
 
-        public void AddQuantity(int quantity)
+        private void SetName(string name)
         {
-            if (quantity <= 0) throw new ArgumentException("Quantity to add must be positive.");
-            Quantity += quantity;
-            UpdateTimestamp();
-        }
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be null or empty.");
 
-        public void UpdateUnitCost(int unitCost)
-        {
-            if (unitCost < 0) throw new ArgumentException("Unit cost cannot be negative.");
-            UnitCost = unitCost;
-            UpdateTimestamp();
-        }
-
-        public void UpdateReorderLevel(int reorderLevel)
-        {
-            if (reorderLevel < 0) throw new ArgumentException("Reorder level cannot be negative.");
-            ReorderLevel = reorderLevel;
-            UpdateTimestamp();
-        }
-
-        public bool IsExpired() => DateTime.UtcNow > ExpiryDate;
-
-        public bool NeedsRestock() => Quantity <= ReorderLevel;
-
-        public void SetName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or empty.");
             Name = name;
-            UpdateTimestamp();
         }
 
-        public void SetQuantity(int quantity)
+        private void SetQuantity(int quantity)
         {
-            if (quantity < 0) throw new ArgumentException("Quantity cannot be negative.");
+            if (quantity < 0)
+                throw new ArgumentException("Quantity cannot be negative.");
+
             Quantity = quantity;
-            UpdateTimestamp();
         }
 
-        public void SetUnit(Unit unit)
+        private void SetUnitCost(decimal unitCost)
         {
-            Unit = unit;
-            UpdateTimestamp();
-        }
+            if (unitCost < 0)
+                throw new ArgumentException("Unit cost cannot be negative.");
 
-        public void SetUnitCost(decimal unitCost)
-        {
-            if (unitCost < 0) throw new ArgumentException("Unit cost cannot be negative.");
             UnitCost = unitCost;
-            UpdateTimestamp();
         }
 
-        public void SetCategory(Category category)
+        private void SetSupplier(Supplier supplier)
         {
-            Category = category;
-            UpdateTimestamp();
-        }
-
-        public void SetSupplier(int supplierId)
-        {
-            if (supplierId <= 0) throw new ArgumentException("Supplier ID must be positive.");
-            SupplierId = supplierId;
-            UpdateTimestamp();
-        }
-
-        public void SetPurchaseDate(DateTime purchaseDate)
-        {
-            if (purchaseDate > DateTime.UtcNow) throw new ArgumentException("Purchase date cannot be in the future.");
-            PurchaseDate = purchaseDate;
-            UpdateTimestamp();
-        }
-
-        public void SetExpiryDate(DateTime expiryDate)
-        {
-            if (expiryDate <= PurchaseDate) throw new ArgumentException("Expiry date must be after the purchase date.");
-            ExpiryDate = expiryDate;
-            UpdateTimestamp();
-        }
-
-        public void SetIsPerishable(bool isPerishable)
-        {
-            IsPerishable = isPerishable;
-            UpdateTimestamp();
-        }
-
-        public void SetReorderLevel(int reorderLevel)
-        {
-            if (reorderLevel < 0) throw new ArgumentException("Reorder level cannot be negative.");
-            ReorderLevel = reorderLevel;
-            UpdateTimestamp();
-        }
-
-        private void UpdateTimestamp()
-        {
-            UpdatedDate = DateTime.UtcNow;
+            Supplier = supplier ?? throw new ArgumentNullException(nameof(supplier));
+            SupplierId = supplier.Id;
         }
     }
 }

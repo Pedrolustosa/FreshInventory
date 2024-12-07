@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using FreshInventory.Application.DTO.IngredientDTO;
-using FreshInventory.Domain.Entities;
-using FreshInventory.Application.Features.Ingredients.Commands;
 using FreshInventory.Application.CQRS.Ingredient.Commands;
+using FreshInventory.Domain.Entities;
 
 namespace FreshInventory.Application.Profiles
 {
@@ -10,39 +9,48 @@ namespace FreshInventory.Application.Profiles
     {
         public IngredientProfile()
         {
-            // Entity to DTO
             CreateMap<Ingredient, IngredientReadDto>()
-                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.Name));
+                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.Name))
+                .ForMember(dest => dest.TotalCost, opt => opt.MapFrom(src => src.Quantity * src.UnitCost))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.UnitCost, opt => opt.MapFrom(src => src.UnitCost))
+                .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.SupplierId))
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => src.UpdatedDate));
 
-            // DTO to Command
-            CreateMap<IngredientCreateDto, Ingredient>();
-            CreateMap<IngredientUpdateDto, Ingredient>();
+            CreateMap<IngredientCreateDto, CreateIngredientCommand>()
+                .ConstructUsing(src => new CreateIngredientCommand(
+                    src.Name,
+                    src.Quantity,
+                    src.UnitCost,
+                    src.SupplierId));
 
-            // Command to Entity
             CreateMap<CreateIngredientCommand, Ingredient>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.IngredientCreateDto.Name))
-                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.IngredientCreateDto.Quantity))
-                .ForMember(dest => dest.Unit, opt => opt.MapFrom(src => src.IngredientCreateDto.Unit))
-                .ForMember(dest => dest.UnitCost, opt => opt.MapFrom(src => src.IngredientCreateDto.UnitCost))
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.IngredientCreateDto.Category))
-                .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.IngredientCreateDto.SupplierId))
-                .ForMember(dest => dest.PurchaseDate, opt => opt.MapFrom(src => src.IngredientCreateDto.PurchaseDate))
-                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.IngredientCreateDto.ExpiryDate))
-                .ForMember(dest => dest.IsPerishable, opt => opt.MapFrom(src => src.IngredientCreateDto.IsPerishable))
-                .ForMember(dest => dest.ReorderLevel, opt => opt.MapFrom(src => src.IngredientCreateDto.ReorderLevel));
+                .ConstructUsing(src => new Ingredient(
+                    src.Name,
+                    src.Quantity,
+                    src.UnitCost,
+                    null))
+                .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.SupplierId));
 
             CreateMap<UpdateIngredientCommand, Ingredient>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.IngredientId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.IngredientUpdateDto.Name))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.IngredientUpdateDto.Quantity))
-                .ForMember(dest => dest.Unit, opt => opt.MapFrom(src => src.IngredientUpdateDto.Unit))
                 .ForMember(dest => dest.UnitCost, opt => opt.MapFrom(src => src.IngredientUpdateDto.UnitCost))
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.IngredientUpdateDto.Category))
                 .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.IngredientUpdateDto.SupplierId))
-                .ForMember(dest => dest.PurchaseDate, opt => opt.MapFrom(src => src.IngredientUpdateDto.PurchaseDate))
-                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.IngredientUpdateDto.ExpiryDate))
-                .ForMember(dest => dest.IsPerishable, opt => opt.MapFrom(src => src.IngredientUpdateDto.IsPerishable))
-                .ForMember(dest => dest.ReorderLevel, opt => opt.MapFrom(src => src.IngredientUpdateDto.ReorderLevel));
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+
+            CreateMap<IngredientUpdateDto, Ingredient>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.UnitCost, opt => opt.MapFrom(src => src.UnitCost))
+                .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.SupplierId))
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
         }
     }
 }

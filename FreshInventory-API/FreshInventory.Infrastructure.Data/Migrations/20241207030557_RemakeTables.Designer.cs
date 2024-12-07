@@ -3,6 +3,7 @@ using System;
 using FreshInventory.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshInventory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FreshInventoryDbContext))]
-    partial class FreshInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207030557_RemakeTables")]
+    partial class RemakeTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -97,10 +100,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Contact")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -123,9 +122,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");

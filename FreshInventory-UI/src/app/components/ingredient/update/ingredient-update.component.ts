@@ -1,6 +1,3 @@
-import { Unit, UnitLabels } from "../../../models/enums/unit.enum";
-import { Category, CategoryLabels } from "../../../models/enums/category.enum";
-import { Ingredient, UpdateIngredient } from "../../../models/ingredient.model";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { IngredientService } from "src/app/services/ingredient.service";
@@ -8,12 +5,10 @@ import { SupplierService } from "src/app/services/supplier.service";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
+import { NgxSpinnerService } from "ngx-spinner";
 import { ToastrService } from "ngx-toastr";
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { Supplier } from "src/app/models/supplier.model";
+import { SupplierReadDto } from "src/app/models/supplier.model";
+import { IngredientReadDto, IngredientUpdateDto } from "../../../models/ingredient.model";
 
 @Component({
   selector: "app-ingredient-update",
@@ -23,30 +18,15 @@ import { Supplier } from "src/app/models/supplier.model";
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule,
-    BsDatepickerModule,
-    TooltipModule,
-    BsDropdownModule
   ],
   templateUrl: "./ingredient-update.component.html",
-  styleUrls: ["./ingredient-update.component.css"]
+  styleUrls: ["./ingredient-update.component.css"],
 })
 export class IngredientUpdateComponent implements OnInit {
   ingredientForm!: FormGroup;
-  units = Object.values(Unit).filter(value => typeof value === 'number') as Unit[];
-  categories = Object.values(Category).filter(value => typeof value === 'number') as Category[];
-  categoryLabels = CategoryLabels;
-  unitLabels = UnitLabels;
-  suppliers: Supplier[] = [];
+  suppliers: SupplierReadDto[] = [];
   isLoading = false;
-  maxDate = new Date();
-  minDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-  bsConfig = {
-    dateInputFormat: 'YYYY-MM-DD',
-    containerClass: 'theme-default',
-    adaptivePosition: true,
-    showWeekNumbers: false
-  };
+  ingredientId: number | null = null;
 
   constructor(
     private ingredientService: IngredientService,
@@ -56,124 +36,98 @@ export class IngredientUpdateComponent implements OnInit {
     private formBuilder: FormBuilder,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService
-  ) {
-    this.createForm();
-    this.loadSuppliers();
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const id = params['id'];
-      if (id) {
-        this.loadIngredient(id);
+    this.createForm();
+    this.loadSuppliers();
+    this.route.params.subscribe((params) => {
+      this.ingredientId = +params["id"];
+      if (this.ingredientId) {
+        this.loadIngredient(this.ingredientId);
       }
     });
   }
 
   private createForm(): void {
     this.ingredientForm = this.formBuilder.group({
-      id: [''],
-      name: ['', [Validators.required]],
-      quantity: ['', [Validators.required, Validators.min(0)]],
-      unit: [null, [Validators.required]],
-      unitCost: ['', [Validators.required, Validators.min(0)]],
-      category: [null, [Validators.required]],
-      supplierId: ['', [Validators.required]],
-      purchaseDate: ['', [Validators.required]],
-      expiryDate: ['', [Validators.required]],
-      isPerishable: [false],
-      reorderLevel: ['', [Validators.required, Validators.min(0)]]
+      name: ["", [Validators.required, Validators.minLength(3)]],
+      quantity: [0, [Validators.required, Validators.min(1)]],
+      unitCost: [0, [Validators.required, Validators.min(0)]],
+      supplierId: [null, [Validators.required]],
     });
   }
 
   private loadSuppliers(): void {
-    this.supplierService.getSuppliers(1, 100, "", "name", "asc").subscribe({
-      next: (response: any) => {
-        this.suppliers = response.items.filter(
-          (supplier: Supplier) => supplier.status
-        );
+    this.spinner.show();
+    this.supplierService.getAllSuppliersPaged(1, 100).subscribe({
+      next: (response) => {
+        this.suppliers = response.data || [];
+        this.spinner.hide();
       },
       error: (error: any) => {
         console.error("Error loading suppliers:", error);
-        this.toastr.error("Failed to load suppliers");
-      }
+        this.toastr.error("Failed to load suppliers.");
+        this.spinner.hide();
+      },
     });
   }
 
   private loadIngredient(id: number): void {
     this.spinner.show();
     this.ingredientService.getIngredientById(id).subscribe({
-      next: (ingredient: Ingredient) => {
-
-        // Convert string/number values to enum values
-        const unitValue = typeof ingredient.unit === 'string' 
-          ? Unit[ingredient.unit as keyof typeof Unit]
-          : ingredient.unit;
-        
-        const categoryValue = typeof ingredient.category === 'string'
-          ? Category[ingredient.category as keyof typeof Category]
-          : ingredient.category;
-
-        // Set form values with the correct enum values
-        const formValues = {
-          ...ingredient,
-          unit: unitValue,
-          category: categoryValue,
-          purchaseDate: new Date(ingredient.purchaseDate),
-          expiryDate: new Date(ingredient.expiryDate)
-        };
-        
-        this.ingredientForm.patchValue(formValues);
+      next: (ingredient: IngredientReadDto) => {
+        this.ingredientForm.patchValue(ingredient);
         this.spinner.hide();
       },
       error: (error: any) => {
-        console.error('Error loading ingredient:', error);
-        this.toastr.error('Failed to load ingredient');
+        console.error("Error loading ingredient:", error);
+        this.toastr.error("Failed to load ingredient.");
         this.spinner.hide();
-      }
+      },
     });
   }
 
   onSubmit(): void {
-    if (this.ingredientForm.valid) {
+    if (this.ingredientForm.valid && this.ingredientId) {
       this.spinner.show();
       const formData = this.ingredientForm.value;
-      const ingredient: UpdateIngredient = {
-        ...formData,
-        unit: Number(formData.unit),
-        category: Number(formData.category)
+      const ingredient: IngredientUpdateDto = {
+        name: formData.name,
+        quantity: formData.quantity,
+        unitCost: formData.unitCost,
+        supplierId: formData.supplierId,
       };
 
-      this.ingredientService.updateIngredient(ingredient.id, ingredient).subscribe({
+      this.ingredientService.updateIngredient(this.ingredientId, ingredient).subscribe({
         next: () => {
+          this.toastr.success("Ingredient updated successfully!");
           this.spinner.hide();
-          this.toastr.success('Ingredient updated successfully!');
-          this.router.navigate(['/ingredients']);
+          this.router.navigate(["/ingredients"]);
         },
         error: (error: any) => {
-          console.error('Error updating ingredient:', error);
+          console.error("Error updating ingredient:", error);
+          this.toastr.error("Failed to update ingredient.");
           this.spinner.hide();
-          this.toastr.error('Failed to update ingredient');
-        }
+        },
       });
     } else {
       this.markFormGroupTouched(this.ingredientForm);
-      this.toastr.warning('Please fill in all required fields');
+      this.toastr.warning("Please fill in all required fields.");
     }
   }
 
   getControlError(controlName: string): string {
     const control = this.ingredientForm.get(controlName);
     if (control?.errors && control.touched) {
-      if (control.errors['required']) return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required`;
-      if (control.errors['min']) return `Value must be at least ${control.errors['min'].min}`;
-      if (control.errors['max']) return `Value must be at most ${control.errors['max'].max}`;
+      if (control.errors["required"]) return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required.`;
+      if (control.errors["min"]) return `Value must be at least ${control.errors["min"].min}.`;
     }
-    return '';
+    return "";
   }
 
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);

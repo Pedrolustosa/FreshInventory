@@ -5,11 +5,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { NgxMaskDirective } from 'ngx-mask';
 import { phoneNumberValidator } from '../../../shared/validators/phone.validator';
-import { Supplier } from '../../../models/supplier.model';
-import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
+import { SupplierReadDto, SupplierUpdateDto } from '../../../models/supplier.model';
 
 @Component({
   selector: 'app-supplier-update',
@@ -19,7 +17,6 @@ import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
     RouterModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-    BsDatepickerModule,
     NgxMaskDirective
   ],
   templateUrl: './supplier-update.component.html',
@@ -29,8 +26,6 @@ export class SupplierUpdateComponent implements OnInit {
   supplierForm!: FormGroup;
   isLoading = false;
   supplierId!: number;
-  categories = Object.values(Category).filter((value) => typeof value === 'number') as Category[];
-  categoryLabels = CategoryLabels;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,25 +48,23 @@ export class SupplierUpdateComponent implements OnInit {
 
   createForm(): void {
     this.supplierForm = this.formBuilder.group({
-      id: [''],
       name: ['', [Validators.required, Validators.minLength(3)]],
-      contactPerson: ['', [Validators.required, Validators.minLength(3)]],
+      contact: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, phoneNumberValidator]],
       address: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', [Validators.required]],
-      status: ['', [Validators.required]]
+      status: [true, [Validators.required]]
     });
   }
 
   loadSupplier(id: number): void {
     this.spinner.show();
     this.supplierService.getSupplierById(id).subscribe({
-      next: (supplier: Supplier) => {
+      next: (supplier: SupplierReadDto) => {
         this.supplierForm.patchValue({
-          id: supplier.id,
           name: supplier.name,
-          contactPerson: supplier.contactPerson,
+          contact: supplier.contact,
           email: supplier.email,
           phone: supplier.phone,
           address: supplier.address,
@@ -94,7 +87,6 @@ export class SupplierUpdateComponent implements OnInit {
     if (control?.errors && control.touched) {
       if (control.errors['required']) return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required`;
       if (control.errors['minlength']) return `${controlName} must be at least ${control.errors['minlength'].requiredLength} characters`;
-      if (control.errors['pattern']) return `Invalid ${controlName} format`;
       if (control.errors['email']) return 'Invalid email format';
       if (control.errors['invalidPhone']) return 'Invalid phone number format';
     }
@@ -104,7 +96,7 @@ export class SupplierUpdateComponent implements OnInit {
   onSubmit(): void {
     if (this.supplierForm.valid) {
       this.spinner.show();
-      const supplier = this.supplierForm.value;
+      const supplier: SupplierUpdateDto = this.supplierForm.value;
       this.supplierService.updateSupplier(this.supplierId, supplier).subscribe({
         next: () => {
           this.spinner.hide();

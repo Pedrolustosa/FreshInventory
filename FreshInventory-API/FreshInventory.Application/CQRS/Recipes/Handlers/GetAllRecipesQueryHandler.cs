@@ -20,11 +20,9 @@ public class GetAllRecipesPagedQueryHandler(IRecipeRepository recipeRepository, 
         {
             _logger.LogInformation("Fetching paginated recipes. Page {PageNumber}, Size {PageSize}.", request.PageNumber, request.PageSize);
 
-            var paginatedRecipes = await _recipeRepository.GetAllRecipesPagedAsync(request.PageNumber, request.PageSize);
-
             var recipes = await _recipeRepository.GetAllRecipesPagedAsync(request.PageNumber, request.PageSize);
 
-            var recipeDtos = _mapper.Map<List<RecipeReadDto>>(recipes.Items);
+            var recipeDtos = _mapper.Map<List<RecipeReadDto>>(recipes.Data);
 
             _logger.LogInformation("Successfully retrieved {Count} ingredients on page {PageNumber}.", recipeDtos.Count, request.PageNumber);
 

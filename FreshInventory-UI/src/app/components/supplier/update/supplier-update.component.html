@@ -4,6 +4,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
       <div>
         <h1 class="content-title">Update Supplier</h1>
+        <p class="text-muted">Edit supplier details below.</p>
       </div>
     </div>
   </div>
@@ -24,14 +25,14 @@
               <input type="text" 
                      class="form-control" 
                      formControlName="name"
-                     placeholder="Enter company name"
+                     placeholder="Enter supplier name"
                      [class.is-invalid]="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched">
               <div class="invalid-feedback">{{ getControlError('name') }}</div>
             </div>
 
             <!-- Status -->
             <div class="mb-3">
-              <div class="form-check">
+              <div class="form-check form-switch">
                 <input type="checkbox" 
                        class="form-check-input" 
                        id="status" 
@@ -45,15 +46,15 @@
           <div class="form-section">
             <h5 class="form-section-title">Contact Information</h5>
 
-            <!-- Contact Name -->
+            <!-- Contact -->
             <div class="mb-3">
-              <label class="form-label required-field">Contact Name</label>
+              <label class="form-label required-field">Contact</label>
               <input type="text" 
                      class="form-control" 
-                     formControlName="contactPerson"
-                     placeholder="Enter contact person name"
-                     [class.is-invalid]="supplierForm.get('contactPerson')?.invalid && supplierForm.get('contactPerson')?.touched">
-              <div class="invalid-feedback">{{ getControlError('contactPerson') }}</div>
+                     formControlName="contact"
+                     placeholder="Enter contact name"
+                     [class.is-invalid]="supplierForm.get('contact')?.invalid && supplierForm.get('contact')?.touched">
+              <div class="invalid-feedback">{{ getControlError('contact') }}</div>
             </div>
 
             <!-- Email -->
@@ -78,6 +79,11 @@
                      [class.is-invalid]="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
               <div class="invalid-feedback">{{ getControlError('phone') }}</div>
             </div>
+          </div>
+
+          <!-- Address Section -->
+          <div class="form-section">
+            <h5 class="form-section-title">Address</h5>
 
             <!-- Address -->
             <div class="mb-3">
@@ -85,9 +91,20 @@
               <textarea class="form-control" 
                         formControlName="address"
                         rows="3"
-                        placeholder="Enter complete address"
+                        placeholder="Enter full address"
                         [class.is-invalid]="supplierForm.get('address')?.invalid && supplierForm.get('address')?.touched"></textarea>
               <div class="invalid-feedback">{{ getControlError('address') }}</div>
+            </div>
+
+            <!-- Category -->
+            <div class="mb-3">
+              <label class="form-label required-field">Category</label>
+              <input type="text" 
+                     class="form-control" 
+                     formControlName="category"
+                     placeholder="Enter category"
+                     [class.is-invalid]="supplierForm.get('category')?.invalid && supplierForm.get('category')?.touched">
+              <div class="invalid-feedback">{{ getControlError('category') }}</div>
             </div>
           </div>
         </div>

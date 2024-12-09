@@ -48,20 +48,6 @@
               <div class="invalid-feedback">{{ getControlError('quantity') }}</div>
             </div>
 
-            <!-- Unit -->
-            <div class="mb-3">
-              <label class="form-label required-field">Unit</label>
-              <select class="form-select" 
-                      formControlName="unit"
-                      [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched">
-                <option value="" selected>Select unit</option>
-                <option *ngFor="let unit of units" [value]="unit">
-                  {{ unitLabels[unit] }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getControlError('unit') }}</div>
-            </div>
-
             <!-- Unit Cost -->
             <div class="mb-3">
               <label class="form-label required-field">Unit Cost</label>
@@ -81,20 +67,6 @@
               <i class="fas fa-clipboard-list text-primary me-2"></i>Additional Details
             </h5>
 
-            <!-- Category -->
-            <div class="mb-3">
-              <label class="form-label required-field">Category</label>
-              <select class="form-select" 
-                      formControlName="category"
-                      [class.is-invalid]="ingredientForm.get('category')?.invalid && ingredientForm.get('category')?.touched">
-                <option value="" selected>Select category</option>
-                <option *ngFor="let category of categories" [value]="category">
-                  {{ categoryLabels[category] }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getControlError('category') }}</div>
-            </div>
-
             <!-- Supplier -->
             <div class="mb-3">
               <label class="form-label required-field">Supplier</label>
@@ -107,59 +79,6 @@
                 </option>
               </select>
               <div class="invalid-feedback">{{ getControlError('supplierId') }}</div>
-            </div>
-
-            <!-- Purchase Date -->
-            <div class="mb-3">
-              <label class="form-label required-field">Purchase Date</label>
-              <input type="text"
-                     class="form-control"
-                     formControlName="purchaseDate"
-                     placeholder="YYYY-MM-DD"
-                     bsDatepicker
-                     [bsConfig]="bsConfig"
-                     [maxDate]="maxDate"
-                     [minDate]="minDate"
-                     [class.is-invalid]="ingredientForm.get('purchaseDate')?.invalid && ingredientForm.get('purchaseDate')?.touched">
-              <div class="invalid-feedback">{{ getControlError('purchaseDate') }}</div>
-            </div>
-
-            <!-- Expiry Date -->
-            <div class="mb-3">
-              <label class="form-label required-field">Expiry Date</label>
-              <input type="text"
-                     class="form-control"
-                     formControlName="expiryDate"
-                     placeholder="YYYY-MM-DD"
-                     bsDatepicker
-                     [bsConfig]="bsConfig"
-                     [minDate]="ingredientForm.get('purchaseDate')?.value || minDate"
-                     [class.is-invalid]="ingredientForm.get('expiryDate')?.invalid && ingredientForm.get('expiryDate')?.touched">
-              <div class="invalid-feedback">{{ getControlError('expiryDate') }}</div>
-            </div>
-
-            <!-- Is Perishable -->
-            <div class="mb-3">
-              <div class="form-check">
-                <input type="checkbox" 
-                       class="form-check-input" 
-                       formControlName="isPerishable" 
-                       id="isPerishable">
-                <label class="form-check-label" for="isPerishable">
-                  Perishable Item
-                </label>
-              </div>
-            </div>
-
-            <!-- Reorder Level -->
-            <div class="mb-3">
-              <label class="form-label required-field">Reorder Level</label>
-              <input type="number" 
-                     class="form-control" 
-                     formControlName="reorderLevel"
-                     placeholder="Enter reorder level"
-                     [class.is-invalid]="ingredientForm.get('reorderLevel')?.invalid && ingredientForm.get('reorderLevel')?.touched">
-              <div class="invalid-feedback">{{ getControlError('reorderLevel') }}</div>
             </div>
           </div>
         </div>
@@ -177,4 +96,3 @@
     </div>
   </div>
 </div>
-

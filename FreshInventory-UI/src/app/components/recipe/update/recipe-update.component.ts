@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { FormsModule, ReactiveFormsModule, FormArray } from '@angular/forms';
-import { NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { RecipeService } from '../../../services/recipe.service';
 import { IngredientService } from '../../../services/ingredient.service';
 import { RecipeFormBase } from '../shared/recipe-form.base';
+import { RecipeUpdateDto } from '../../../models/recipe.model';
 
 @Component({
   selector: 'app-recipe-update',
@@ -29,7 +30,8 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
     protected override ingredientService: IngredientService,
     protected override router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ) {
     super(recipeService, ingredientService, router);
   }
@@ -40,53 +42,56 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
   }
 
   private loadRecipe(): void {
+    this.spinner.show();
     this.recipeService.getRecipeById(this.recipeId).subscribe({
       next: (recipe) => {
         this.recipeForm.patchValue({
           name: recipe.name,
-          description: recipe.description,
-          category: recipe.category,
-          preparationTime: recipe.preparationTime,
-          servings: recipe.servings
+          description: recipe.description
         });
 
-        // Clear and rebuild ingredients array
-        while (this.ingredientsArray.length) {
-          this.ingredientsArray.removeAt(0);
-        }
-        recipe.ingredients.forEach(ingredient => {
-          this.addIngredient();
-          this.ingredientsArray.at(this.ingredientsArray.length - 1).patchValue(ingredient);
+        // Atualizar ingredientes
+        this.ingredientsArray.clear();
+        recipe.ingredients.forEach((ingredient) => {
+          this.ingredientsArray.push(
+            this.createIngredientGroup({
+              ingredientId: ingredient.ingredientId,
+              quantity: ingredient.quantity,
+            })
+          );
         });
 
-        // Clear and rebuild instructions array
-        while (this.instructionsArray.length) {
-          this.instructionsArray.removeAt(0);
-        }
-        recipe.instructions.forEach(instruction => {
-          this.addInstruction();
-          this.instructionsArray.at(this.instructionsArray.length - 1).patchValue(instruction);
+        // Atualizar etapas (steps)
+        this.stepsArray.clear();
+        recipe.steps.forEach((step) => {
+          this.stepsArray.push(this.createStepControl(step));
         });
+
+        this.spinner.hide();
       },
       error: () => {
+        this.spinner.hide();
         this.toastr.error('Error loading recipe');
         this.router.navigate(['/recipes']);
-      }
+      },
     });
   }
 
   override onSubmit(): void {
     if (this.recipeForm.valid) {
-      const recipe = this.getFormattedRecipe();
-      if (recipe !== null) {
-        this.recipeService.updateRecipe(this.recipeId, recipe).subscribe({
+      const updatedRecipe: RecipeUpdateDto | null = this.getFormattedRecipe();
+      if (updatedRecipe) {
+        this.spinner.show();
+        this.recipeService.updateRecipe(this.recipeId, updatedRecipe).subscribe({
           next: () => {
-            this.toastr.success('Recipe updated successfully');
+            this.spinner.hide();
+            this.toastr.success('Recipe updated successfully!');
             this.router.navigate(['/recipes']);
           },
           error: () => {
-            this.toastr.error('Error updating recipe');
-          }
+            this.spinner.hide();
+            this.toastr.error('Error updating recipe.');
+          },
         });
       }
     } else {

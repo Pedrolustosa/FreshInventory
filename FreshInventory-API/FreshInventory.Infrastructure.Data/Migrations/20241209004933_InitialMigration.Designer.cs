@@ -3,6 +3,7 @@ using System;
 using FreshInventory.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshInventory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FreshInventoryDbContext))]
-    partial class FreshInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209004933_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -94,10 +97,6 @@ namespace FreshInventory.Infrastructure.Data.Migrations
 
                     b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("IngredientName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");

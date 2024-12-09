@@ -17,10 +17,10 @@ import { RecipeFormBase } from '../shared/recipe-form.base';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
   ],
   templateUrl: './recipe-create.component.html',
-  styleUrls: ['./recipe-create.component.css']
+  styleUrls: ['./recipe-create.component.css'],
 })
 export class RecipeCreateComponent extends RecipeFormBase implements OnInit {
   constructor(
@@ -35,39 +35,38 @@ export class RecipeCreateComponent extends RecipeFormBase implements OnInit {
 
   ngOnInit(): void {
     this.addIngredient();
-    this.addInstruction();
+    this.addStep();
   }
 
   override onSubmit(): void {
-    console.log('Iniciando submissão do formulário');
-    console.log('Form válido:', this.recipeForm.valid);
-    console.log('Form value:', this.recipeForm.value);
-    console.log('Form errors:', this.recipeForm.errors);
-
     if (this.recipeForm.valid) {
       const recipe = this.getFormattedRecipe();
-      if (recipe !== null) {
+      if (recipe) {
         this.spinner.show();
         this.recipeService.createRecipe(recipe).subscribe({
           next: () => {
             this.spinner.hide();
-            this.toastr.success('Recipe created successfully', 'Success');
+            this.toastr.success('Recipe created successfully!', 'Success');
             this.router.navigate(['/recipes']);
           },
           error: (error) => {
             this.spinner.hide();
-            console.error('Erro ao criar receita:', error);
-            this.toastr.error('Error creating recipe', 'Error');
-          }
+            console.error('Error creating recipe:', error);
+            this.toastr.error(
+              'Failed to create recipe. Please try again.',
+              'Error'
+            );
+          },
         });
       } else {
-        console.error('Recipe is null after formatting');
-        this.toastr.error('Please fill in all required fields', 'Validation Error');
+        this.toastr.error('Please review your inputs.', 'Validation Error');
       }
     } else {
-      console.log('Form inválido - marcando campos como touched');
       this.markFormGroupTouched(this.recipeForm);
-      this.toastr.error('Please fill in all required fields', 'Validation Error');
+      this.toastr.warning(
+        'Please fill in all required fields.',
+        'Validation Error'
+      );
     }
-  }  
+  }
 }

@@ -64,7 +64,7 @@ namespace FreshInventory.API.Controllers
         }
 
         [HttpGet("GetAllPaged")]
-        public async Task<IActionResult> GetAllRecipesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllRecipesPaged(int pageNumber = 1, int pageSize = 10)
         {
             try
             {

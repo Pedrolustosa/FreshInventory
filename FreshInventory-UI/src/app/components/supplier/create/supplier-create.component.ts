@@ -5,10 +5,6 @@ import { Router, RouterModule } from '@angular/router';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { NgxMaskDirective } from 'ngx-mask';
-import { phoneNumberValidator } from '../../../shared/validators/phone.validator';
-import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
 
 @Component({
   selector: 'app-supplier-create',
@@ -18,17 +14,13 @@ import { Category, CategoryLabels } from 'src/app/models/enums/category.enum';
     RouterModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-    BsDatepickerModule,
-    NgxMaskDirective
   ],
   templateUrl: './supplier-create.component.html',
-  styleUrls: ['./supplier-create.component.css']
+  styleUrls: ['./supplier-create.component.css'],
 })
 export class SupplierCreateComponent implements OnInit {
   supplierForm!: FormGroup;
   isLoading = false;
-  categories = Object.values(Category).filter((value) => typeof value === 'number') as Category[];
-  categoryLabels = CategoryLabels;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,24 +37,22 @@ export class SupplierCreateComponent implements OnInit {
   createForm(): void {
     this.supplierForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      code: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9-]{3,10}$')]],
-      contactPerson: ['', [Validators.required, Validators.minLength(3)]],
+      contact: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, phoneNumberValidator]],
+      phone: ['', [Validators.required, Validators.pattern('^[0-9\\-+()\\s]+$')]],
       address: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', [Validators.required]],
-      status: [true]
+      status: [true], // Default status to true
     });
   }
 
   getControlError(controlName: string): string {
     const control = this.supplierForm.get(controlName);
     if (control?.errors && control.touched) {
-      if (control.errors['required']) return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required`;
-      if (control.errors['minlength']) return `${controlName} must be at least ${control.errors['minlength'].requiredLength} characters`;
-      if (control.errors['pattern']) return `Invalid ${controlName} format`;
-      if (control.errors['email']) return 'Invalid email format';
-      if (control.errors['invalidPhone']) return 'Invalid phone number format';
+      if (control.errors['required']) return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required.`;
+      if (control.errors['minlength']) return `${controlName} must be at least ${control.errors['minlength'].requiredLength} characters.`;
+      if (control.errors['pattern']) return `Invalid ${controlName} format.`;
+      if (control.errors['email']) return 'Invalid email format.';
     }
     return '';
   }
@@ -70,7 +60,9 @@ export class SupplierCreateComponent implements OnInit {
   onSubmit(): void {
     if (this.supplierForm.valid) {
       this.spinner.show();
-      this.supplierService.createSupplier(this.supplierForm.value).subscribe({
+      const supplierData = this.supplierForm.value;
+
+      this.supplierService.createSupplier(supplierData).subscribe({
         next: () => {
           this.spinner.hide();
           this.toastr.success('Supplier created successfully!');
@@ -79,17 +71,17 @@ export class SupplierCreateComponent implements OnInit {
         error: (error: any) => {
           console.error('Error creating supplier:', error);
           this.spinner.hide();
-          this.toastr.error('Failed to create supplier');
-        }
+          this.toastr.error('Failed to create supplier. Please try again.');
+        },
       });
     } else {
       this.markFormGroupTouched(this.supplierForm);
-      this.toastr.warning('Please fill in all required fields correctly');
+      this.toastr.warning('Please fill in all required fields correctly.');
     }
   }
 
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);

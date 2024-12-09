@@ -1,128 +1,75 @@
-<div class="supplier-list-container">
-  <!-- Create Form Header -->
-  <div class="content-header mb-4">
-    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-      <div>
-        <h1 class="content-title">Create Supplier</h1>
-      </div>
-    </div>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="fas fa-user-plus me-2"></i>Create Supplier
+    </h2>
+    <button class="btn btn-outline-secondary" routerLink="/suppliers">
+      <i class="fas fa-arrow-left me-2"></i>Back to Suppliers
+    </button>
   </div>
 
-  <!-- Create Form Card -->
-  <div class="card">
+  <div class="card shadow-sm">
     <div class="card-body">
-      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="supplier-form">
-        <!-- Form Grid -->
-        <div class="form-grid">
-          <!-- Basic Information Section -->
-          <div class="form-section">
-            <h5 class="form-section-title">Basic Information</h5>
-
-            <!-- Name -->
-            <div class="mb-3">
-              <label class="form-label required-field">Name</label>
-              <input type="text" 
-                     class="form-control" 
-                     formControlName="name"
-                     placeholder="Enter company name"
-                     [class.is-invalid]="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched">
-              <div class="invalid-feedback">{{ getControlError('name') }}</div>
-            </div>
-
-            <!-- Code -->
-            <div class="mb-3">
-              <label class="form-label required-field">Code</label>
-              <input type="text" 
-                     class="form-control" 
-                     formControlName="code"
-                     placeholder="Enter supplier code"
-                     [class.is-invalid]="supplierForm.get('code')?.invalid && supplierForm.get('code')?.touched">
-              <div class="invalid-feedback">{{ getControlError('code') }}</div>
-            </div>
-
-            <!-- Category -->
-            <div class="mb-3">
-              <label class="form-label required-field">Category</label>
-              <select class="form-select" 
-                      formControlName="category"
-                      [class.is-invalid]="supplierForm.get('category')?.invalid && supplierForm.get('category')?.touched">
-                <option value="" selected>Select category</option>
-                <option *ngFor="let category of categories" [value]="category">
-                  {{ categoryLabels[category] }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getControlError('category') }}</div>
-            </div>
-
-            <!-- Status -->
-            <div class="mb-3">
-              <div class="form-check">
-                <input type="checkbox" 
-                       class="form-check-input" 
-                       id="status" 
-                       formControlName="status">
-                <label class="form-check-label" for="status">Active</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact Information Section -->
-          <div class="form-section">
-            <h5 class="form-section-title">Contact Information</h5>
-
-            <!-- Contact Name -->
-            <div class="mb-3">
-              <label class="form-label required-field">Contact Name</label>
-              <input type="text" 
-                     class="form-control" 
-                     formControlName="contactPerson"
-                     placeholder="Enter contact person name"
-                     [class.is-invalid]="supplierForm.get('contactPerson')?.invalid && supplierForm.get('contactPerson')?.touched">
-              <div class="invalid-feedback">{{ getControlError('contactPerson') }}</div>
-            </div>
-
-            <!-- Email -->
-            <div class="mb-3">
-              <label class="form-label required-field">Email</label>
-              <input type="email" 
-                     class="form-control" 
-                     formControlName="email"
-                     placeholder="Enter email address"
-                     [class.is-invalid]="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched">
-              <div class="invalid-feedback">{{ getControlError('email') }}</div>
-            </div>
-
-            <!-- Phone -->
-            <div class="mb-3">
-              <label class="form-label required-field">Phone</label>
-              <input type="tel"
-                     class="form-control"
-                     formControlName="phone"
-                     mask="(00) 00000-0000"
-                     placeholder="(99) 99999-9999"
-                     [class.is-invalid]="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
-              <div class="invalid-feedback">{{ getControlError('phone') }}</div>
-            </div>
-
-            <!-- Address -->
-            <div class="mb-3">
-              <label class="form-label required-field">Address</label>
-              <textarea class="form-control" 
-                        formControlName="address"
-                        rows="3"
-                        placeholder="Enter complete address"
-                        [class.is-invalid]="supplierForm.get('address')?.invalid && supplierForm.get('address')?.touched"></textarea>
-              <div class="invalid-feedback">{{ getControlError('address') }}</div>
-            </div>
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+        <!-- Name -->
+        <div class="mb-3">
+          <label class="form-label required-field">Name</label>
+          <input type="text" class="form-control" formControlName="name" placeholder="Enter supplier name">
+          <div class="invalid-feedback" *ngIf="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched">
+            {{ getControlError('name') }}
           </div>
         </div>
 
+        <!-- Contact -->
+        <div class="mb-3">
+          <label class="form-label required-field">Contact Person</label>
+          <input type="text" class="form-control" formControlName="contact" placeholder="Enter contact person">
+          <div class="invalid-feedback"
+            *ngIf="supplierForm.get('contact')?.invalid && supplierForm.get('contact')?.touched">
+            {{ getControlError('contact') }}
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label required-field">Email</label>
+          <input type="email" class="form-control" formControlName="email" placeholder="Enter email address">
+          <div class="invalid-feedback"
+            *ngIf="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched">
+            {{ getControlError('email') }}
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3">
+          <label class="form-label required-field">Phone</label>
+          <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone number">
+          <div class="invalid-feedback"
+            *ngIf="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
+            {{ getControlError('phone') }}
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="mb-3">
+          <label class="form-label required-field">Address</label>
+          <textarea class="form-control" formControlName="address" rows="3" placeholder="Enter address"></textarea>
+          <div class="invalid-feedback"
+            *ngIf="supplierForm.get('address')?.invalid && supplierForm.get('address')?.touched">
+            {{ getControlError('address') }}
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" formControlName="status" id="status">
+          <label class="form-check-label" for="status">Active</label>
+        </div>
+
         <!-- Form Actions -->
-        <div class="form-actions d-flex justify-content-end gap-3">
+        <div class="d-flex justify-content-end gap-3">
           <button type="button" class="btn btn-outline-secondary" routerLink="/suppliers">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid || isLoading">
-            Create Supplier
-          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid">Create Supplier</button>
         </div>
       </form>
     </div>

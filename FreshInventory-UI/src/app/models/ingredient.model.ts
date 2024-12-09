@@ -1,46 +1,31 @@
-import { Unit } from './enums/unit.enum';
-import { Category } from './enums/category.enum';
+export interface IngredientCreateDto {
+  name: string;
+  quantity: number;
+  unitCost: number;
+  supplierId: number;
+}
 
-export interface Ingredient {
+export interface IngredientReadDto {
   id: number;
   name: string;
   quantity: number;
-  unit: Unit;
   unitCost: number;
-  category: Category;
+  totalCost: number;
   supplierId: number;
   supplierName: string;
-  purchaseDate: Date;
-  expiryDate: Date;
-  isPerishable: boolean;
-  reorderLevel: number;
   createdDate: Date;
   updatedDate: Date;
 }
 
-export interface CreateIngredient {
+export interface IngredientUpdateDto {
   name: string;
   quantity: number;
-  unit: Unit;
   unitCost: number;
-  category: Category;
   supplierId: number;
-  purchaseDate: Date;
-  expiryDate: Date;
-  isPerishable: boolean;
-  reorderLevel: number;
 }
 
-export interface UpdateIngredient {
-  id: number;
-  name: string;
+export interface RecipeIngredientReadDto {
+  ingredientId: number;
+  ingredientName: string;
   quantity: number;
-  unit: Unit;
-  unitCost: number;
-  category: Category;
-  supplierId: number;
-  purchaseDate: Date;
-  expiryDate: Date;
-  isPerishable: boolean;
-  reorderLevel: number;
 }

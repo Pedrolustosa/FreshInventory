@@ -22,7 +22,6 @@ import { NgxSpinnerService } from "ngx-spinner";
 export class LoginComponent {
   loginForm: FormGroup;
   showPassword = false;
-  isLoading = false;
   submitted = false;
 
   constructor(
@@ -33,17 +32,20 @@ export class LoginComponent {
     private spinner: NgxSpinnerService
   ) {
     this.loginForm = this.fb.group({
-      email: ["", [
-        Validators.required,
-        Validators.email,
-        Validators.pattern(
-          "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-        ),
-      ]],
-      password: ["", [
-        Validators.required,
-        Validators.minLength(6),
-      ]],
+      email: [
+        "",
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern(
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          ),
+        ],
+      ],
+      password: [
+        "",
+        [Validators.required, Validators.minLength(6)],
+      ],
       rememberMe: [false],
     });
   }
@@ -64,16 +66,16 @@ export class LoginComponent {
       return;
     }
 
-    this.isLoading = true;
+    this.spinner.show(); // Exibe o spinner
     try {
       const credentials = this.loginForm.value;
       await this.authService.login(credentials).toPromise();
-      this.toastr.success('Login successful!');
-      this.router.navigate(['/dashboard']);
+      this.toastr.success("Login successful!");
+      this.router.navigate(["/dashboard"]);
     } catch (error: any) {
-      this.toastr.error(error.message || 'Login failed. Please try again.');
+      this.toastr.error(error.message || "Login failed. Please try again.");
     } finally {
-      this.isLoading = false;
+      this.spinner.hide(); // Oculta o spinner
     }
   }
 

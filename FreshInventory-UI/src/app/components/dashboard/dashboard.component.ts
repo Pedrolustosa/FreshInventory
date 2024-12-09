@@ -4,10 +4,10 @@ import { NgChartsModule } from "ng2-charts";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { ChartConfiguration, ChartData } from "chart.js";
 import { DashboardService } from "../../services/dashboard.service";
-import { ToastService } from "../../services/toast.service";
-import { SpinnerService } from "../../services/spinner.service";
 import { catchError, finalize } from "rxjs/operators";
 import { forkJoin } from "rxjs";
+import { NgxSpinnerService } from "ngx-spinner";
+import { ToastrService } from "ngx-toastr";
 
 interface TopItem {
   name: string;
@@ -78,13 +78,13 @@ export class DashboardComponent implements OnInit {
     interaction: {
       mode: 'nearest',
       axis: 'x',
-      intersect: false
+      intersect: false,
     },
     scales: {
       y: {
         beginAtZero: true,
         border: {
-          display: false
+          display: false,
         },
         grid: {
           color: 'rgba(0,0,0,0.1)',
@@ -92,17 +92,17 @@ export class DashboardComponent implements OnInit {
         ticks: {
           color: 'rgba(0,0,0,0.6)',
           maxTicksLimit: 5,
-          callback: function(value: string | number) {
+          callback: function (value: string | number) {
             const numValue = Number(value);
-            return !isNaN(numValue) && numValue >= 1000 ? 
-              (numValue / 1000).toFixed(1) + 'k' : 
-              value;
-          }
-        }
+            return !isNaN(numValue) && numValue >= 1000
+              ? (numValue / 1000).toFixed(1) + 'k'
+              : value;
+          },
+        },
       },
       x: {
         border: {
-          display: false
+          display: false,
         },
         grid: {
           display: false,
@@ -111,8 +111,8 @@ export class DashboardComponent implements OnInit {
           color: 'rgba(0,0,0,0.6)',
           maxRotation: 0,
           autoSkipPadding: 15,
-          maxTicksLimit: 7
-        }
+          maxTicksLimit: 7,
+        },
       },
     },
   };
@@ -143,94 +143,36 @@ export class DashboardComponent implements OnInit {
           usePointStyle: true,
           padding: 20,
           font: {
-            size: 12
-          }
-        }
+            size: 12,
+          },
+        },
       },
       tooltip: {
         mode: 'index',
         intersect: false,
-      }
+      },
     },
     layout: {
       padding: {
         top: 20,
-        bottom: 20
-      }
-    }
+        bottom: 20,
+      },
+    },
   };
 
   // Sample Data
   topItems: TopItem[] = [
-    {
-      name: 'Fresh Tomatoes',
-      category: 'Vegetables',
-      quantity: 250,
-      sales: 1200.50,
-      trend: 'up',
-      percentage: 15
-    },
-    {
-      name: 'Chicken Breast',
-      category: 'Meat',
-      quantity: 180,
-      sales: 2100.75,
-      trend: 'down',
-      percentage: 8
-    },
-    {
-      name: 'Mozzarella',
-      category: 'Dairy',
-      quantity: 120,
-      sales: 960.25,
-      trend: 'up',
-      percentage: 12
-    },
-    {
-      name: 'Pasta',
-      category: 'Grains',
-      quantity: 300,
-      sales: 750.00,
-      trend: 'neutral',
-      percentage: 0
-    }
+    // Sample items
   ];
 
   recentActivities: Activity[] = [
-    {
-      type: 'success',
-      icon: 'fa-box',
-      title: 'New Stock Arrived',
-      description: 'Fresh vegetables delivery received',
-      time: new Date()
-    },
-    {
-      type: 'warning',
-      icon: 'fa-exclamation-triangle',
-      title: 'Low Stock Alert',
-      description: 'Chicken breast stock is running low',
-      time: new Date(Date.now() - 3600000)
-    },
-    {
-      type: 'info',
-      icon: 'fa-chart-line',
-      title: 'Sales Milestone',
-      description: 'Monthly sales target achieved',
-      time: new Date(Date.now() - 7200000)
-    },
-    {
-      type: 'danger',
-      icon: 'fa-times-circle',
-      title: 'Items Expired',
-      description: '3 dairy products marked as expired',
-      time: new Date(Date.now() - 10800000)
-    }
+    // Sample activities
   ];
 
   constructor(
     private dashboardService: DashboardService,
-    private toastService: ToastService,
-    private spinnerService: SpinnerService
+    private toastr: ToastrService, // Corrigido para usar ToastrService
+    private spinner: NgxSpinnerService // Corrigido para usar NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
@@ -238,7 +180,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    this.spinnerService.show();
+    this.spinner.show();
 
     forkJoin({
       financial: this.dashboardService.getFinancialMetrics(),
@@ -246,12 +188,12 @@ export class DashboardComponent implements OnInit {
     })
       .pipe(
         catchError((error) => {
-          this.toastService.error(
-            "Error loading dashboard data. Please try again."
+          this.toastr.error(
+            'Error loading dashboard data. Please try again.'
           );
           throw error;
         }),
-        finalize(() => this.spinnerService.hide())
+        finalize(() => this.spinner.hide())
       )
       .subscribe({
         next: (data) => {

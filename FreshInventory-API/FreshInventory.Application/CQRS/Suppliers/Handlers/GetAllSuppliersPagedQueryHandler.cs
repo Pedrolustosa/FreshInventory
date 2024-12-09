@@ -28,13 +28,13 @@ public class GetAllSuppliersPagedQueryHandler : IRequestHandler<GetAllSuppliersP
             _logger.LogInformation("Retrieving paginated suppliers. Page: {PageNumber}, Size: {PageSize}", request.PageNumber, request.PageSize);
 
             var suppliers = await _supplierRepository.GetAllPagedAsync(request.PageNumber, request.PageSize);
-            if (!suppliers.Items.Any())
+            if (!suppliers.Data.Any())
             {
                 _logger.LogWarning("No suppliers found for the given page.");
                 return new PaginatedList<SupplierReadDto>(Enumerable.Empty<SupplierReadDto>(), 0, request.PageNumber, request.PageSize);
             }
 
-            var supplierDtos = _mapper.Map<IEnumerable<SupplierReadDto>>(suppliers.Items);
+            var supplierDtos = _mapper.Map<IEnumerable<SupplierReadDto>>(suppliers.Data);
             _logger.LogInformation("Successfully retrieved paginated suppliers. Page: {PageNumber}, Size: {PageSize}", request.PageNumber, request.PageSize);
 
             return new PaginatedList<SupplierReadDto>(supplierDtos, suppliers.TotalCount, request.PageNumber, request.PageSize);

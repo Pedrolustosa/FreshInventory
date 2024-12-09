@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierService } from '../../../services/supplier.service';
-import { Supplier } from '../../../models/supplier.model';
+import { SupplierReadDto } from '../../../models/supplier.model';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { finalize } from 'rxjs/operators';
 import { Modal } from 'bootstrap';
@@ -26,19 +26,19 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
   styleUrls: ['./supplier-list.component.css']
 })
 export class SupplierListComponent implements OnInit {
-  suppliers: Supplier[] = [];
-  selectedSupplier: Supplier | null = null;
+  suppliers: SupplierReadDto[] = [];
+  selectedSupplier: SupplierReadDto | null = null;
   searchName: string = '';
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number = 0;
   maxSize: number = 5;
-  Math = Math;
   private deleteModal?: Modal;
+  Math = Math;
 
   constructor(
     private supplierService: SupplierService,
-    private toastService: ToastrService,
+    private toastr: ToastrService,
     private spinnerService: NgxSpinnerService
   ) {}
 
@@ -48,20 +48,17 @@ export class SupplierListComponent implements OnInit {
 
   loadSuppliers(): void {
     this.spinnerService.show();
-    this.supplierService.getSuppliers(this.currentPage, this.pageSize, this.searchName)
+    this.supplierService.getAllSuppliersPaged(this.currentPage, this.pageSize)
       .pipe(finalize(() => this.spinnerService.hide()))
       .subscribe({
-        next: (response: any) => {
-          console.log('API Response:', response); // Debug log
+        next: (response) => {
           if (response) {
-            this.suppliers = response.items || [];
+            this.suppliers = response.data || [];
             this.totalItems = response.totalCount || 0;
-            this.currentPage = response.currentPage || 1;
           }
         },
-        error: (error) => {
-          console.error('Error loading suppliers:', error);
-          this.toastService.error('Failed to load suppliers. Please try again.');
+        error: () => {
+          this.toastr.error('Failed to load suppliers. Please try again.');
         }
       });
   }
@@ -78,7 +75,7 @@ export class SupplierListComponent implements OnInit {
     }
   }
 
-  openDeleteModal(supplier: Supplier): void {
+  openDeleteModal(supplier: SupplierReadDto): void {
     this.selectedSupplier = supplier;
     const modalElement = document.getElementById('deleteModal');
     if (modalElement) {
@@ -94,12 +91,12 @@ export class SupplierListComponent implements OnInit {
         .pipe(finalize(() => this.spinnerService.hide()))
         .subscribe({
           next: () => {
-            this.toastService.success('Supplier deleted successfully!');
+            this.toastr.success('Supplier deleted successfully!');
             this.deleteModal?.hide();
             this.loadSuppliers();
           },
           error: () => {
-            this.toastService.error('Failed to delete supplier. Please try again.');
+            this.toastr.error('Failed to delete supplier. Please try again.');
           }
         });
     }

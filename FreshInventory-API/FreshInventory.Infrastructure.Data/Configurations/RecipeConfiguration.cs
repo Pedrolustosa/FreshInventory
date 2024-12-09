@@ -1,7 +1,6 @@
 ﻿using FreshInventory.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FreshInventory.Infrastructure.Data.Configurations
 {
@@ -35,14 +34,12 @@ namespace FreshInventory.Infrastructure.Data.Configurations
                 .HasColumnType("TEXT")
                 .IsRequired();
 
-            // Configurando Ingredients como um dicionário serializado
-            builder.Property(r => r.Ingredients)
-                .HasConversion(
-                    ingredients => JsonSerializer.Serialize(ingredients, (JsonSerializerOptions)null),
-                    ingredients => JsonSerializer.Deserialize<Dictionary<int, int>>(ingredients, (JsonSerializerOptions)null)
-                )
-                .HasColumnType("TEXT")
-                .IsRequired();
+            // Configurando relacionamento com RecipeIngredient
+            builder.HasMany(r => r.RecipeIngredients)
+                .WithOne(ri => ri.Recipe)
+                .HasForeignKey(ri => ri.RecipeId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Configurando o nome da tabela
             builder.ToTable("Recipes");

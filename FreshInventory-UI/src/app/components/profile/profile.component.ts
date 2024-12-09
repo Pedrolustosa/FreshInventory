@@ -1,87 +1,99 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { Router } from '@angular/router';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Router, ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { UpdateUserDto } from '../../models/auth.model';
+import { UserUpdateDto, UserReadDto } from '../../models/auth.model';
+import { CommonModule } from '@angular/common';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
+  standalone: true, // Marca o componente como standalone
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    NgxSpinnerModule,
+    CommonModule,
+    ReactiveFormsModule,
     BsDatepickerModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  profileForm: FormGroup;
+  profileForm!: FormGroup;
   isEditing = false;
-  maxDate = new Date();
-  profileImage: string | null = null;
+  maxDate: Date = new Date();
   private originalFormValues: any;
+  userId: string = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private toastr: ToastrService,
     private router: Router,
+    private route: ActivatedRoute,
     private spinner: NgxSpinnerService
-  ) {
-    this.profileForm = this.fb.group({
-      id: [''],
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      dateOfBirth: [null, Validators.required],
-      password: ['']
-    });
-
-    // Set max date to 18 years ago
-    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
-  }
+  ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.getUserIdFromRoute();
     this.loadUserProfile();
   }
 
+  private initForm(): void {
+    this.profileForm = this.fb.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      dateOfBirth: [null, Validators.required],
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      zipCode: ['', Validators.required],
+      country: ['', Validators.required],
+      bio: [''],
+      alternatePhoneNumber: [''],
+      gender: [null, Validators.required],
+      nationality: [''],
+      languagePreference: [''],
+      timeZone: ['']
+    });
+
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
+  }
+
+  private getUserIdFromRoute(): void {
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.userId = params['id'];
+      } else {
+        this.toastr.error('User ID not found in route');
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
   loadUserProfile(): void {
-    this.spinner.show();
-    const currentUser = this.authService.currentUserValue;
-    
-    if (currentUser?.email) {
-      // Busca os dados mais recentes do usuário usando o email
-      this.authService.getUserByEmail(currentUser.email)
-        .pipe(finalize(() => this.spinner.hide()))
-        .subscribe({
-          next: (user) => {
-            if (user) {
-              this.profileForm.patchValue({
-                id: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                dateOfBirth: new Date(user.dateOfBirth)
-              });
-              this.profileImage = user.profileImage || null;
-              this.originalFormValues = this.profileForm.value;
-            }
-          },
-          error: () => {
-            this.toastr.error('Erro ao carregar dados do perfil');
-            this.router.navigate(['/login']);
-          }
-        });
-    } else {
-      this.spinner.hide();
-      this.toastr.error('Usuário não encontrado');
-      this.router.navigate(['/login']);
+    if (!this.userId) {
+      return;
     }
+
+    this.spinner.show();
+    this.authService
+      .getUserById(this.userId)
+      .pipe(finalize(() => this.spinner.hide()))
+      .subscribe({
+        next: (userResponse) => {
+          const user: UserReadDto = userResponse.user;
+          this.profileForm.patchValue(user);
+          this.originalFormValues = this.profileForm.value;
+        },
+        error: () => {
+          this.toastr.error('Error loading profile data');
+          this.router.navigate(['/login']);
+        }
+      });
   }
 
   toggleEdit(): void {
@@ -94,63 +106,52 @@ export class ProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
-  onUploadImage(): void {
-    this.toastr.info('Upload image');
-  }
-
   onSubmit(): void {
     if (this.profileForm.valid) {
-      this.spinner.show();
+      const updatedProfile: UserUpdateDto = {
+        userId: this.userId,
+        ...this.profileForm.value
+      };
 
-      // Primeiro busca os dados mais recentes do usuário
-      const email = this.profileForm.get('email')?.value;
-      
-      this.authService.getUserByEmail(email)
+      this.spinner.show();
+      this.authService
+        .updateUser(this.userId, updatedProfile)
         .pipe(finalize(() => this.spinner.hide()))
         .subscribe({
-          next: (user) => {
-            const updatedProfile: UpdateUserDto = {
-              id: user.id,
-              fullName: this.profileForm.get('fullName')?.value,
-              email: this.profileForm.get('email')?.value,
-              dateOfBirth: this.profileForm.get('dateOfBirth')?.value?.toISOString(),
-              password: this.profileForm.get('password')?.value || undefined
-            };
-
-            this.spinner.show();
-            this.authService.updateUser(updatedProfile)
-              .pipe(finalize(() => this.spinner.hide()))
-              .subscribe({
-                next: (success) => {
-                  if (success) {
-                    this.toastr.success('Perfil atualizado com sucesso');
-                    this.isEditing = false;
-                    this.originalFormValues = this.profileForm.value;
-                    if (this.profileForm.get('password')?.value) {
-                      this.profileForm.patchValue({ password: '' });
-                    }
-                    // Recarrega os dados do perfil após a atualização
-                    this.loadUserProfile();
-                  } else {
-                    this.toastr.error('Não foi possível atualizar o perfil');
-                  }
-                },
-                error: (error) => {
-                  this.toastr.error(error.message || 'Erro ao atualizar perfil');
-                }
-              });
+          next: () => {
+            this.toastr.success('Profile updated successfully!');
+            this.isEditing = false;
+            this.originalFormValues = this.profileForm.value;
           },
-          error: () => {
-            this.toastr.error('Erro ao buscar dados atualizados do usuário');
+          error: (error) => {
+            this.toastr.error(error.message || 'Error updating profile');
           }
         });
     } else {
-      Object.keys(this.profileForm.controls).forEach(key => {
-        const control = this.profileForm.get(key);
-        if (control?.invalid) {
-          control.markAsTouched();
-        }
-      });
+      this.markFormGroupTouched(this.profileForm);
+      this.toastr.warning('Please fill in all required fields correctly.');
     }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  getControlError(controlName: string): string {
+    const control = this.profileForm.get(controlName);
+    if (control?.errors && control.touched) {
+      if (control.errors['required']) {
+        return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required.`;
+      }
+      if (control.errors['email']) {
+        return 'Invalid email format.';
+      }
+    }
+    return '';
   }
 }

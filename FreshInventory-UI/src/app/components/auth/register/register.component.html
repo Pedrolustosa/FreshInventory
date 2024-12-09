@@ -1,176 +1,184 @@
 <div class="min-vh-100 d-flex align-items-center justify-content-center login-background">
   <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6">
+      <div class="col-12 col-lg-10">
         <div class="card border-0 shadow-lg fade-in">
-          <!-- Card Header with Logo -->
           <div class="card-header bg-white border-0 text-center pt-4">
             <img src="assets/logo.png" alt="Fresh Inventory Logo" class="mb-3 logo-img" width="64">
             <h2 class="fw-bold text-primary mb-2">Create Account</h2>
             <p class="text-muted">Join Fresh Inventory today</p>
           </div>
-
-          <!-- Card Body -->
           <div class="card-body px-4 py-4">
             <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
-              <!-- Full Name Field -->
-              <div class="form-floating mb-3">
-                <input type="text" 
-                       class="form-control" 
-                       id="fullNameInput" 
-                       formControlName="fullName" 
-                       placeholder="John Doe"
-                       [ngClass]="{'is-invalid': submitted && f['fullName'].errors}"
-                       required>
-                <label for="fullNameInput">Full Name</label>
-                <div class="invalid-feedback" *ngIf="submitted && f['fullName'].errors">
-                  <div *ngIf="f['fullName'].errors['required']">Full name is required</div>
-                  <div *ngIf="f['fullName'].errors['minlength']">Full name must be at least 3 characters</div>
+              <div class="row">
+                <!-- Full Name -->
+                <div class="col-md-6 mb-3">
+                  <label for="fullNameInput" class="form-label">Full Name</label>
+                  <input type="text" id="fullNameInput" formControlName="fullName" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['fullName'].errors}" placeholder="John Doe">
+                  <div class="invalid-feedback">{{ getFieldError('fullName') }}</div>
                 </div>
-              </div>
 
-              <!-- Email Field -->
-              <div class="form-floating mb-3">
-                <input type="email" 
-                       class="form-control" 
-                       id="emailInput" 
-                       formControlName="email" 
-                       placeholder="name@example.com"
-                       [ngClass]="{'is-invalid': submitted && f['email'].errors}"
-                       required>
-                <label for="emailInput">Email address</label>
-                <div class="invalid-feedback" *ngIf="submitted && f['email'].errors">
-                  <div *ngIf="f['email'].errors['required']">Email is required</div>
-                  <div *ngIf="f['email'].errors['email']">Please enter a valid email</div>
+                <!-- Username -->
+                <div class="col-md-6 mb-3">
+                  <label for="userNameInput" class="form-label">Username</label>
+                  <input type="text" id="userNameInput" formControlName="userName" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['userName'].errors}" placeholder="username">
+                  <div class="invalid-feedback">{{ getFieldError('userName') }}</div>
                 </div>
-              </div>
 
-              <!-- Date of Birth Field -->
-              <div class="form-floating mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="dateOfBirth"
-                  formControlName="dateOfBirth"
-                  placeholder="Date of Birth"
-                  bsDatepicker
-                  [bsConfig]="bsConfig"
-                  [maxDate]="maxDate"
-                  [ngClass]="{
-                    'is-invalid': f['dateOfBirth'].errors && (f['dateOfBirth'].touched || submitted)
-                  }"
-                />
-                <label for="dateOfBirth">Date of Birth</label>
-                <div class="invalid-feedback">
-                  {{ getFieldError("dateOfBirth") }}
+                <!-- Email -->
+                <div class="col-md-6 mb-3">
+                  <label for="emailInput" class="form-label">Email Address</label>
+                  <input type="email" id="emailInput" formControlName="email" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['email'].errors}" placeholder="name@example.com">
+                  <div class="invalid-feedback">{{ getFieldError('email') }}</div>
                 </div>
-              </div>
 
-              <!-- Password Field -->
-              <div class="form-floating mb-3">
-                <input [type]="showPassword ? 'text' : 'password'"
-                       class="form-control" 
-                       id="passwordInput" 
-                       formControlName="password"
-                       placeholder="Password"
-                       [ngClass]="{'is-invalid': submitted && f['password'].errors}"
-                       required>
-                <label for="passwordInput">Password</label>
-                <button type="button" 
-                        class="btn btn-link password-toggle" 
-                        (click)="togglePasswordVisibility()">
-                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-                </button>
-                <div class="invalid-feedback" *ngIf="submitted && f['password'].errors">
-                  <div *ngIf="f['password'].errors['required']">Password is required</div>
-                  <div *ngIf="f['password'].errors['pattern']">Password must contain at least 8 characters, including uppercase, lowercase, number and special character</div>
+                <!-- Date of Birth -->
+                <div class="col-md-6 mb-3">
+                  <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                  <input type="text" id="dateOfBirth" formControlName="dateOfBirth" class="form-control"
+                    bsDatepicker [bsConfig]="bsConfig" [maxDate]="maxDate"
+                    [ngClass]="{'is-invalid': submitted && f['dateOfBirth'].errors}" placeholder="DD/MM/YYYY">
+                  <div class="invalid-feedback">{{ getFieldError('dateOfBirth') }}</div>
                 </div>
-              </div>
 
-              <!-- Confirm Password -->
-              <div class="form-floating mb-3">
-                <input
-                  [type]="showPassword ? 'text' : 'password'"
-                  class="form-control"
-                  id="confirmPassword"
-                  formControlName="confirmPassword"
-                  placeholder="Confirm Password"
-                  [ngClass]="{
-                    'is-invalid': (f['confirmPassword'].errors && (f['confirmPassword'].touched || submitted))
-                  }"
-                />
-                <label for="confirmPassword">Confirm Password</label>
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="togglePasswordVisibility()"
-                >
-                  <i
-                    class="bi"
-                    [ngClass]="{
-                      'bi-eye-fill': !showPassword,
-                      'bi-eye-slash-fill': showPassword
-                    }"
-                  ></i>
-                </button>
-                <div class="invalid-feedback" *ngIf="f['confirmPassword'].errors?.['required'] && (f['confirmPassword'].touched || submitted)">
-                  Confirm Password is required
-                </div>
-                <div class="invalid-feedback" *ngIf="f['confirmPassword'].errors?.['mismatch'] && (f['confirmPassword'].touched || submitted)">
-                  Passwords do not match
-                </div>
-              </div>
+                <!-- Password -->
+                <div class="col-md-6 mb-3">
+                  <label for="passwordInput" class="form-label">Password</label>
+                  <input [type]="showPassword ? 'text' : 'password'" id="passwordInput" formControlName="password"
+                    class="form-control" [ngClass]="{'is-invalid': submitted && f['password'].errors}"
+                    placeholder="Password">
+                  <button type="button" class="btn btn-link password-toggle" (click)="togglePasswordVisibility()">
+                    <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  </button>
+                  <div class="invalid-feedback">{{ getFieldError('password') }}</div>
 
-              <!-- Password Strength -->
-              <div class="password-strength mb-4" *ngIf="registerForm.get('password')?.value">
-                <div class="progress mb-2" style="height: 5px;">
-                  <div class="progress-bar" [style.width.%]="passwordStrength"
-                       [ngClass]="{
-                         'bg-danger': passwordStrength <= 40,
-                         'bg-warning': passwordStrength > 40 && passwordStrength <= 80,
-                         'bg-success': passwordStrength > 80
-                       }">
+                  <!-- Password Strength Indicator -->
+                  <div class="password-strength-wrapper mt-2">
+                    <div class="progress">
+                      <div class="progress-bar" role="progressbar" [ngClass]="{
+                          'bg-danger': passwordStrength <= 40,
+                          'bg-warning': passwordStrength > 40 && passwordStrength <= 80,
+                          'bg-success': passwordStrength > 80
+                        }" [style.width]="passwordStrength + '%'">
+                      </div>
+                    </div>
+                    <small>Password Strength: {{ getPasswordStrengthText() }}</small>
+                    <ul class="password-requirements mt-2">
+                      <li [class.text-success]="passwordCriteria.length"><i class="bi" [ngClass]="passwordCriteria.length ? 'bi-check-circle-fill' : 'bi-circle'"></i> At least 8 characters</li>
+                      <li [class.text-success]="passwordCriteria.lowercase"><i class="bi" [ngClass]="passwordCriteria.lowercase ? 'bi-check-circle-fill' : 'bi-circle'"></i> Lowercase letter</li>
+                      <li [class.text-success]="passwordCriteria.uppercase"><i class="bi" [ngClass]="passwordCriteria.uppercase ? 'bi-check-circle-fill' : 'bi-circle'"></i> Uppercase letter</li>
+                      <li [class.text-success]="passwordCriteria.number"><i class="bi" [ngClass]="passwordCriteria.number ? 'bi-check-circle-fill' : 'bi-circle'"></i> Number</li>
+                      <li [class.text-success]="passwordCriteria.special"><i class="bi" [ngClass]="passwordCriteria.special ? 'bi-check-circle-fill' : 'bi-circle'"></i> Special character</li>
+                    </ul>
                   </div>
                 </div>
-                <div class="password-requirements small">
-                  <p class="mb-1 text-muted">Password must contain:</p>
-                  <ul class="list-unstyled mb-0">
-                    <li [ngClass]="{'text-success': passwordCriteria.length}">
-                      <i class="bi" [ngClass]="passwordCriteria.length ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-                      At least 8 characters
-                    </li>
-                    <li [ngClass]="{'text-success': passwordCriteria.lowercase}">
-                      <i class="bi" [ngClass]="passwordCriteria.lowercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-                      One lowercase letter
-                    </li>
-                    <li [ngClass]="{'text-success': passwordCriteria.uppercase}">
-                      <i class="bi" [ngClass]="passwordCriteria.uppercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-                      One uppercase letter
-                    </li>
-                    <li [ngClass]="{'text-success': passwordCriteria.number}">
-                      <i class="bi" [ngClass]="passwordCriteria.number ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-                      One number
-                    </li>
-                    <li [ngClass]="{'text-success': passwordCriteria.special}">
-                      <i class="bi" [ngClass]="passwordCriteria.special ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-                      One special character
-                    </li>
-                  </ul>
+
+                <!-- Confirm Password -->
+                <div class="col-md-6 mb-3">
+                  <label for="confirmPassword" class="form-label">Confirm Password</label>
+                  <input [type]="showPassword ? 'text' : 'password'" id="confirmPassword"
+                    formControlName="confirmPassword" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['confirmPassword'].errors}" placeholder="Confirm Password">
+                  <div class="invalid-feedback">{{ getFieldError('confirmPassword') }}</div>
+                </div>
+
+                <!-- Gender -->
+                <div class="col-md-6 mb-3">
+                  <label for="genderInput" class="form-label">Gender</label>
+                  <select id="genderInput" formControlName="gender" class="form-select"
+                    [ngClass]="{'is-invalid': submitted && f['gender'].errors}">
+                    <option value="" disabled>Select Gender</option>
+                    <option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFieldError('gender') }}</div>
+                </div>
+
+                <!-- Language Preference -->
+                <div class="col-md-6 mb-3">
+                  <label for="languagePreferenceInput" class="form-label">Language Preference</label>
+                  <input type="text" id="languagePreferenceInput" formControlName="languagePreference" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['languagePreference'].errors}"
+                    placeholder="Language Preference">
+                  <div class="invalid-feedback">{{ getFieldError('languagePreference') }}</div>
+                </div>
+
+                <!-- Street -->
+                <div class="col-md-12 mb-3">
+                  <label for="streetInput" class="form-label">Street</label>
+                  <input type="text" id="streetInput" formControlName="street" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['street'].errors}" placeholder="123 Main St">
+                  <div class="invalid-feedback">{{ getFieldError('street') }}</div>
+                </div>
+
+                <!-- City, State, Zip Code -->
+                <div class="col-md-4 mb-3">
+                  <label for="cityInput" class="form-label">City</label>
+                  <input type="text" id="cityInput" formControlName="city" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['city'].errors}" placeholder="City">
+                  <div class="invalid-feedback">{{ getFieldError('city') }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="stateInput" class="form-label">State</label>
+                  <input type="text" id="stateInput" formControlName="state" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['state'].errors}" placeholder="State">
+                  <div class="invalid-feedback">{{ getFieldError('state') }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="countryInput" class="form-label">Country</label>
+                  <input type="text" id="countryInput" formControlName="country" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['country'].errors}" placeholder="Country">
+                  <div class="invalid-feedback">{{ getFieldError('country') }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="nationalityInput" class="form-label">Nationality</label>
+                  <input type="text" id="nationalityInput" formControlName="nationality" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['nationality'].errors}" placeholder="Nationality">
+                  <div class="invalid-feedback">{{ getFieldError('nationality') }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="zipCodeInput" class="form-label">Zip Code</label>
+                  <input type="text" id="zipCodeInput" formControlName="zipCode" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['zipCode'].errors}" placeholder="Zip Code">
+                  <div class="invalid-feedback">{{ getFieldError('zipCode') }}</div>
+                </div>
+
+                <!-- Time Zone -->
+                <div class="col-md-6 mb-3">
+                  <label for="timeZoneInput" class="form-label">Time Zone</label>
+                  <input type="text" id="timeZoneInput" formControlName="timeZone" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['timeZone'].errors}" placeholder="Time Zone">
+                  <div class="invalid-feedback">{{ getFieldError('timeZone') }}</div>
+                </div>
+
+                <!-- Alternate Phone -->
+                <div class="col-md-6 mb-3">
+                  <label for="alternatePhoneInput" class="form-label">Alternate Phone</label>
+                  <input type="text" id="alternatePhoneInput" formControlName="alternatePhoneNumber" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['alternatePhoneNumber'].errors}" placeholder="Alternate Phone">
+                  <div class="invalid-feedback">{{ getFieldError('alternatePhoneNumber') }}</div>
+                </div>
+
+                <!-- Bio -->
+                <div class="col-md-12 mb-3">
+                  <label for="bioInput" class="form-label">Bio</label>
+                  <textarea id="bioInput" formControlName="bio" rows="3" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f['bio'].errors}" placeholder="Tell us about yourself"></textarea>
+                  <div class="invalid-feedback">{{ getFieldError('bio') }}</div>
                 </div>
               </div>
 
               <!-- Submit Button -->
-              <button type="submit" 
-                      class="btn btn-primary w-100 py-2 mb-3"
-                      [disabled]="registerForm.invalid || isLoading">
-                <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+              <button type="submit" class="btn btn-primary w-100 py-2 mb-3" [disabled]="registerForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                 {{ isLoading ? 'Creating account...' : 'Create Account' }}
               </button>
 
               <!-- Login Link -->
               <p class="text-center mb-0">
-                Already have an account? 
-                <a routerLink="/auth/login" class="text-primary text-decoration-none">Sign in</a>
+                Already have an account? <a routerLink="/auth/login" class="text-primary text-decoration-none">Sign in</a>
               </p>
             </form>
           </div>

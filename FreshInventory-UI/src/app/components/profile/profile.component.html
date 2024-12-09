@@ -1,12 +1,5 @@
 <div class="profile-container">
   <div class="profile-header">
-    <div class="profile-avatar">
-      <img [src]="profileImage || '../../../assets/avatar-placeholder.png'" [alt]="profileForm.get('fullName')?.value">
-      <button class="btn upload-btn" (click)="onUploadImage()" [disabled]="!isEditing">
-        <i class="fas fa-camera"></i>
-      </button>
-    </div>
-
     <div class="profile-title">
       <h1>Meu Perfil</h1>
       <p>Gerencie suas informações pessoais</p>
@@ -15,7 +8,7 @@
     <button class="btn btn-action" [class.btn-primary]="!isEditing" [class.btn-success]="isEditing"
       (click)="isEditing ? onSubmit() : toggleEdit()">
       <i class="fas" [class.fa-edit]="!isEditing" [class.fa-save]="isEditing"></i>
-      {{isEditing ? 'Salvar' : 'Editar'}}
+      {{ isEditing ? 'Salvar' : 'Editar' }}
     </button>
   </div>
 
@@ -24,23 +17,23 @@
       <div class="form-section">
         <h2>Informações Pessoais</h2>
         <div class="row">
-          <input type="hidden" formControlName="id">
-          
+          <!-- Nome Completo -->
           <div class="col-md-6 mb-3">
             <label class="form-label">Nome Completo</label>
-            <input type="text" class="form-control" formControlName="fullName" 
-                   [class.is-invalid]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched"
-                   [readonly]="!isEditing">
+            <input type="text" class="form-control" formControlName="fullName"
+              [class.is-invalid]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched"
+              [readonly]="!isEditing">
             <div class="invalid-feedback" *ngIf="profileForm.get('fullName')?.errors?.['required']">
               Nome completo é obrigatório
             </div>
           </div>
 
+          <!-- E-mail -->
           <div class="col-md-6 mb-3">
             <label class="form-label">E-mail</label>
-            <input type="email" class="form-control" formControlName="email" 
-                   [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
-                   [readonly]="!isEditing">
+            <input type="email" class="form-control" formControlName="email"
+              [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+              [readonly]="!isEditing">
             <div class="invalid-feedback" *ngIf="profileForm.get('email')?.errors?.['required']">
               E-mail é obrigatório
             </div>
@@ -49,27 +42,78 @@
             </div>
           </div>
 
+          <!-- Data de Nascimento -->
           <div class="col-md-6 mb-3">
             <label class="form-label">Data de Nascimento</label>
             <input type="text" class="form-control" formControlName="dateOfBirth"
-                   [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-default' }"
-                   [maxDate]="maxDate"
-                   bsDatepicker
-                   [class.is-invalid]="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched"
-                   [readonly]="!isEditing">
+              [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', containerClass: 'theme-default' }"
+              [maxDate]="maxDate"
+              bsDatepicker
+              [class.is-invalid]="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched"
+              [readonly]="!isEditing">
             <div class="invalid-feedback" *ngIf="profileForm.get('dateOfBirth')?.errors?.['required']">
               Data de nascimento é obrigatória
             </div>
           </div>
 
-          <div class="col-md-6 mb-3" *ngIf="isEditing">
-            <label class="form-label">Nova Senha (opcional)</label>
-            <input type="password" class="form-control" formControlName="password"
-                   placeholder="Deixe em branco para manter a senha atual">
+          <!-- Endereço -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Endereço</label>
+            <input type="text" class="form-control" formControlName="street"
+              [class.is-invalid]="profileForm.get('street')?.invalid && profileForm.get('street')?.touched"
+              [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('street')?.errors?.['required']">
+              Endereço é obrigatório
+            </div>
+          </div>
+
+          <!-- Cidade -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Cidade</label>
+            <input type="text" class="form-control" formControlName="city"
+              [class.is-invalid]="profileForm.get('city')?.invalid && profileForm.get('city')?.touched"
+              [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('city')?.errors?.['required']">
+              Cidade é obrigatória
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Estado</label>
+            <input type="text" class="form-control" formControlName="state"
+              [class.is-invalid]="profileForm.get('state')?.invalid && profileForm.get('state')?.touched"
+              [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('state')?.errors?.['required']">
+              Estado é obrigatório
+            </div>
+          </div>
+
+          <!-- CEP -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">CEP</label>
+            <input type="text" class="form-control" formControlName="zipCode"
+              [class.is-invalid]="profileForm.get('zipCode')?.invalid && profileForm.get('zipCode')?.touched"
+              [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('zipCode')?.errors?.['required']">
+              CEP é obrigatório
+            </div>
+          </div>
+
+          <!-- País -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">País</label>
+            <input type="text" class="form-control" formControlName="country"
+              [class.is-invalid]="profileForm.get('country')?.invalid && profileForm.get('country')?.touched"
+              [readonly]="!isEditing">
+            <div class="invalid-feedback" *ngIf="profileForm.get('country')?.errors?.['required']">
+              País é obrigatório
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Botões de ação -->
       <div class="action-buttons" *ngIf="isEditing">
         <button type="button" class="btn btn-light btn-action" (click)="cancelEdit()">
           Cancelar
@@ -81,7 +125,3 @@
     </form>
   </div>
 </div>
-
-<ngx-spinner type="ball-scale-multiple">
-  <p style="color: white">Carregando...</p>
-</ngx-spinner>

@@ -1,50 +1,48 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {
+  IngredientCreateDto,
+  IngredientReadDto,
+  IngredientUpdateDto,
+} from '../models/ingredient.model';
 import { environment } from '../../environments/environment';
-import { Ingredient, CreateIngredient, UpdateIngredient } from '../models/ingredient.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class IngredientService {
-  private apiUrl = `${environment.apiUrl}/api/Ingredients`;
+  private apiUrl = `${environment.apiUrl}/api/Ingredient`;
 
   constructor(private http: HttpClient) {}
 
-  getIngredients(
+  createIngredient(ingredient: IngredientCreateDto): Observable<IngredientReadDto> {
+    return this.http.post<IngredientReadDto>(`${this.apiUrl}/Create`, ingredient);
+  }
+
+  getIngredientById(id: number): Observable<IngredientReadDto> {
+    return this.http.get<IngredientReadDto>(`${this.apiUrl}/GetById/${id}`);
+  }
+  
+  getAllIngredientsPaged(
     pageNumber: number = 1,
-    pageSize: number = 10,
-    name?: string,
-    category?: string,
-    sortBy?: string,
-    sortDirection?: string
-  ): Observable<any> {
-    let params = new HttpParams()
+    pageSize: number = 10
+  ): Observable<{ data: IngredientReadDto[]; totalCount: number }> {
+    const params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    if (name) params = params.set('name', name);
-    if (category) params = params.set('category', category);
-    if (sortBy) params = params.set('sortBy', sortBy);
-    if (sortDirection) params = params.set('sortDirection', sortDirection);
-
-    return this.http.get<any>(`${this.apiUrl}/GetAllIngredients`, { params });
+    return this.http.get<{ data: IngredientReadDto[]; totalCount: number }>(
+      `${this.apiUrl}/GetAllPaged`,
+      { params }
+    );
   }
 
-  getIngredientById(id: number): Observable<Ingredient> {
-    return this.http.get<Ingredient>(`${this.apiUrl}/GetIngredientById/${id}`);
-  }
-
-  createIngredient(ingredient: CreateIngredient): Observable<Ingredient> {
-    return this.http.post<Ingredient>(`${this.apiUrl}/CreateIngredient`, ingredient);
-  }
-
-  updateIngredient(id: number, ingredient: UpdateIngredient): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/UpdateIngredient/${id}`, ingredient);
+  updateIngredient(id: number, ingredient: IngredientUpdateDto): Observable<IngredientReadDto> {
+    return this.http.put<IngredientReadDto>(`${this.apiUrl}/Update/${id}`, ingredient);
   }
 
   deleteIngredient(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/DeleteIngredient/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/Delete/${id}`);
   }
 }

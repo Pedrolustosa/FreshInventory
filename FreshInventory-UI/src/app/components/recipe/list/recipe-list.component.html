@@ -35,12 +35,9 @@
           <thead class="bg-light">
             <tr>
               <th class="border-0">Recipe</th>
-              <th class="border-0">Category</th>
-              <th class="border-0">Time</th>
-              <th class="border-0">Servings</th>
+              <th class="border-0">Preparation Time</th>
               <th class="border-0">Ingredients</th>
               <th class="border-0">Steps</th>
-              <th class="border-0">Available</th>
               <th class="border-0 text-center">Actions</th>
             </tr>
           </thead>
@@ -59,39 +56,21 @@
               </td>
               <td>
                 <div class="d-flex align-items-center">
-                  <span [class]="'badge bg-' + getCategoryBadgeClass(recipe.category)">
-                    {{ recipe.category }}
-                  </span>
-                </div>
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
                   <i class="fas fa-clock text-muted me-2"></i>
-                  {{ formatTime(recipe.preparationTime) }}
-                </div>
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <i class="fas fa-users text-muted me-2"></i>
-                  {{ getServingsLabel(recipe.servings) }}
+                  {{ recipe.preparationTime }}
                 </div>
               </td>
               <td>
                 <div class="d-flex align-items-center">
                   <i class="fas fa-carrot text-muted me-2"></i>
-                  {{ getIngredientsLabel(recipe.ingredients.length) }}
+                  {{ recipe.ingredients.length }} Ingredients
                 </div>
               </td>
               <td>
                 <div class="d-flex align-items-center">
                   <i class="fas fa-list-ol text-muted me-2"></i>
-                  {{ getInstructionsLabel(recipe.instructions.length) }}
+                  {{ recipe.steps.length }} Steps
                 </div>
-              </td>
-              <td>
-                <span class="badge" [ngClass]="recipe.isAvailable ? 'bg-success' : 'bg-danger'">
-                  {{ recipe.isAvailable ? 'Yes' : 'No' }}
-                </span>
               </td>
               <td>
                 <div class="d-flex justify-content-end gap-2">
@@ -111,7 +90,7 @@
               </td>
             </tr>
             <tr *ngIf="recipes.length === 0">
-              <td colspan="8">
+              <td colspan="5">
                 <div class="text-center py-5">
                   <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
                   <h5 class="text-muted mb-0">No recipes found</h5>
@@ -148,145 +127,6 @@
           class="pagination-sm mb-0"
           *ngIf="totalItems > itemsPerPage">
         </pagination>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Modal -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0">
-        <div class="modal-header border-0">
-          <h5 class="modal-title">Delete Recipe</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="text-center mb-4">
-            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-            <h5>Are you sure?</h5>
-            <p class="text-muted mb-0">
-              Do you really want to delete recipe <strong>{{ selectedRecipe?.name }}</strong>?
-              This process cannot be undone.
-            </p>
-          </div>
-          <div class="alert alert-warning">
-            <i class="fas fa-info-circle me-2"></i>
-            <strong>Warning:</strong> Deleting this recipe will remove all associated ingredients and instructions.
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            <i class="fas fa-times-circle me-2"></i>Cancel
-          </button>
-          <button type="button" class="btn btn-danger" (click)="confirmDelete()">
-            <i class="fas fa-trash-alt me-2"></i>Delete Recipe
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recipe Details Modal -->
-  <div class="modal fade" id="recipeDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header border-0">
-          <h5 class="modal-title">Recipe Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body px-4" *ngIf="selectedRecipe">
-          <!-- Basic Info -->
-          <div class="text-center mb-4">
-            <i class="fas fa-utensils fa-3x text-primary mb-3"></i>
-            <h4 class="recipe-name">{{ selectedRecipe.name }}</h4>
-            <div class="recipe-meta d-flex justify-content-center flex-wrap gap-4 text-muted mt-3">
-              <div>
-                <i class="fas fa-tag me-2"></i>
-                <span [class]="'badge bg-' + getCategoryBadgeClass(selectedRecipe.category)">
-                  {{ selectedRecipe.category }}
-                </span>
-              </div>
-              <div>
-                <i class="fas fa-clock me-2"></i>
-                {{ formatTime(selectedRecipe.preparationTime) }}
-              </div>
-              <div>
-                <i class="fas fa-users me-2"></i>
-                {{ getServingsLabel(selectedRecipe.servings) }}
-              </div>
-              <div>
-                <i class="fas fa-check-circle me-2"></i>
-                <span class="badge" [ngClass]="selectedRecipe.isAvailable ? 'bg-success' : 'bg-danger'">
-                  {{ selectedRecipe.isAvailable ? 'Available' : 'Not Available' }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="alert alert-light mb-4">
-            <div class="d-flex align-items-center mb-2">
-              <i class="fas fa-info-circle text-primary me-2"></i>
-              <h6 class="mb-0">Description</h6>
-            </div>
-            <p class="mb-0">{{ selectedRecipe.description }}</p>
-          </div>
-
-          <!-- Ingredients -->
-          <div class="card mb-4">
-            <div class="card-header bg-light">
-              <div class="d-flex align-items-center">
-                <i class="fas fa-carrot text-primary me-2"></i>
-                <h6 class="mb-0">Ingredients</h6>
-              </div>
-            </div>
-            <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Ingredient</th>
-                      <th class="text-end" style="width: 120px;">Quantity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let ingredient of selectedRecipe.ingredients">
-                      <td>{{ getIngredientName(ingredient.ingredientId) }}</td>
-                      <td class="text-end">{{ formatIngredientQuantity(ingredient.quantity) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- Instructions -->
-          <div class="card">
-            <div class="card-header bg-light">
-              <div class="d-flex align-items-center">
-                <i class="fas fa-list-ol text-primary me-2"></i>
-                <h6 class="mb-0">Instructions</h6>
-              </div>
-            </div>
-            <div class="card-body">
-              <ol class="instructions-list list-group list-group-flush">
-                <li *ngFor="let instruction of selectedRecipe.instructions; let i = index" 
-                    class="list-group-item d-flex align-items-start border-0 px-0">
-                  <span class="step-number badge bg-primary rounded-pill me-3">{{ i + 1 }}</span>
-                  <span>{{ instruction }}</span>
-                </li>
-              </ol>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-primary" (click)="generatePDF()">
-            <i class="fas fa-file-pdf me-2"></i>Generate PDF
-          </button>
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            <i class="fas fa-times-circle me-2"></i>Close
-          </button>
-        </div>
       </div>
     </div>
   </div>

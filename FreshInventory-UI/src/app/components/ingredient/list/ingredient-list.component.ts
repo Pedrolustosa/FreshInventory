@@ -6,12 +6,11 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { IngredientService } from '../../../services/ingredient.service';
-import { ToastService } from '../../../services/toast.service';
-import { SpinnerService } from '../../../services/spinner.service';
-import { Ingredient } from '../../../models/ingredient.model';
-import { Category, CategoryLabels } from '../../../models/enums/category.enum';
+import { IngredientReadDto } from '../../../models/ingredient.model';
 import { finalize } from 'rxjs/operators';
 import { Modal } from 'bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-ingredient-list',
@@ -28,58 +27,38 @@ import { Modal } from 'bootstrap';
   ]
 })
 export class IngredientListComponent implements OnInit {
-  ingredients: Ingredient[] = [];
-  categories = Object.values(Category).filter(v => typeof v === 'number') as Category[];
-  categoryLabels = CategoryLabels;
-  selectedIngredient: Ingredient | null = null;
+  ingredients: IngredientReadDto[] = [];
   searchName: string = '';
-  selectedCategory: Category | null = null;
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number = 0;
-  maxSize: number = 5;
-  Math = Math;
-  private deleteModal?: Modal;
-
-  // Constants for expiry validation
-  readonly EXPIRY_WARNING_DAYS = 30;
-  readonly EXPIRY_DANGER_DAYS = 7;
+  selectedIngredient: IngredientReadDto | null = null;
+  Math = Math; // Adiciona Math para uso no template
 
   constructor(
     private ingredientService: IngredientService,
-    private toastService: ToastService,
-    private spinnerService: SpinnerService
-  ) { }
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit(): void {
     this.loadIngredients();
   }
 
   loadIngredients(): void {
-    this.spinnerService.show();
-    this.ingredientService.getIngredients(
-      this.currentPage,
-      this.pageSize,
-      this.searchName,
-      this.selectedCategory?.toString()
-    )
-    .pipe(
-      finalize(() => this.spinnerService.hide())
-    )
-    .subscribe({
-      next: (response: any) => {
-        console.log('API Response:', response); // Debug log
-        if (response) {
-          this.ingredients = response.items || [];
+    this.spinner.show();
+    this.ingredientService
+      .getAllIngredientsPaged(this.currentPage, this.pageSize)
+      .pipe(finalize(() => this.spinner.hide()))
+      .subscribe({
+        next: (response) => {
+          this.ingredients = response.data || [];
           this.totalItems = response.totalCount || 0;
-          this.currentPage = response.currentPage || 1;
-        }
-      },
-      error: (error) => {
-        console.error('Error loading ingredients:', error);
-        this.toastService.error('Failed to load ingredients. Please try again.');
-      }
-    });
+        },
+        error: () => {
+          this.toastr.error('Failed to load ingredients. Please try again.');
+        },
+      });
   }
 
   onSearch(): void {
@@ -94,11 +73,10 @@ export class IngredientListComponent implements OnInit {
     }
   }
 
-  openDeleteModal(ingredient: Ingredient): void {
+  openDeleteModal(ingredient: IngredientReadDto): void {
     this.selectedIngredient = ingredient;
     const modalElement = document.getElementById('deleteModal');
     if (modalElement) {
-      // Garantir que não há instância anterior do modal
       Modal.getOrCreateInstance(modalElement).show();
     }
   }
@@ -106,79 +84,19 @@ export class IngredientListComponent implements OnInit {
   deleteIngredient(): void {
     if (!this.selectedIngredient) return;
 
-    this.spinnerService.show();
+    this.spinner.show();
     this.ingredientService.deleteIngredient(this.selectedIngredient.id)
-      .pipe(
-        finalize(() => {
-          this.spinnerService.hide();
-          // Fecha o modal após a operação
-          const modalElement = document.getElementById('deleteModal');
-          if (modalElement) {
-            const modal = Modal.getInstance(modalElement);
-            if (modal) {
-              modal.hide();
-              // Remove o backdrop manualmente se necessário
-              const backdrop = document.querySelector('.modal-backdrop');
-              if (backdrop) {
-                backdrop.remove();
-              }
-            }
-          }
-        })
-      )
+      .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: () => {
-          this.toastService.success('Ingredient deleted successfully');
+          this.toastr.success('Ingredient deleted successfully');
           this.loadIngredients();
-          this.selectedIngredient = null; // Limpa a seleção
+          this.selectedIngredient = null;
         },
-        error: (error) => {
-          console.error('Error deleting ingredient:', error);
-          this.toastService.error(error?.error || 'Failed to delete ingredient. Please try again.');
-        }
+        error: () => {
+          this.toastr.error('Failed to delete ingredient. Please try again.');
+        },
       });
-  }
-
-  getCategoryLabel(category: Category): string {
-    return CategoryLabels[category];
-  }
-
-  getExpiryStatus(expiryDate: string | Date | null): { status: string; label: string } {
-    if (!expiryDate) {
-      return { status: 'secondary', label: 'No expiry date' };
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
-    
-    const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysUntilExpiry < 0) {
-      return { status: 'danger', label: 'Expired' };
-    } else if (daysUntilExpiry <= this.EXPIRY_DANGER_DAYS) {
-      return { status: 'danger', label: `Expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}` };
-    } else if (daysUntilExpiry <= this.EXPIRY_WARNING_DAYS) {
-      return { status: 'warning', label: `Expires in ${daysUntilExpiry} days` };
-    } else {
-      return { status: 'success', label: `Valid for ${daysUntilExpiry} days` };
-    }
-  }
-
-  formatDate(date: string | Date | null): string {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString();
-  }
-
-  getQuantityStatus(quantity: number, reorderLevel: number): string {
-    if (quantity <= 0) {
-      return 'danger';
-    } else if (quantity <= reorderLevel) {
-      return 'warning';
-    }
-    return 'success';
   }
 
   formatCurrency(value: number): string {

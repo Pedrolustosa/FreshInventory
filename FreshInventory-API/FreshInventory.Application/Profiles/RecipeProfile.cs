@@ -9,40 +9,41 @@ namespace FreshInventory.Application.Profiles
     {
         public RecipeProfile()
         {
+            // Mapeando Recipe para RecipeReadDto
             CreateMap<Recipe, RecipeReadDto>()
                 .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src =>
-                    src.Ingredients.Select(i => new RecipeIngredientDto
+                    src.RecipeIngredients.Select(ri => new RecipeIngredientDto
                     {
-                        IngredientId = i.Key,
-                        Quantity = i.Value
-                    })));
+                        IngredientId = ri.IngredientId,
+                        IngredientName = ri.Ingredient.Name,
+                        Quantity = ri.Quantity
+                    }).ToList()));
 
+            // Mapeando RecipeCreateDto para Recipe
             CreateMap<RecipeCreateDto, Recipe>()
                 .ConstructUsing(src => new Recipe(
                     src.Name,
                     src.Description,
                     src.Servings,
                     src.PreparationTime,
-                    src.Ingredients != null
-                        ? src.Ingredients.ToDictionary(i => i.IngredientId, i => i.Quantity)
-                        : new Dictionary<int, int>(),
-                    src.Steps ?? new List<string>()
-                ))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore());
+                    src.Ingredients.Select(i => new RecipeIngredient
+                    {
+                        IngredientId = i.IngredientId,
+                        Quantity = i.Quantity
+                    }).ToList(),
+                    src.Steps
+                ));
 
+            // Mapeando RecipeUpdateDto para Recipe
             CreateMap<RecipeUpdateDto, Recipe>()
-                .ConstructUsing(src => new Recipe(
-                    src.Name,
-                    src.Description,
-                    src.Servings,
-                    src.PreparationTime,
-                    src.Ingredients != null
-                        ? src.Ingredients.ToDictionary(i => i.IngredientId, i => i.Quantity)
-                        : new Dictionary<int, int>(),
-                    src.Steps ?? new List<string>()
-                ))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore());
+                .ForMember(dest => dest.RecipeIngredients, opt => opt.MapFrom(src =>
+                    src.Ingredients.Select(i => new RecipeIngredient
+                    {
+                        IngredientId = i.IngredientId,
+                        Quantity = i.Quantity
+                    }).ToList()));
 
+            // Map CreateRecipeCommand to Recipe
             CreateMap<CreateRecipeCommand, Recipe>()
                 .ConstructUsing(src => new Recipe(
                     src.RecipeCreateDto.Name,
@@ -50,12 +51,17 @@ namespace FreshInventory.Application.Profiles
                     src.RecipeCreateDto.Servings,
                     src.RecipeCreateDto.PreparationTime,
                     src.RecipeCreateDto.Ingredients != null
-                        ? src.RecipeCreateDto.Ingredients.ToDictionary(i => i.IngredientId, i => i.Quantity)
-                        : new Dictionary<int, int>(),
+                        ? src.RecipeCreateDto.Ingredients.Select(i => new RecipeIngredient
+                        {
+                            IngredientId = i.IngredientId,
+                            Quantity = i.Quantity
+                        }).ToList()
+                        : new List<RecipeIngredient>(),
                     src.RecipeCreateDto.Steps ?? new List<string>()
                 ))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore());
+                .ForMember(dest => dest.RecipeIngredients, opt => opt.Ignore());
 
+            // Map UpdateRecipeCommand to Recipe
             CreateMap<UpdateRecipeCommand, Recipe>()
                 .ConstructUsing(src => new Recipe(
                     src.RecipeUpdateDto.Name,
@@ -63,11 +69,15 @@ namespace FreshInventory.Application.Profiles
                     src.RecipeUpdateDto.Servings,
                     src.RecipeUpdateDto.PreparationTime,
                     src.RecipeUpdateDto.Ingredients != null
-                        ? src.RecipeUpdateDto.Ingredients.ToDictionary(i => i.IngredientId, i => i.Quantity)
-                        : new Dictionary<int, int>(),
+                        ? src.RecipeUpdateDto.Ingredients.Select(i => new RecipeIngredient
+                        {
+                            IngredientId = i.IngredientId,
+                            Quantity = i.Quantity
+                        }).ToList()
+                        : new List<RecipeIngredient>(),
                     src.RecipeUpdateDto.Steps ?? new List<string>()
                 ))
-                .ForMember(dest => dest.Ingredients, opt => opt.Ignore());
+                .ForMember(dest => dest.RecipeIngredients, opt => opt.Ignore());
         }
     }
 }

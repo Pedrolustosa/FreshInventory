@@ -1,15 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
-import { tap, catchError, map } from "rxjs/operators";
+import { tap, catchError } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import {
-  LoginRequest,
-  RegisterRequest,
-  UpdateUserDto,
-  AuthResponse,
-  AuthError,
-} from "../models/auth.model";
+import { UserCreateDto, UserLoginDto, UserLoginResponseDto, UserUpdateDto } from "../models/auth.model";
 import { Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
 
@@ -18,7 +12,7 @@ import { ToastrService } from "ngx-toastr";
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/auth`;
-  private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
+  private currentUserSubject = new BehaviorSubject<UserLoginResponseDto | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
@@ -38,22 +32,9 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap((response) => {
-        this.setCurrentUser(response);
-      }),
-      catchError((error) => {
-        const errorMessage = error.error?.message || 'Invalid login credentials';
-        return throwError(() => new Error(errorMessage));
-      })
-    );
-  }
-  
-
-  register(userData: RegisterRequest): Observable<AuthResponse> {
+  register(userData: UserCreateDto): Observable<UserLoginResponseDto> {
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/register`, userData)
+      .post<UserLoginResponseDto>(`${this.apiUrl}/RegisterUser`, userData)
       .pipe(
         tap((response) => {
           this.setCurrentUser(response);
@@ -61,66 +42,76 @@ export class AuthService {
           this.router.navigate(["/dashboard"]);
         }),
         catchError((error) => {
-          const errorResponse: AuthError = error.error;
-          if (errorResponse.errors) {
-            Object.values(errorResponse.errors).forEach((messages) => {
-              messages.forEach((message) => this.toastr.error(message));
-            });
-          } else {
-            this.toastr.error(errorResponse.message || "Registration failed");
-          }
-          return throwError(() => error);
+          const errorMessage = error.error?.message || "Registration failed";
+          this.toastr.error(errorMessage);
+          return throwError(() => new Error(errorMessage));
         })
       );
   }
 
-  updateUser(userData: UpdateUserDto): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/profile`, userData).pipe(
-      tap((success) => {
-        if (success) {
-          // Atualiza o estado do usuário local com os novos dados
-          const currentUser = this.currentUserSubject.value;
-          if (currentUser) {
-            const updatedUser: AuthResponse = {
-              ...currentUser,
-              fullName: userData.fullName,
-              email: userData.email || currentUser.email,
-              dateOfBirth: userData.dateOfBirth ? new Date(userData.dateOfBirth) : currentUser.dateOfBirth
-            };
-            
-            this.currentUserSubject.next(updatedUser);
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          }
-        }
-      }),
-      catchError((error) => {
-        const errorMessage = error.error || 'Erro ao atualizar usuário';
-        this.toastr.error(errorMessage);
-        return throwError(() => new Error(errorMessage));
-      })
-    );
-  }
-
-  fetchUserProfile(): void {
-    if (!this.token) {
-      console.warn("No token available to fetch user profile");
-      return;
-    }
-  
-    this.http
-      .get<AuthResponse>(`${this.apiUrl}/profile`)
+  login(credentials: UserLoginDto): Observable<UserLoginResponseDto> {
+    return this.http
+      .post<UserLoginResponseDto>(`${this.apiUrl}/LoginUser`, credentials)
       .pipe(
-        tap((user) => {
-          this.setCurrentUser(user);
+        tap((response) => {
+          this.setCurrentUser(response);
         }),
         catchError((error) => {
-          console.error("Failed to fetch user profile:", error);
-          this.logout();
-          return throwError(() => error);
+          const errorMessage = error.error?.message || "Invalid login credentials";
+          return throwError(() => new Error(errorMessage));
         })
-      )
-      .subscribe();
-  }  
+      );
+  }
+
+  updateUser(userId: string, userData: UserUpdateDto): Observable<UserLoginResponseDto> {
+    return this.http
+      .put<UserLoginResponseDto>(`${this.apiUrl}/UpdateUserProfile?userId=${userId}`, userData)
+      .pipe(
+        tap((response) => {
+          this.setCurrentUser(response);
+          this.toastr.success("User updated successfully!");
+        }),
+        catchError((error) => {
+          const errorMessage = error.error?.message || "Failed to update user";
+          this.toastr.error(errorMessage);
+          return throwError(() => new Error(errorMessage));
+        })
+      );
+  }
+
+  getUserById(userId: string): Observable<UserLoginResponseDto> {
+    return this.http
+      .get<UserLoginResponseDto>(`${this.apiUrl}/GetById/${userId}`)
+      .pipe(
+        tap((response) => {
+          this.currentUserSubject.next(response);
+        }),
+        catchError((error) => {
+          const errorMessage = error.error?.message || "Failed to fetch user by ID";
+          this.toastr.error(errorMessage);
+          return throwError(() => new Error(errorMessage));
+        })
+      );
+  }
+
+  getUserByEmail(email: string): Observable<UserLoginResponseDto> {
+    return this.http
+      .get<UserLoginResponseDto>(`${this.apiUrl}/GetByEmail/${email}`)
+      .pipe(
+        tap((response) => {
+          const currentUser = this.currentUserSubject.value;
+          if (currentUser) {
+            this.currentUserSubject.next({ ...currentUser, ...response });
+            localStorage.setItem("currentUser", JSON.stringify(this.currentUserSubject.value));
+          }
+        }),
+        catchError((error) => {
+          const errorMessage = error.error?.message || "Failed to fetch user by email";
+          this.toastr.error(errorMessage);
+          return throwError(() => new Error(errorMessage));
+        })
+      );
+  }
 
   logout(): void {
     localStorage.removeItem("currentUser");
@@ -129,7 +120,7 @@ export class AuthService {
     this.router.navigate(["/auth/login"]);
   }
 
-  private setCurrentUser(user: AuthResponse): void {
+  private setCurrentUser(user: UserLoginResponseDto): void {
     if (!user) {
       console.warn("Attempted to set null user");
       return;
@@ -142,32 +133,11 @@ export class AuthService {
     return !!this.currentUserSubject.value;
   }
 
-  get currentUserValue(): AuthResponse | null {
+  get currentUserValue(): UserLoginResponseDto | null {
     return this.currentUserSubject.value;
   }
 
   get token(): string | null {
     return this.currentUserValue?.token ?? null;
-  }
-
-  getUserByEmail(email: string): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.apiUrl}/email/${email}`).pipe(
-      tap((response) => {
-        // Atualiza o estado do usuário atual com os dados mais recentes
-        const currentUser = this.currentUserSubject.value;
-        if (currentUser) {
-          this.currentUserSubject.next({
-            ...currentUser,
-            ...response
-          });
-          localStorage.setItem('currentUser', JSON.stringify(this.currentUserSubject.value));
-        }
-      }),
-      catchError((error) => {
-        const errorMessage = error.error?.message || 'Erro ao buscar dados do usuário';
-        this.toastr.error(errorMessage);
-        return throwError(() => new Error(errorMessage));
-      })
-    );
   }
 }

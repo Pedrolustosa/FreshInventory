@@ -6,11 +6,9 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { AuthService } from '../../services/auth.service';
 import { IngredientService } from '../../services/ingredient.service';
 import { RecipeService } from '../../services/recipe.service';
-import { AuthResponse } from '../../models/auth.model';
-import { Ingredient } from '../../models/ingredient.model';
-import { Recipe } from '../../models/recipe.model';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject, takeUntil } from 'rxjs';
+import { UserLoginResponseDto } from '../../models/auth.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,10 +25,9 @@ import { Subject, takeUntil } from 'rxjs';
 export class SidebarComponent implements OnInit, OnDestroy {
   @Input() isCollapsed = false;
   @Output() isCollapsedChange = new EventEmitter<boolean>();
-  currentUser: AuthResponse | null = null;
-  ingredients: Ingredient[] = [];
-  recipes: Recipe[] = [];
   private destroy$ = new Subject<void>();
+  
+  currentUser: UserLoginResponseDto | null = null; // Propriedade adicionada para armazenar o usuário logado.
 
   constructor(
     private authService: AuthService,
@@ -42,7 +39,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUserProfile();
-    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -55,32 +51,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (user) => {
-          this.currentUser = user;
+          this.currentUser = user; // Armazena o usuário logado.
           if (!user) {
-            this.authService.fetchUserProfile();
+            this.currentUser = this.authService.currentUserValue; // Usa o valor atual do usuário.
           }
         },
         error: (error) => {
           console.error('Error loading user profile:', error);
         }
-      });
-  }
-
-  private loadData(): void {
-    // Carregar ingredientes
-    this.ingredientService.getIngredients()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (ingredients) => this.ingredients = ingredients,
-        error: (error) => console.error('Error loading ingredients:', error)
-      });
-
-    // Carregar receitas
-    this.recipeService.getRecipes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (recipes) => this.recipes = recipes,
-        error: (error) => console.error('Error loading recipes:', error)
       });
   }
 
@@ -92,7 +70,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   async logout(): Promise<void> {
     try {
       this.spinner.show();
-      await this.authService.logout();
+      this.authService.logout(); // Chama o método de logout.
       await this.router.navigate(['/auth/login']);
     } catch (error) {
       console.error('Error during logout:', error);

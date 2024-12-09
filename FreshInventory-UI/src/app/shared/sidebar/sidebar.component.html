@@ -19,95 +19,47 @@
   <!-- Navigation -->
   <div class="sidebar-nav">
     <ul class="nav nav-pills flex-column">
-      <!-- Dashboard -->
       <li class="nav-item">
-        <a class="nav-link d-flex align-items-center"
-           routerLink="/dashboard"
-           routerLinkActive="active"
-           [tooltip]="isCollapsed ? 'Dashboard' : ''"
-           placement="right"
-           [delay]="200">
+        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
           <i class="fas fa-chart-line"></i>
-          <span class="nav-text" [class.d-none]="isCollapsed">Dashboard</span>
+          <span class="nav-text">Dashboard</span>
         </a>
       </li>
-
-      <!-- Ingredients -->
       <li class="nav-item">
-        <a class="nav-link d-flex align-items-center"
-           routerLink="/ingredients"
-           routerLinkActive="active"
-           [tooltip]="isCollapsed ? 'Ingredients' : ''"
-           placement="right"
-           [delay]="200">
+        <a class="nav-link" routerLink="/ingredients" routerLinkActive="active">
           <i class="fas fa-box"></i>
-          <span class="nav-text" [class.d-none]="isCollapsed">Ingredients</span>
-          <span class="badge bg-primary ms-auto" *ngIf="ingredients?.length && !isCollapsed">{{ingredients.length}}</span>
+          <span class="nav-text">Ingredients</span>
         </a>
       </li>
-
-      <!-- Recipes -->
       <li class="nav-item">
-        <a class="nav-link d-flex align-items-center"
-           routerLink="/recipes"
-           routerLinkActive="active"
-           [tooltip]="isCollapsed ? 'Recipes' : ''"
-           placement="right"
-           [delay]="200">
+        <a class="nav-link" routerLink="/recipes" routerLinkActive="active">
           <i class="fas fa-utensils"></i>
-          <span class="nav-text" [class.d-none]="isCollapsed">Recipes</span>
-          <span class="badge bg-primary ms-auto" *ngIf="recipes?.length && !isCollapsed">{{recipes.length}}</span>
+          <span class="nav-text">Recipes</span>
         </a>
       </li>
-
-      <!-- Suppliers -->
       <li class="nav-item">
-        <a class="nav-link d-flex align-items-center"
-           routerLink="/suppliers"
-           routerLinkActive="active"
-           [tooltip]="isCollapsed ? 'Suppliers' : ''"
-           placement="right"
-           [delay]="200">
+        <a class="nav-link" routerLink="/suppliers" routerLinkActive="active">
           <i class="fas fa-truck"></i>
-          <span class="nav-text" [class.d-none]="isCollapsed">Suppliers</span>
+          <span class="nav-text">Suppliers</span>
         </a>
       </li>
     </ul>
   </div>
 
-  <!-- Footer with User Profile -->
+  <!-- Footer -->
   <div class="sidebar-footer">
-    <div class="dropdown" dropdown [dropup]="true">
-      <a class="d-flex align-items-center user-profile" 
-         dropdownToggle
-         [tooltip]="isCollapsed ? (currentUser?.fullName || 'User Profile') : ''"
-         placement="right"
-         [delay]="200">
-        <img [src]="'assets/avatar-placeholder.png'" 
-             [alt]="currentUser?.fullName || 'User'"
-             class="avatar">
-        <div class="user-info" [class.d-none]="isCollapsed">
-          <span class="user-name">{{currentUser?.fullName || 'Guest User'}}</span>
+    <div class="dropdown">
+      <a class="dropdown-toggle d-flex align-items-center" id="userMenu" data-bs-toggle="dropdown">
+        <img [src]="'assets/avatar-placeholder.png'" [alt]="currentUser?.user?.fullName || 'User'" class="avatar">
+        <div class="user-info">
+          <span class="user-name">{{ currentUser?.user?.fullName }}</span>
         </div>
-        <i class="fas fa-ellipsis-v ms-auto" [class.d-none]="isCollapsed"></i>
       </a>
-      <ul class="dropdown-menu dropdown-menu-dark" *dropdownMenu>
-        <li>
-          <a class="dropdown-item" routerLink="/profile">
-            <i class="fas fa-user me-2"></i>Profile
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item" routerLink="/settings">
-            <i class="fas fa-cog me-2"></i>Settings
-          </a>
-        </li>
+      <ul class="dropdown-menu dropdown-menu-dark">
+        <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+        <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li>
-          <a class="dropdown-item text-danger" (click)="logout()">
-            <i class="fas fa-sign-out-alt me-2"></i>Logout
-          </a>
-        </li>
+        <li><a class="dropdown-item text-danger" (click)="logout()">Logout</a></li>
       </ul>
     </div>
   </div>

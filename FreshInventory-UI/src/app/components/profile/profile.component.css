@@ -2,9 +2,9 @@
   max-width: 1200px;
   margin: 2rem auto;
   padding: 2rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--bs-neutral-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
 }
 
 .profile-header {
@@ -12,7 +12,7 @@
   align-items: center;
   gap: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--bs-border);
   margin-bottom: 2rem;
 }
 
@@ -25,8 +25,8 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--bs-neutral-white);
+  box-shadow: var(--box-shadow);
 }
 
 .upload-btn {
@@ -39,15 +39,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bs-primary);
-  color: white;
-  border: 2px solid white;
+  background: var(--bs-tech-blue);
+  color: var(--bs-neutral-white);
+  border: 2px solid var(--bs-neutral-white);
   padding: 0;
 }
 
 .upload-btn:hover {
-  background: var(--primary-color);
-  color: white;
+  background: var(--bs-tech-blue-hover);
+  color: var(--bs-neutral-white);
 }
 
 .profile-title {
@@ -57,58 +57,59 @@
 .profile-title h1 {
   margin: 0;
   font-size: 1.8rem;
-  color: var(--bs-primary);
+  color: var(--bs-tech-blue);
 }
 
 .profile-title p {
   margin: 0.5rem 0 0;
-  color: #666;
+  color: var(--bs-neutral-dark-alt);
 }
 
 .profile-content {
-  background: white;
-  border-radius: 15px;
+  background: var(--bs-neutral-white);
+  border-radius: var(--border-radius-lg);
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  box-shadow: var(--box-shadow);
 }
 
 .form-section {
-  background: #f8f9fa;
+  background: var(--bs-neutral-light);
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   margin-bottom: 2rem;
 }
 
 .form-section h2 {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
-  color: var(--bs-primary);
+  color: var(--bs-tech-blue);
 }
 
 .form-label {
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: var(--neutral-coffee);
+  color: var(--bs-neutral-coffee);
 }
 
 .form-control {
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--bs-border);
   padding: 0.75rem;
 }
 
 .form-control:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  border-color: var(--bs-tech-blue);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-tech-blue-rgb), 0.25);
 }
 
 .form-control:disabled {
-  background: var(--neutral-beige);
+  background: var(--bs-neutral-beige);
   opacity: 0.7;
 }
 
 .invalid-feedback {
   font-size: 0.875rem;
+  color: var(--bs-food-tomato);
 }
 
 .btn-action {

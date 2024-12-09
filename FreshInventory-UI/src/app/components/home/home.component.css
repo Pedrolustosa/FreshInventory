@@ -1,6 +1,5 @@
-/* Navbar */
 .navbar {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(var(--bs-neutral-dark-rgb), 0.95);
   backdrop-filter: blur(10px);
   padding: 1rem 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -10,7 +9,7 @@
 .navbar-brand span {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--bs-primary);
+  color: var(--bs-tech-blue);
 }
 
 .nav-logo {
@@ -21,7 +20,7 @@
 }
 
 .nav-link {
-  color: var(--bs-secondary);
+  color: var(--bs-neutral-light);
   font-weight: 500;
   padding: 0.5rem 1rem;
   transition: color 0.3s ease;
@@ -29,32 +28,30 @@
 
 .nav-link:hover,
 .navbar-nav .nav-link.active {
-  color: var(--bs-primary);
+  color: var(--bs-tech-green);
   font-weight: bold;
-  border-bottom: 2px solid var(--bs-primary);
+  border-bottom: 2px solid var(--bs-tech-green);
 }
 
-/* Buttons */
 .btn-outline-primary {
-  color: var(--bs-primary);
-  border-color: var(--bs-primary);
+  color: var(--bs-tech-blue);
+  border-color: var(--bs-tech-blue);
 }
 
 .btn-outline-primary:hover {
-  background-color: var(--bs-primary);
-  color: #fff;
+  background-color: var(--bs-tech-blue);
+  color: var(--bs-neutral-white);
 }
 
 .btn-primary {
-  background-color: var(--bs-primary);
-  border-color: var(--bs-primary);
+  background-color: var(--bs-tech-blue);
+  border-color: var(--bs-tech-blue);
 }
 
 .btn-primary:hover {
-  background-color: #2937bf;
+  background-color: var(--bs-tech-green);
 }
 
-/* Hero Section */
 .hero {
   position: relative;
   padding: 6rem 0;
@@ -62,7 +59,7 @@
   background: url("/assets/Smart_Kitchen_Management.png") no-repeat center center/cover;
   display: flex;
   align-items: center;
-  color: white;
+  color: var(--bs-neutral-white);
 }
 
 .hero::before {
@@ -72,7 +69,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--bs-gradient-tech);
   z-index: 1;
 }
 
@@ -86,13 +83,11 @@
   line-height: 1.2;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  animation: fadeInDown 1s ease-in-out;
 }
 
 .hero-content p {
   font-size: 1.25rem;
   opacity: 0.9;
-  animation: fadeInUp 1.5s ease-in-out;
 }
 
 .hero-buttons .btn {
@@ -106,37 +101,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Animações */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Features Section */
 .features {
   padding: 5rem 0;
-  background: var(--neutral-beige);
+  background: var(--bs-neutral-light);
 }
 
 .feature-card {
-  background: white;
+  background: var(--bs-neutral-white);
   padding: 2rem;
   border-radius: 15px;
   text-align: center;
@@ -152,7 +123,7 @@
 .feature-icon {
   width: 4rem;
   height: 4rem;
-  background: var(--bs-primary);
+  background: var(--bs-food-tomato);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -162,25 +133,24 @@
 
 .feature-icon i {
   font-size: 2rem;
-  color: white;
+  color: var(--bs-neutral-white);
 }
 
 .feature-card h3 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
-  color: var(--bs-secondary);
+  color: var(--bs-neutral-dark);
 }
 
 .feature-card p {
-  color: var(--bs-secondary);
+  color: var(--bs-neutral-coffee);
   opacity: 0.8;
 }
 
-/* Footer */
 .footer {
   padding: 4rem 0;
-  background: var(--bs-secondary);
-  color: white;
+  background: var(--bs-neutral-dark);
+  color: var(--bs-neutral-white);
 }
 
 .footer h4 {
@@ -198,13 +168,13 @@
 }
 
 .footer ul li a {
-  color: #ccc;
+  color: var(--bs-neutral-light);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .footer ul li a:hover {
-  color: var(--bs-primary);
+  color: var(--bs-tech-blue);
 }
 
 .social-btn {
@@ -214,7 +184,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: white;
+  color: var(--bs-neutral-white);
   font-size: 1.5rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -225,18 +195,18 @@
 }
 
 .subfooter {
-  background-color: var(--bs-secondary);
-  color: #eee;
+  background-color: var(--bs-food-chocolate);
+  color: var(--bs-neutral-white);
   text-align: center;
   font-size: 0.875rem;
 }
 
 .subfooter a {
-  color: #ddd;
+  color: var(--bs-neutral-light);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .subfooter a:hover {
-  color: var(--bs-primary);
+  color: var(--bs-tech-green);
 }

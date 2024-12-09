@@ -25,13 +25,8 @@
               <span class="input-group-text border-end-0 bg-transparent">
                 <i class="fas fa-search text-muted"></i>
               </span>
-              <input
-                type="text"
-                class="form-control border-start-0 ps-0"
-                [(ngModel)]="searchName"
-                placeholder="Search ingredients..."
-                (keyup.enter)="onSearch()"
-              />
+              <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="searchName"
+                placeholder="Search ingredients..." (keyup.enter)="onSearch()" />
             </div>
           </div>
         </div>
@@ -57,20 +52,12 @@
               <td>{{ ingredient.supplierName || 'Unknown Supplier' }}</td>
               <td class="text-center">
                 <div class="d-flex justify-content-center gap-2">
-                  <button
-                    class="btn btn-sm btn-light"
-                    [routerLink]="['update', ingredient.id]"
-                    tooltip="Edit Ingredient"
-                    placement="top"
-                  >
+                  <button class="btn btn-sm btn-light" [routerLink]="['update', ingredient.id]"
+                    tooltip="Edit Ingredient" placement="top">
                     <i class="fas fa-edit text-primary"></i>
                   </button>
-                  <button
-                    class="btn btn-sm btn-light"
-                    (click)="openDeleteModal(ingredient)"
-                    tooltip="Delete Ingredient"
-                    placement="top"
-                  >
+                  <button class="btn btn-sm btn-light" (click)="openDeleteModal(ingredient)" tooltip="Delete Ingredient"
+                    placement="top">
                     <i class="fas fa-trash text-danger"></i>
                   </button>
                 </div>
@@ -93,21 +80,11 @@
       </div>
 
       <!-- Pagination Section -->
-      <div
-        class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4"
-        *ngIf="totalItems > pageSize"
-      >
-        <div class="text-muted small">
-          Showing {{ ingredients.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}
-          to {{ Math.min(currentPage * pageSize, totalItems) }} of {{ totalItems }} entries
-        </div>
-        <pagination
-          [totalItems]="totalItems"
-          [itemsPerPage]="pageSize"
-          [(ngModel)]="currentPage"
-          (pageChanged)="pageChanged($event)"
-          class="pagination-sm mb-0"
-        ></pagination>
+      <div class="d-flex justify-content-center mt-4">
+        <pagination [totalItems]="totalItems" [itemsPerPage]="pageSize" [(ngModel)]="currentPage" [maxSize]="maxSize"
+          (pageChanged)="pageChanged($event)" [boundaryLinks]="true" [rotate]="true" [directionLinks]="true"
+          class="pagination-sm mb-0">
+        </pagination>
       </div>
     </div>
   </div>

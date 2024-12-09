@@ -3,7 +3,13 @@ import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { tap, catchError } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import { UserCreateDto, UserLoginDto, UserLoginResponseDto, UserUpdateDto } from "../models/auth.model";
+import {
+  UserCreateDto,
+  UserLoginDto,
+  UserLoginResponseDto,
+  UserUpdateDto,
+  UserReadDto,
+} from "../models/auth.model";
 import { Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
 
@@ -41,11 +47,7 @@ export class AuthService {
           this.toastr.success("Registration successful!");
           this.router.navigate(["/dashboard"]);
         }),
-        catchError((error) => {
-          const errorMessage = error.error?.message || "Registration failed";
-          this.toastr.error(errorMessage);
-          return throwError(() => new Error(errorMessage));
-        })
+        catchError(this.handleError("Registration failed"))
       );
   }
 
@@ -56,60 +58,34 @@ export class AuthService {
         tap((response) => {
           this.setCurrentUser(response);
         }),
-        catchError((error) => {
-          const errorMessage = error.error?.message || "Invalid login credentials";
-          return throwError(() => new Error(errorMessage));
-        })
+        catchError(this.handleError("Invalid login credentials"))
       );
   }
 
-  updateUser(userId: string, userData: UserUpdateDto): Observable<UserLoginResponseDto> {
+  updateUser(id: string, userData: UserUpdateDto): Observable<UserReadDto> {
     return this.http
-      .put<UserLoginResponseDto>(`${this.apiUrl}/UpdateUserProfile?userId=${userId}`, userData)
+      .put<UserReadDto>(`${this.apiUrl}/UpdateUserProfile?userId=${id}`, userData)
       .pipe(
         tap((response) => {
-          this.setCurrentUser(response);
           this.toastr.success("User updated successfully!");
         }),
-        catchError((error) => {
-          const errorMessage = error.error?.message || "Failed to update user";
-          this.toastr.error(errorMessage);
-          return throwError(() => new Error(errorMessage));
-        })
+        catchError(this.handleError("Failed to update user"))
       );
   }
 
-  getUserById(userId: string): Observable<UserLoginResponseDto> {
+  getUserById(id: string): Observable<UserReadDto> {
     return this.http
-      .get<UserLoginResponseDto>(`${this.apiUrl}/GetById/${userId}`)
+      .get<UserReadDto>(`${this.apiUrl}/GetById/${id}`)
       .pipe(
-        tap((response) => {
-          this.currentUserSubject.next(response);
-        }),
-        catchError((error) => {
-          const errorMessage = error.error?.message || "Failed to fetch user by ID";
-          this.toastr.error(errorMessage);
-          return throwError(() => new Error(errorMessage));
-        })
+        catchError(this.handleError("Failed to fetch user by ID"))
       );
   }
 
-  getUserByEmail(email: string): Observable<UserLoginResponseDto> {
+  getUserByEmail(email: string): Observable<UserReadDto> {
     return this.http
-      .get<UserLoginResponseDto>(`${this.apiUrl}/GetByEmail/${email}`)
+      .get<UserReadDto>(`${this.apiUrl}/GetByEmail/${email}`)
       .pipe(
-        tap((response) => {
-          const currentUser = this.currentUserSubject.value;
-          if (currentUser) {
-            this.currentUserSubject.next({ ...currentUser, ...response });
-            localStorage.setItem("currentUser", JSON.stringify(this.currentUserSubject.value));
-          }
-        }),
-        catchError((error) => {
-          const errorMessage = error.error?.message || "Failed to fetch user by email";
-          this.toastr.error(errorMessage);
-          return throwError(() => new Error(errorMessage));
-        })
+        catchError(this.handleError("Failed to fetch user by email"))
       );
   }
 
@@ -127,6 +103,14 @@ export class AuthService {
     }
     localStorage.setItem("currentUser", JSON.stringify(user));
     this.currentUserSubject.next(user);
+  }
+
+  private handleError(defaultMessage: string) {
+    return (error: any) => {
+      const errorMessage = error.error?.message || defaultMessage;
+      this.toastr.error(errorMessage);
+      return throwError(() => new Error(errorMessage));
+    };
   }
 
   get isAuthenticated(): boolean {

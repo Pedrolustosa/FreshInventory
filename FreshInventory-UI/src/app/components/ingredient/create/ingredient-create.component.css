@@ -1,26 +1,27 @@
 .ingredient-list-container {
   padding: 1rem;
+  background: var(--bs-neutral-light);
 }
 
 .content-header {
-  background: linear-gradient(to right, var(--bs-primary-bg-subtle), var(--bs-light));
-  border-radius: 0.5rem;
+  background: var(--bs-gradient-food);
+  border-radius: var(--border-radius-lg);
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .content-title {
-  color: #2c3e50;
+  color: var(--bs-neutral-dark);
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
 }
 
 .card {
-  background: #fff;
+  background: var(--bs-neutral-white);
   border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
 }
 
 .card-body {
@@ -39,8 +40,8 @@
 }
 
 .form-section {
-  background: #fff;
-  border-radius: 0.5rem;
+  background: var(--bs-neutral-white);
+  border-radius: var(--border-radius-md);
   padding: 0.75rem;
 }
 
@@ -48,10 +49,10 @@
   font-size: 0.925rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #2c3e50;
+  color: var(--bs-tech-blue);
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #3498db;
-  background: linear-gradient(to right, #3498db, #2980b9);
+  border-bottom: 2px solid var(--bs-tech-blue);
+  background: var(--bs-gradient-tech);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -63,21 +64,21 @@
 
 .required-field::after {
   content: "*";
-  color: #e74c3c;
+  color: var(--bs-food-tomato);
   margin-left: 0.25rem;
 }
 
 .form-control, .form-select {
-  border: 1px solid #ddd;
-  border-radius: 0.375rem;
+  border: 1px solid var(--bs-border);
+  border-radius: var(--border-radius-sm);
   padding: 0.25rem 0.5rem;
   height: 32px;
   font-size: 0.875rem;
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  border-color: var(--bs-tech-blue);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
 textarea.form-control {
@@ -86,8 +87,8 @@ textarea.form-control {
 }
 
 .form-check-input:checked {
-  background-color: #3498db;
-  border-color: #3498db;
+  background-color: var(--bs-tech-blue);
+  border-color: var(--bs-tech-blue);
 }
 
 .form-check {
@@ -96,49 +97,47 @@ textarea.form-control {
 
 .invalid-feedback {
   font-size: 0.875rem;
-  color: #e74c3c;
+  color: var(--bs-food-tomato);
 }
 
 .form-actions {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--bs-border);
 }
 
 .btn {
   padding: 0.375rem 1rem;
   font-weight: 500;
-  border-radius: 0.375rem;
+  border-radius: var(--border-radius-sm);
   transition: all 0.2s;
 }
 
 .btn-primary {
-  background-color: #3498db;
-  border-color: #3498db;
+  background-color: var(--bs-tech-blue);
+  border-color: var(--bs-tech-blue);
 }
 
 .btn-primary:hover {
-  background-color: #2980b9;
-  border-color: #2980b9;
+  background-color: var(--bs-tech-blue-hover);
+  border-color: var(--bs-tech-blue-hover);
 }
 
 .btn-outline-secondary {
-  color: #6c757d;
-  border-color: #6c757d;
+  color: var(--bs-neutral-dark-alt);
+  border-color: var(--bs-neutral-dark-alt);
 }
 
 .btn-outline-secondary:hover {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
+  color: var(--bs-neutral-light);
+  background-color: var(--bs-neutral-dark-alt);
+  border-color: var(--bs-neutral-dark-alt);
 }
 
-/* Compact form styles */
 .mb-3 {
   margin-bottom: 0.75rem !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

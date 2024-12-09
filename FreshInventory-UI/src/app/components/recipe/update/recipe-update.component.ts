@@ -47,10 +47,11 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
       next: (recipe) => {
         this.recipeForm.patchValue({
           name: recipe.name,
-          description: recipe.description
+          description: recipe.description,
+          servings: recipe.servings,
+          preparationTime: recipe.preparationTime
         });
 
-        // Atualizar ingredientes
         this.ingredientsArray.clear();
         recipe.ingredients.forEach((ingredient) => {
           this.ingredientsArray.push(
@@ -61,7 +62,6 @@ export class RecipeUpdateComponent extends RecipeFormBase implements OnInit {
           );
         });
 
-        // Atualizar etapas (steps)
         this.stepsArray.clear();
         recipe.steps.forEach((step) => {
           this.stepsArray.push(this.createStepControl(step));

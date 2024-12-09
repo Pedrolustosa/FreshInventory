@@ -1,5 +1,3 @@
-// supplier.model.ts
-
 export interface SupplierCreateDto {
   name: string;
   contact: string;
@@ -7,7 +5,7 @@ export interface SupplierCreateDto {
   phone: string;
   address: string;
   category: string;
-  status?: boolean;
+  status: boolean;
 }
 
 export interface SupplierReadDto {
@@ -18,7 +16,7 @@ export interface SupplierReadDto {
   phone: string;
   address: string;
   category: string;
-  status?: boolean;
+  status: boolean;
 }
 
 export interface SupplierUpdateDto {
@@ -26,7 +24,7 @@ export interface SupplierUpdateDto {
   contact: string;
   email: string;
   phone: string;
-  category: string;
   address: string;
+  category: string;
   status: boolean;
 }

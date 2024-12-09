@@ -1,60 +1,60 @@
 .card {
   border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-label {
   font-weight: 500;
-  color: var(--neutral-coffee);
+  color: var(--bs-neutral-coffee);
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(44, 97, 79, 0.1);
+  border-color: var(--bs-tech-green);
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.1);
 }
 
 .ingredients-section,
 .instructions-section {
-  background: var(--neutral-beige);
+  background: var(--bs-neutral-light);
   padding: 1.5rem;
   border-radius: 10px;
 }
 
 .ingredients-section h3,
 .instructions-section h3 {
-  color: var(--neutral-coffee);
+  color: var(--bs-neutral-coffee);
 }
 
 .input-group-text {
-  background: var(--primary-color);
-  color: white;
+  background: var(--bs-tech-blue);
+  color: var(--bs-neutral-white);
   border: none;
 }
 
 .btn-outline-danger {
-  border-color: var(--danger-color);
-  color: var(--danger-color);
+  border-color: var(--bs-food-tomato);
+  color: var(--bs-food-tomato);
 }
 
 .btn-outline-danger:hover {
-  background: var(--danger-color);
-  color: white;
+  background: var(--bs-food-tomato);
+  color: var(--bs-neutral-white);
 }
 
 .btn-outline-primary {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+  border-color: var(--bs-tech-blue);
+  color: var(--bs-tech-blue);
 }
 
 .btn-outline-primary:hover {
-  background: var(--primary-color);
-  color: white;
+  background: var(--bs-tech-blue);
+  color: var(--bs-neutral-white);
 }
 
 .invalid-feedback {
   display: block;
-  color: var(--danger-color);
+  color: var(--bs-food-tomato);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }

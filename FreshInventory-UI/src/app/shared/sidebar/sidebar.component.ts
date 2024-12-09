@@ -1,23 +1,19 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import { IngredientService } from '../../services/ingredient.service';
-import { RecipeService } from '../../services/recipe.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { Subject, takeUntil } from 'rxjs';
 import { UserLoginResponseDto } from '../../models/auth.model';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
-    BsDropdownModule,
-    TooltipModule
+    TooltipModule,
+    RouterModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
@@ -26,16 +22,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   @Input() isCollapsed = false;
   @Output() isCollapsedChange = new EventEmitter<boolean>();
   private destroy$ = new Subject<void>();
-  
-  currentUser: UserLoginResponseDto | null = null; // Propriedade adicionada para armazenar o usuário logado.
+  currentUser: UserLoginResponseDto | null = null;
 
-  constructor(
-    private authService: AuthService,
-    private ingredientService: IngredientService,
-    private recipeService: RecipeService,
-    private spinner: NgxSpinnerService,
-    private router: Router
-  ) {}
+  menuItems = [
+    { label: 'Home', link: '/home', icon: 'fas fa-home' },
+    { label: 'Dashboard', link: '/dashboard', icon: 'fas fa-chart-line' },
+    { label: 'Ingredients', link: '/ingredients', icon: 'fas fa-box' },
+    { label: 'Recipes', link: '/recipes', icon: 'fas fa-utensils' },
+    { label: 'Suppliers', link: '/suppliers', icon: 'fas fa-truck' },
+  ];
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -51,10 +48,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (user) => {
-          this.currentUser = user; // Armazena o usuário logado.
-          if (!user) {
-            this.currentUser = this.authService.currentUserValue; // Usa o valor atual do usuário.
-          }
+          this.currentUser = user;
         },
         error: (error) => {
           console.error('Error loading user profile:', error);
@@ -69,13 +63,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   async logout(): Promise<void> {
     try {
-      this.spinner.show();
-      this.authService.logout(); // Chama o método de logout.
-      await this.router.navigate(['/auth/login']);
+      this.authService.logout();
     } catch (error) {
       console.error('Error during logout:', error);
-    } finally {
-      this.spinner.hide();
     }
   }
 }

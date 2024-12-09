@@ -1,5 +1,3 @@
-// recipe.model.ts
-
 export interface RecipeCreateDto {
   name: string;
   description: string;
@@ -7,11 +5,6 @@ export interface RecipeCreateDto {
   preparationTime: string;
   ingredients: RecipeIngredientDto[];
   steps: string[];
-}
-
-export interface RecipeIngredientDto {
-  ingredientId: number;
-  quantity: number;
 }
 
 export interface RecipeReadDto {
@@ -22,6 +15,12 @@ export interface RecipeReadDto {
   preparationTime: string;
   ingredients: RecipeIngredientDto[];
   steps: string[];
+}
+
+export interface RecipeIngredientDto {
+  ingredientId: number;
+  ingredientName: string;
+  quantity: number;
 }
 
 export interface RecipeUpdateDto {

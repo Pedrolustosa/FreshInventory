@@ -1,5 +1,3 @@
-// auth.model.ts
-
 export interface UserCreateDto {
   fullName: string;
   userName: string;
@@ -24,13 +22,13 @@ export interface UserLoginDto {
   email: string;
   password: string;
 }
-
 export interface UserLoginResponseDto {
   token: string;
   user: UserReadDto;
 }
 
 export interface UserReadDto {
+  id: string;
   fullName: string;
   email: string;
   dateOfBirth?: Date;
@@ -48,7 +46,7 @@ export interface UserReadDto {
 }
 
 export interface UserUpdateDto {
-  userId: string; // Guid equivalente a string no TS
+  id: string;
   fullName: string;
   email: string;
   street: string;

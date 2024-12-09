@@ -8,26 +8,28 @@
     <router-outlet></router-outlet>
   </div>
 
-  <ngx-spinner 
-    bdColor="rgba(0, 0, 0, 0.7)" 
-    size="medium" 
-    color="var(--bs-primary)" 
-    type="ball-clip-rotate-multiple"
-    [fullScreen]="true">
-    <div class="spinner-wrapper">
-      <div class="spinner-icon">
-        <i class="bi bi-arrow-repeat"></i>
-      </div>
-      <h4 class="spinner-title">Processing Request</h4>
-      <p class="spinner-message">Please wait while we process your request...</p>
-      <div class="progress spinner-progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" 
-             role="progressbar" 
-             aria-valuenow="100" 
-             aria-valuemin="0" 
-             aria-valuemax="100">
-        </div>
+  <ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.7)"
+  size="medium"
+  color="var(--bs-success)"
+  type="ball-clip-rotate"
+  [fullScreen]="true">
+  <div class="spinner-wrapper">
+    <div class="spinner-icon">
+      <i class="fas fa-utensils"></i>
+    </div>
+    <h4 class="spinner-title">Cooking Up Something Great</h4>
+    <p class="spinner-message">Hold tight, we're preparing the best for you...</p>
+    <div class="progress spinner-progress">
+      <div
+        class="progress-bar progress-bar-striped progress-bar-animated"
+        role="progressbar"
+        aria-valuenow="100"
+        aria-valuemin="0"
+        aria-valuemax="100">
       </div>
     </div>
-  </ngx-spinner>
+  </div>
+</ngx-spinner>
+
 </div>

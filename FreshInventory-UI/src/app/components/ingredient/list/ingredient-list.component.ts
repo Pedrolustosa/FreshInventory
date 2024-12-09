@@ -33,7 +33,8 @@ export class IngredientListComponent implements OnInit {
   pageSize: number = 10;
   totalItems: number = 0;
   selectedIngredient: IngredientReadDto | null = null;
-  Math = Math; // Adiciona Math para uso no template
+  Math = Math;
+  maxSize: number = 5;
 
   constructor(
     private ingredientService: IngredientService,

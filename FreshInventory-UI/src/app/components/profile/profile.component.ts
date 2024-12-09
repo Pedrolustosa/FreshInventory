@@ -11,7 +11,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-profile',
-  standalone: true, // Marca o componente como standalone
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit {
   isEditing = false;
   maxDate: Date = new Date();
   private originalFormValues: any;
-  userId: string = '';
+  id: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -38,7 +38,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.getUserIdFromRoute();
+    this.getidFromRoute();
     this.loadUserProfile();
   }
 
@@ -63,34 +63,42 @@ export class ProfileComponent implements OnInit {
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
-  private getUserIdFromRoute(): void {
+  private getidFromRoute(): void {
     this.route.params.subscribe((params) => {
       if (params['id']) {
-        this.userId = params['id'];
+        this.id = params['id'];
       } else {
-        this.toastr.error('User ID not found in route');
-        this.router.navigate(['/login']);
+        const currentUser = this.authService.currentUserValue?.user;
+        if (currentUser?.id) {
+          this.id = currentUser.id;
+        } else {
+          this.toastr.error('User ID not found. Redirecting to login.');
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
-
+  
   loadUserProfile(): void {
-    if (!this.userId) {
+    if (!this.id) {
+      this.toastr.error('User ID is missing. Redirecting to login.');
+      this.router.navigate(['/login']);
       return;
     }
-
+  
     this.spinner.show();
     this.authService
-      .getUserById(this.userId)
+      .getUserById(this.id)
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (userResponse) => {
-          const user: UserReadDto = userResponse.user;
+          const user: UserReadDto = userResponse;
           this.profileForm.patchValue(user);
           this.originalFormValues = this.profileForm.value;
+          this.toastr.success('Profile loaded successfully!');
         },
         error: () => {
-          this.toastr.error('Error loading profile data');
+          this.toastr.error('Error loading profile data. Redirecting to login.');
           this.router.navigate(['/login']);
         }
       });
@@ -109,13 +117,13 @@ export class ProfileComponent implements OnInit {
   onSubmit(): void {
     if (this.profileForm.valid) {
       const updatedProfile: UserUpdateDto = {
-        userId: this.userId,
+        id: this.id,
         ...this.profileForm.value
       };
-
+  
       this.spinner.show();
       this.authService
-        .updateUser(this.userId, updatedProfile)
+        .updateUser(this.id, updatedProfile)
         .pipe(finalize(() => this.spinner.hide()))
         .subscribe({
           next: () => {

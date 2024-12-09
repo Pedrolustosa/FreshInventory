@@ -4,7 +4,6 @@
   width: 100%;
   overflow-x: hidden;
   position: relative;
-  background-color: var(--bs-body-bg);
 }
 
 .main-content {
@@ -13,8 +12,6 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: calc(100% - 280px);
   margin-left: 280px;
-  padding: 1.5rem;
-  background-color: var(--bs-body-bg);
 }
 
 .main-content.no-sidebar {
@@ -29,7 +26,7 @@
 
 /* Spinner Styles */
 .spinner-content {
-  color: var(--bs-light);
+  color: var(--bs-neutral-white);
   text-align: center;
   padding: 1rem;
 }
@@ -38,12 +35,13 @@
   font-size: 1.125rem;
   margin-bottom: 1rem;
   font-weight: 500;
+  color: var(--bs-food-tomato);
 }
 
 .progress-container {
   width: 200px;
   height: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bs-neutral-dark);
   border-radius: 2px;
   overflow: hidden;
   margin: 0.5rem auto;
@@ -52,7 +50,7 @@
 .progress-bar {
   width: 30%;
   height: 100%;
-  background-color: var(--bs-success);
+  background-color: var(--bs-food-carrot);
   border-radius: 2px;
   animation: progress 1s ease infinite;
   transform-origin: 0% 50%;

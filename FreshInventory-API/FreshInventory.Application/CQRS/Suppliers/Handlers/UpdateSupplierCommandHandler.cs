@@ -41,6 +41,7 @@ namespace FreshInventory.Application.CQRS.Supplier.Handlers
                     request.SupplierUpdateDto.Contact,
                     request.SupplierUpdateDto.Email,
                     request.SupplierUpdateDto.Phone,
+                    request.SupplierUpdateDto.Category,
                     request.SupplierUpdateDto.Status
                 );
 

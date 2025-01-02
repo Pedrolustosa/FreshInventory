@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FreshInventory.Application.Interfaces;
 using FreshInventory.Application.DTO.SupplierDTO;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FreshInventory.API.Controllers;
 

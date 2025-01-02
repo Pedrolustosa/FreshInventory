@@ -1,5 +1,4 @@
 // Program.cs
-using AutoMapper;
 using FreshInventory.API.Middlewares;
 using FreshInventory.Infrastructure.IoC.DependencyInjection;
 using Serilog;
